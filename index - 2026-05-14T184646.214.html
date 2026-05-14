@@ -89,10 +89,10 @@ footer{text-align:center;padding:24px;color:var(--ink3);font-size:12px;border-to
 
 <nav>
   <a href="#" class="logo">Forecast<span>Demo</span></a>
-  
+  <a href="#" onclick="goBackToOnboarding();return false" class="nav-back">← Volver</a>
 </nav>
 
-<div class="gate-screen" id="gate" style="display:none">
+<div class="gate-screen" id="gate">
   <div class="gate-box">
     <div class="gate-icon">📊</div>
     <h1 class="gate-title">Forecast Demo</h1>
@@ -179,7 +179,7 @@ footer{text-align:center;padding:24px;color:var(--ink3);font-size:12px;border-to
   </div>
 </div>
 
-<div class="main-screen" id="main" style="display:block">
+<div class="main-screen" id="main">
   <div class="container">
     
     <div id="context-bar" onclick="goBackToOnboarding()" style="text-align:center;margin-bottom:8px;padding:8px 16px;background:var(--purple-bg);border-radius:var(--radius-lg);display:none;cursor:pointer" title="Click para cambiar empresa">
@@ -933,21 +933,6 @@ function renderChart(chartData) {
 }
 
 try { updateMarcas(); filterSKUs(); updateRequiredCols(); validateGranularidad(); updateClienteVisibility(); } catch(e) { console.log('Init:', e.message); }
-</script>
-
-<script>
-// Auto-load: skip gate and onboarding, go straight to app
-(function(){
-  STATE.empresa = 'Electrolux Group';
-  STATE.rubro = 'electrohogar';
-  var bar = document.getElementById('context-bar');
-  if (bar) {
-    bar.style.display = 'block';
-    document.getElementById('context-rubro').textContent = 'Electrodomésticos / Electrohogar';
-    document.getElementById('context-empresa').textContent = 'Electrolux Group';
-  }
-  loadCompanyConfig('Electrolux Group');
-})();
 </script>
 </body>
 </html>
