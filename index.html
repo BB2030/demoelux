@@ -329,8 +329,9 @@ footer{text-align:center;padding:24px;color:var(--ink3);font-size:12px;border-to
     <div id="demo-banner" style="max-width:700px;margin:0 auto 8px;padding:10px 16px;background:linear-gradient(135deg,#FAF5FF,#F3F2FF);border:1px solid #DDD6FE;border-radius:8px;display:flex;align-items:center;gap:10px">
       <span style="font-size:18px">🔬</span>
       <div style="flex:1">
-        <div style="font-size:12px;font-weight:700;color:var(--purple)">MODO DEMO — Data de ejemplo precargada</div>
-        <div style="font-size:11px;color:var(--ink3)">Estás viendo data histórica 2024-2025. El sistema proyectó 2025 con solo data de 2024 y acertó un <strong style="color:#16A34A">91.6%</strong>. Sube tu data real para reemplazar.</div>
+        <div style="font-size:12px;font-weight:700;color:var(--purple)">🔓 VERSIÓN LIBRE — Sube tu data</div>
+        <div style="font-size:11px;color:var(--ink3)">Sube tus archivos Excel para generar tu forecast. Usa los botones <strong>⚡ Cargar ejemplo</strong> en cada caja para probar con data demo.</div>
+        <a href="demo.html" style="font-size:11px;color:var(--purple);font-weight:600;text-decoration:none;margin-top:4px;display:inline-block">¿Quieres ver la demo precargada? → Ver demo</a>
       </div>
     </div>
 
@@ -1160,23 +1161,60 @@ function renderChart(chartData) {
 
 
 function loadDemoFile(type, filename, rows) {
-  // Simulate file loaded
+  var meta = {
+    'primary':   {icon:'📦', detail:'3 marcas · 32 SKUs · 10 retailers · Ene 2024 — Dic 2025', color:'#7B61FF'},
+    'secondary': {icon:'📊', detail:'3 marcas · 32 SKUs · 10 retailers · Ene 2024 — Dic 2025', color:'#7B61FF'},
+    'inv-dist':  {icon:'🏭', detail:'4 bodegas · 32 SKUs · Stock + Tránsito · Dic 2025', color:'#7B61FF'},
+    'inv-retail': {icon:'🏪', detail:'10 retailers · 32 SKUs · Stock tienda + bodega · Dic 2025', color:'#7B61FF'},
+    'gfk':       {icon:'📈', detail:'9 marcas mercado · Lavadoras+Secadoras · Formato GfK · 2024-2025', color:'#7B61FF'}
+  };
+  var m = meta[type] || {icon:'📄', detail:rows + ' filas', color:'#7B61FF'};
+  
   var fnEl = document.getElementById('filename-' + type);
-  if (fnEl) { fnEl.textContent = '✅ ' + filename; fnEl.style.color = '#16A34A'; fnEl.style.fontWeight = '600'; }
-  
-  // Mark the drop zone as loaded
-  var dropEl = document.getElementById('drop-' + type);
-  if (dropEl) { dropEl.style.border = '2px solid #16A34A'; dropEl.style.background = '#F0FDF480'; dropEl.style.opacity = '1'; }
-  
-  // Generate fake parsed data
-  var fakeData = [['Fecha','Retailer','Marca','Subcategoría','Cod. Producto','Unidades','Venta Total sin IVA']];
-  for (var i = 0; i < Math.min(rows, 50); i++) {
-    fakeData.push(['2024-01','Falabella','Fensa','Lavadora CS','FEN-PC18SZ',89,27589110]);
+  if (fnEl) {
+    fnEl.innerHTML = '<div style="color:#16A34A;font-weight:700">✅ ' + filename + '</div>' +
+      '<div style="font-size:9px;color:' + m.color + ';margin-top:2px;font-weight:600;background:#F3F2FF;padding:2px 6px;border-radius:3px;display:inline-block">' + m.detail + '</div>';
   }
-  STATE.files[type] = fakeData;
-  if (type === 'primary' || type === 'secondary') { STATE.fileData = fakeData; }
   
-  showPreview('✅ ' + filename + ' cargado — ' + rows.toLocaleString() + ' filas de ejemplo', true);
+  // Color the box purple (demo) not green (real data)
+  var dropEl = document.getElementById('drop-' + type);
+  if (!dropEl) {
+    // For inv-dist, inv-retail, gfk the parent div is the drop zone
+    var fileInput = document.getElementById('file-' + type);
+    if (fileInput) dropEl = fileInput.parentElement;
+  }
+  if (dropEl) {
+    dropEl.style.border = '2px solid #7B61FF';
+    dropEl.style.background = 'rgba(123,97,255,0.05)';
+    dropEl.style.opacity = '1';
+  }
+  
+  // Generate fake parsed data with correct headers per type
+  var headers, sampleRow;
+  if (type === 'primary') {
+    headers = ['Fecha','Retailer','Marca','Subcategoría','Cod. Producto','Unidades','Venta Total sin IVA','Costo internado unit.'];
+    sampleRow = ['2024-01','Falabella','Fensa','Lavadora CS','FEN-PC18SZ',89,27589110,155000];
+  } else if (type === 'secondary') {
+    headers = ['Fecha','Retailer','Marca','Subcategoría','Cod. Producto','Unidades','Venta Total sin IVA'];
+    sampleRow = ['2024-01','Falabella','Fensa','Lavadora CS','FEN-PC18SZ',82,31898780];
+  } else if (type === 'inv-dist') {
+    headers = ['Fecha Corte','Bodega','Cod. Producto','Marca','Subcategoría','Disponible','En Tránsito','ETA'];
+    sampleRow = ['2025-12-15','Santiago Centro','FEN-PC18SZ','Fensa','Lavadora CS',45,200,'15-ene'];
+  } else if (type === 'inv-retail') {
+    headers = ['Fecha Corte','Retailer','Cod. Producto','Marca','Subcategoría','Stock Tienda','Stock Bodega'];
+    sampleRow = ['2025-12-15','Falabella','FEN-PC18SZ','Fensa','Lavadora CS',8,24];
+  } else {
+    headers = ['Period','BRAND','Item','TYPE OF WASHM.','LOADING KG','Sales Units','Sales Value <LC>'];
+    sampleRow = ['Jun 24','FENSA','PC18SZ','FA TOP',18,960,215177783];
+  }
+  
+  var fakeData = [headers];
+  for (var i = 0; i < Math.min(rows, 100); i++) fakeData.push(sampleRow);
+  
+  STATE.files[type] = fakeData;
+  if (type === 'primary' || type === 'secondary') STATE.fileData = fakeData;
+  
+  showPreview('✅ ' + filename + ' — ' + rows.toLocaleString() + ' filas demo cargadas', true);
   updateForecastButton();
 }
 
