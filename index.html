@@ -1178,7 +1178,14 @@ function switchMode(mode) {
     libreBtn.style.background = 'white'; libreBtn.style.color = 'var(--ink2)';
     demoInfo.style.display = 'block';
     libreInfo.style.display = 'none';
-    if (uploadBoxes) uploadBoxes.style.display = 'none';
+    // Show upload boxes loaded in demo mode
+    if (uploadBoxes) uploadBoxes.style.display = 'grid';
+    // Pre-select filters matching demo data
+    var catMain = document.getElementById('filter-categoria-main');
+    if (catMain) { catMain.value = 'lavado'; updateSubcategorias(); }
+    // Set tipo to SI×SO (demo has both)
+    var sixso = document.getElementById('tipo-sixso');
+    if (sixso) { selectTipoData(sixso, 'sixso'); }
     // Auto-load demo files
     loadDemoFile('primary','Demo_SellIn.xlsx',6677);
     loadDemoFile('secondary','Demo_SellOut.xlsx',6470);
@@ -1193,15 +1200,21 @@ function switchMode(mode) {
     demoInfo.style.display = 'none';
     libreInfo.style.display = 'block';
     if (uploadBoxes) uploadBoxes.style.display = 'grid';
+    // Reset filters to "Todas"
+    var catMain = document.getElementById('filter-categoria-main');
+    if (catMain) { catMain.value = 'todas'; updateSubcategorias(); }
+    // Reset to Sell In
+    var sellin = document.getElementById('tipo-sellin');
+    if (sellin) { selectTipoData(sellin, 'sellin'); }
     // Reset files
     STATE.files = {}; STATE.fileData = null;
     ['primary','secondary','inv-dist','inv-retail','gfk'].forEach(function(t) {
       var fn = document.getElementById('filename-' + t);
-      if (fn) { fn.textContent = 'Haz click o arrastra tu Excel'; fn.style.color = 'var(--ink3)'; fn.style.fontWeight = '400'; }
+      if (fn) { fn.innerHTML = 'Haz click o arrastra tu Excel'; fn.style.color = 'var(--ink3)'; fn.style.fontWeight = '400'; }
       var drop = document.getElementById('drop-' + t);
       if (drop) { drop.style.border = '1px dashed var(--border)'; drop.style.background = ''; drop.style.opacity = '0.6'; }
     });
-    // Fix primary box style
+    // Fix primary box style (obligatorio)
     var pDrop = document.getElementById('drop-primary');
     if (pDrop) { pDrop.style.border = '2px solid var(--purple)'; pDrop.style.background = 'rgba(123,97,255,0.02)'; pDrop.style.opacity = '1'; }
     var preview = document.getElementById('preview');
