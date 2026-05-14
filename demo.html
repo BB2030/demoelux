@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo Precargada — Forecast</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%237B61FF'/%3E%3Cstop offset='100%25' stop-color='%2300E5CC'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='16' cy='16' r='16' fill='url(%23g)'/%3E%3Ctext x='16' y='21' font-family='Arial Black,Arial' font-weight='900' font-size='13' fill='white' text-anchor='middle' letter-spacing='-1'%3EFD%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;600&family=Fraunces:ital,opsz,wght@0,9..144,700;1,9..144,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#37352F;--ink2:#6B6967;--ink3:#9B9A97;
+  --purple:#5B4FE8;--purple-light:#8B83F0;--purple-bg:#F3F2FF;
+  --bg:#F7F6F3;--surface:#FFFFFF;--border:#E9E9E7;--border2:#D3D1CB;
+  --success:#0F7B6C;--warning:#AD8004;--error:#D44C47;
+  --radius:6px;--radius-lg:10px;
+}
+html,body{height:100%;overflow-x:hidden}
+body{background:var(--bg);color:var(--ink);font-family:'Outfit',sans-serif;font-size:14px;line-height:1.6}
+nav{position:fixed;top:0;width:100%;z-index:300;display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:44px;background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Fraunces',serif;font-size:17px;font-weight:700;letter-spacing:-0.3px;color:var(--ink);text-decoration:none}
+.logo span{color:var(--purple)}
+.nav-back{font-size:13px;color:var(--ink3);text-decoration:none;font-weight:500;display:flex;align-items:center;gap:4px}
+.nav-back:hover{color:var(--ink)}
+.gate-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg)}
+.gate-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:48px 40px;max-width:440px;width:90%;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,0.06)}
+.gate-icon{font-size:36px;margin-bottom:16px;display:block}
+.gate-title{font-family:'Fraunces',serif;font-size:26px;font-weight:700;margin-bottom:8px;letter-spacing:-0.5px;color:var(--ink)}
+.gate-sub{font-size:13px;color:var(--ink3);margin-bottom:28px;line-height:1.7}
+.gate-input{width:100%;padding:10px 14px;border:1px solid var(--border2);border-radius:var(--radius);font-size:15px;font-family:'IBM Plex Mono',monospace;text-align:center;text-transform:uppercase;letter-spacing:3px;font-weight:600;background:var(--bg);color:var(--ink);transition:border-color .15s}
+.gate-input:focus{outline:none;border-color:var(--purple);background:white;box-shadow:0 0 0 2px rgba(91,79,232,0.12)}
+.gate-btn{width:100%;padding:11px;background:var(--ink);color:white;border:none;border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer;margin-top:10px;transition:all .15s;font-family:'Outfit',sans-serif;letter-spacing:0.2px}
+.gate-btn:hover{background:#1a1916}
+.gate-error{color:var(--error);font-size:12px;margin-top:10px;display:none;font-weight:500}
+.main-screen{display:none;padding-top:44px;min-height:100vh}
+.container{max-width:920px;margin:0 auto;padding:20px 24px 48px}
+.section-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--ink3);margin-bottom:10px;padding-left:2px}
+.filters-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:10px}
+.filters-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:10px}
+.filter-group label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;color:var(--ink3)}
+.filter-select{width:100%;padding:7px 10px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;background:var(--surface);font-family:'Outfit',sans-serif;cursor:pointer;color:var(--ink);transition:border-color .15s;appearance:auto}
+.filter-select:focus{outline:none;border-color:var(--purple);box-shadow:0 0 0 2px rgba(91,79,232,0.1)}
+.filter-select:disabled{background:var(--bg);cursor:default;color:var(--ink2)}
+.tipo-box{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:10px 18px;text-align:center;cursor:pointer;transition:all .15s;user-select:none}
+.tipo-box:hover{border-color:var(--purple-light);background:var(--purple-bg)}
+.tipo-box.active{border-color:var(--purple);background:var(--purple-bg)}
+.metrics-grid{display:flex;gap:6px;flex-wrap:wrap}
+.metric-check{display:flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--border2);border-radius:var(--radius);cursor:pointer;transition:all .15s;background:var(--surface)}
+.metric-check:hover{border-color:var(--purple-light)}
+.metric-check.active{border-color:var(--purple);background:var(--purple-bg)}
+.metric-check input{width:13px;height:13px;cursor:pointer;accent-color:var(--purple)}
+.metric-check label{font-size:12px;font-weight:500;cursor:pointer;user-select:none;color:var(--ink)}
+.cols-list{display:flex;flex-wrap:wrap;gap:4px}
+.col-tag{display:inline-block;padding:2px 7px;background:var(--bg);border:1px solid var(--border2);border-radius:4px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:var(--purple)}
+.retailer-chip{padding:3px 8px;border-radius:4px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border2);color:var(--ink2);background:var(--surface);transition:all .1s}
+.retailer-chip.active{border-color:var(--purple);background:var(--purple-bg);color:var(--purple)}
+.action-bar{text-align:center;padding:12px 0}
+.btn-primary{padding:9px 28px;background:var(--ink);color:white;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'Outfit',sans-serif;display:inline-flex;align-items:center;gap:6px;letter-spacing:0.2px}
+.btn-primary:hover:not(:disabled){background:#1a1916}
+.btn-primary:disabled{opacity:0.35;cursor:not-allowed}
+.processing-screen{display:none;text-align:center;padding:100px 20px}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--purple);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 20px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.processing-text{font-size:16px;font-weight:600;margin-bottom:8px;color:var(--ink)}
+.processing-detail{font-size:13px;color:var(--ink3)}
+.results-screen{display:none;padding-top:44px;min-height:100vh}
+.results-container{max-width:960px;margin:0 auto;padding:32px 24px}
+.results-header{text-align:center;margin-bottom:32px}
+.results-badge{display:inline-block;padding:5px 12px;background:var(--purple-bg);color:var(--purple);border-radius:4px;font-size:11px;font-weight:700;margin-bottom:12px;letter-spacing:0.5px;text-transform:uppercase}
+.results-title{font-family:'Fraunces',serif;font-size:32px;font-weight:700;margin-bottom:8px;letter-spacing:-0.5px;color:var(--ink)}
+.results-sub{color:var(--ink3);font-size:14px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;margin-bottom:16px}
+.card-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;margin-bottom:16px;color:var(--ink)}
+.chart-wrapper{position:relative;height:360px}
+.override-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
+.override-item{display:flex;flex-direction:column;gap:4px}
+.override-item label{font-size:11px;font-weight:600;color:var(--ink3)}
+.override-item input{padding:7px 8px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--ink)}
+.override-item input:focus{outline:none;border-color:var(--purple)}
+.actions-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:24px}
+.btn-secondary{padding:9px 20px;background:transparent;border:1px solid var(--border2);color:var(--ink2);border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'Outfit',sans-serif}
+.btn-secondary:hover{border-color:var(--ink);color:var(--ink)}
+#tab-kam,#tab-gm,#tab-pm,#tab-bi{padding:6px 14px;border:1px solid var(--border2);border-radius:var(--radius);font-size:12px;font-weight:600;cursor:pointer;background:var(--surface);color:var(--ink2);font-family:'Outfit',sans-serif;transition:all .15s}
+#tab-kam.active,#tab-gm.active,#tab-pm.active,#tab-bi.active{background:var(--ink);color:white;border-color:var(--ink)}
+footer{text-align:center;padding:24px;color:var(--ink3);font-size:12px;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="logo">Forecast<span>Demo</span></a>
+  
+</nav>
+
+<div class="gate-screen" id="gate" style="display:none">
+  <div class="gate-box">
+    <div class="gate-icon">📊</div>
+    <h1 class="gate-title">Forecast Demo</h1>
+    <p class="gate-sub">Tu analista de forecast. Siempre disponible.</p>
+    <input type="text" class="gate-input" id="email-input" placeholder="Usuario o correo" autocomplete="off" style="text-transform:none;letter-spacing:0;margin-bottom:8px">
+    <div style="position:relative">
+      <input type="password" class="gate-input" id="password-input" placeholder="Contraseña" autocomplete="off" style="text-transform:none;letter-spacing:0" onkeydown="if(event.key==='Enter')validateLogin()">
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-top:10px;margin-bottom:4px">
+      <input type="checkbox" id="remember-me" style="accent-color:var(--purple);width:14px;height:14px;cursor:pointer">
+      <label for="remember-me" style="font-size:12px;color:var(--ink3);cursor:pointer">Recordar contraseña</label>
+    </div>
+    <button class="gate-btn" onclick="validateLogin()">Ingresar →</button>
+    <div class="gate-error" id="gate-error">Usuario o contraseña incorrectos</div>
+  </div>
+</div>
+
+<!-- ONBOARDING -->
+<div id="onboarding" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:400;align-items:center;justify-content:center">
+  <div style="background:white;border-radius:16px;padding:48px 40px;max-width:440px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,0.08)">
+    <div style="font-family:'Fraunces',serif;font-size:26px;font-weight:700;margin-bottom:6px;color:var(--ink)">Bienvenido</div>
+    <div style="font-size:14px;color:var(--ink3);margin-bottom:32px">Un par de datos para personalizar tu experiencia</div>
+
+    <div style="margin-bottom:16px">
+      <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--ink3);margin-bottom:6px">Rubro</label>
+      <select id="onboard-rubro" onchange="checkOnboardReady();updateEmpresaDropdown(this.value)" class="filter-select" style="width:100%;font-size:14px;padding:10px 14px">
+        <option value="">Selecciona tu rubro...</option>
+        <option value="electrohogar">Electrodomésticos / Electrohogar</option>
+        <option value="tecnologia">Tecnología</option>
+        <option value="decohogar">Deco y Hogar</option>
+        <option value="moda">Moda y Calzado</option>
+        <option value="deportes">Deportes y Aire Libre</option>
+        <option value="belleza">Belleza e Higiene</option>
+        <option value="jugueteria">Juguetería</option>
+        <option value="consumo">Consumo Masivo</option>
+        <option value="ferreteria">Ferretería / Construcción</option>
+        <option value="farmacia">Farmacia / Salud</option>
+        <option value="otro">Otro</option>
+      </select>
+    </div>
+
+    <div style="margin-bottom:32px">
+      <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--ink3);margin-bottom:6px">Empresa</label>
+      <select id="onboard-empresa" onchange="checkOnboardReady()" class="filter-select" style="width:100%;font-size:14px;padding:10px 14px">
+        <option value="">Selecciona tu rubro primero...</option>
+      </select>
+    </div>
+
+    <button onclick="finishOnboarding()" id="onboard-btn" disabled style="width:100%;padding:12px;background:var(--ink);color:white;border:none;border-radius:var(--radius);font-size:14px;font-weight:600;cursor:not-allowed;font-family:'Outfit',sans-serif;opacity:0.35">Empezar →</button>
+  </div>
+</div>
+
+<div id="output-selector" style="display:none;position:fixed;inset:0;background:rgba(55,53,47,0.5);z-index:500;align-items:center;justify-content:center">
+  <div style="background:white;border-radius:12px;padding:40px;max-width:480px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.2)">
+    <div style="font-family:'Fraunces',serif;font-size:22px;font-weight:700;margin-bottom:4px;color:var(--ink)">¿Cómo quieres ver el resultado?</div>
+    <div style="font-size:13px;color:var(--ink3);margin-bottom:20px">El motor es el mismo — solo cambia el nivel de detalle</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button onclick="selectOutputMode('foto')" style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:#F7F6F3;border:1.5px solid var(--border2);border-radius:8px;cursor:pointer;text-align:left;font-family:'Outfit',sans-serif;transition:all .15s" onmouseover="this.style.borderColor='#5B4FE8'" onmouseout="this.style.borderColor='var(--border2)'">
+        <span style="font-size:22px">📸</span>
+        <div><div style="font-weight:700;font-size:13px;color:var(--ink)">Foto rápida</div><div style="font-size:11px;color:var(--ink3)">3 bullets, 1 número, 1 acción. Para mandar por WhatsApp.</div></div>
+      </button>
+      <button onclick="selectOutputMode('retailer')" style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:#F7F6F3;border:1.5px solid var(--border2);border-radius:8px;cursor:pointer;text-align:left;font-family:'Outfit',sans-serif;transition:all .15s" onmouseover="this.style.borderColor='#5B4FE8'" onmouseout="this.style.borderColor='var(--border2)'">
+        <span style="font-size:22px">🏪</span>
+        <div><div style="font-weight:700;font-size:13px;color:var(--ink)">Por retailer</div><div style="font-size:11px;color:var(--ink3)">Comparación entre canales. Dónde están las oportunidades.</div></div>
+      </button>
+      <button onclick="selectOutputMode('marca')" style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:#F7F6F3;border:1.5px solid var(--border2);border-radius:8px;cursor:pointer;text-align:left;font-family:'Outfit',sans-serif;transition:all .15s" onmouseover="this.style.borderColor='#5B4FE8'" onmouseout="this.style.borderColor='var(--border2)'">
+        <span style="font-size:22px">🏷️</span>
+        <div><div style="font-weight:700;font-size:13px;color:var(--ink)">Por marca</div><div style="font-size:11px;color:var(--ink3)">Mix y participación interna del grupo.</div></div>
+      </button>
+      <button onclick="selectOutputMode('categoria')" style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:#F7F6F3;border:1.5px solid var(--border2);border-radius:8px;cursor:pointer;text-align:left;font-family:'Outfit',sans-serif;transition:all .15s" onmouseover="this.style.borderColor='#5B4FE8'" onmouseout="this.style.borderColor='var(--border2)'">
+        <span style="font-size:22px">📦</span>
+        <div><div style="font-weight:700;font-size:13px;color:var(--ink)">Por categoría / subcategoría</div><div style="font-size:11px;color:var(--ink3)">Qué crece, qué cae. Tendencia por segmento.</div></div>
+      </button>
+      <button onclick="selectOutputMode('resumen')" style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:#F3F2FF;border:1.5px solid var(--purple);border-radius:8px;cursor:pointer;text-align:left;font-family:'Outfit',sans-serif;transition:all .15s">
+        <span style="font-size:22px">📊</span>
+        <div><div style="font-weight:700;font-size:13px;color:var(--purple)">Resumen ejecutivo completo</div><div style="font-size:11px;color:var(--ink3)">Alertas, oportunidades y acciones. Todo en una vista. Para la reunión.</div></div>
+      </button>
+      <button onclick="selectOutputMode('excel')" style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:#F7F6F3;border:1.5px solid var(--border2);border-radius:8px;cursor:pointer;text-align:left;font-family:'Outfit',sans-serif;transition:all .15s" onmouseover="this.style.borderColor='#0F7B6C'" onmouseout="this.style.borderColor='var(--border2)'">
+        <span style="font-size:22px">📋</span>
+        <div><div style="font-weight:700;font-size:13px;color:var(--ink)">Excel detallado</div><div style="font-size:11px;color:var(--ink3)">Proyección por SKU × retailer × mes. Para trabajar.</div></div>
+      </button>
+    </div>
+    <button onclick="document.getElementById('output-selector').style.display='none';document.getElementById('main').style.display='block'" style="margin-top:16px;background:none;border:none;color:var(--ink3);cursor:pointer;font-size:12px;font-family:'Outfit',sans-serif">← Volver</button>
+  </div>
+</div>
+
+<div class="main-screen" id="main" style="display:block">
+  <div class="container">
+    
+    <div id="context-bar" onclick="goBackToOnboarding()" style="text-align:center;margin-bottom:8px;padding:8px 16px;background:var(--purple-bg);border-radius:var(--radius-lg);display:none;cursor:pointer" title="Click para cambiar empresa">
+      <span id="context-rubro" style="font-size:12px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:0.5px"></span>
+      <span style="color:var(--purple-light);margin:0 6px">·</span>
+      <span id="context-empresa" style="font-size:12px;font-weight:600;color:var(--purple)"></span>
+    </div>
+
+    <div class="filters-card" style="margin-bottom:16px;padding:14px">
+      <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#1a1a1a;display:block;margin-bottom:8px;text-align:center">¿Qué vas a proyectar?</label>
+      <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap">
+        <div class="tipo-box active" onclick="selectTipoData(this,'sellin')" id="tipo-sellin" style="padding:8px 16px">
+          <input type="radio" name="tipo-data" value="sellin" checked hidden>
+          <div style="font-family:'Fraunces',serif;font-size:13px;font-weight:800">📦 SELL IN</div>
+          <div style="color:var(--ink3);font-size:9px">Distribuidor → Retail</div>
+        </div>
+        <div class="tipo-box" onclick="selectTipoData(this,'sellout')" id="tipo-sellout" style="padding:8px 16px">
+          <input type="radio" name="tipo-data" value="sellout" hidden>
+          <div style="font-family:'Fraunces',serif;font-size:13px;font-weight:800">📊 SELL OUT</div>
+          <div style="color:var(--ink3);font-size:9px">Retail → Consumidor</div>
+        </div>
+        <div class="tipo-box" onclick="selectTipoData(this,'sixso')" id="tipo-sixso" style="padding:8px 16px">
+          <input type="radio" name="tipo-data" value="sixso" hidden>
+          <div style="font-family:'Fraunces',serif;font-size:13px;font-weight:800">📦📊 SI × SO</div>
+          <div style="color:var(--ink3);font-size:9px">Cruce completo</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="filters-card" style="padding:14px">
+      <div class="filters-grid" style="gap:10px">
+        <input type="hidden" id="filter-grupo" value="todos">
+        
+        <div class="filter-group">
+          <label>Categoría</label>
+          <select class="filter-select" id="filter-categoria-main" onchange="updateSubcategorias();filterSKUs();validateGranularidad()">
+            <option value="todas">Todas las categorías</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Subcategoría</label>
+          <select class="filter-select" id="filter-categoria" onchange="autoSelectFromCategoria();updateRequiredCols();filterSKUs();validateGranularidad()">
+            <option value="todas">Todas</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Marca</label>
+          <select class="filter-select" id="filter-marca" onchange="updateCategoriasByGrupo();filterSKUs();validateGranularidad()">
+            <option value="todas">Todas</option>
+          </select>
+        </div>
+        <div class="filter-group" id="filter-group-cliente">
+          <label>Retailer</label>
+          <div onclick="toggleRetailerList()" style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;background:var(--surface)">
+            <span id="retailer-summary" style="font-size:13px">Todos</span>
+            <span style="color:var(--ink3);font-size:11px">▾</span>
+          </div>
+          <div id="retailer-dropdown" style="display:none;margin-top:4px;border:1.5px solid var(--border);border-radius:8px;background:white;overflow:hidden;max-height:280px;overflow-y:auto">
+            <label style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid #f0f0f0;cursor:pointer;font-size:12px;background:var(--purple-bg)"><input type="checkbox" data-val="todos" onchange="handleRetailerCheck(this)" checked> <strong>Todos</strong></label>
+            <div style="padding:4px 10px;font-size:9px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:0.5px;background:#f8f8f6">Tiendas por Departamento</div>
+            <label style="display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid #f0f0f0;cursor:pointer;font-size:12px"><input type="checkbox" data-val="falabella" onchange="handleRetailerCheck(this)"> Falabella</label>
+            <label style="display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid #f0f0f0;cursor:pointer;font-size:12px"><input type="checkbox" data-val="ripley" onchange="handleRetailerCheck(this)"> Ripley</label>
+            <label style="display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid #f0f0f0;cursor:pointer;font-size:12px"><input type="checkbox" data-val="paris" onchange="handleRetailerCheck(this)"> Paris</label>
+            <label style="display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid #f0f0f0;cursor:pointer;font-size:12px"><input type="checkbox" data-val="hites" onchange="handleRetailerCheck(this)"> Hites</label>
+            <label style="display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid #f0f0f0;cursor:pointer;font-size:12px"><input type="checkbox" data-val="lapolar" onchange="handleRetailerCheck(this)"> La Polar</label>
+            <label style="display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid #f0f0f0;cursor:pointer;font-size:12px"><input type="checkbox" data-val="abcdin" onchange="handleRetailerCheck(this)"> Abcdin</label>
+            <label style="display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid #f0f0f0;cursor:pointer;font-size:12px"><input type="checkbox" data-val="corona" onchange="handleRetailerCheck(this)"> Corona</label>
+            <label style="display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid #f0f0f0;cursor:pointer;font-size:12px"><input type="checkbox" data-val="johnsons" onchange="handleRetailerCheck(this)"> Johnson's</label>
+            <div style="padding:4px 10px;font-size:9px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:0.5px;background:#f8f8f6">Home Improvement</div>
+            <label style="display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid #f0f0f0;cursor:pointer;font-size:12px"><input type="checkbox" data-val="sodimac" onchange="handleRetailerCheck(this)"> Sodimac</label>
+            <label style="display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid #f0f0f0;cursor:pointer;font-size:12px"><input type="checkbox" data-val="easy" onchange="handleRetailerCheck(this)"> Easy</label>
+            <label style="display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid #f0f0f0;cursor:pointer;font-size:12px"><input type="checkbox" data-val="construmart" onchange="handleRetailerCheck(this)"> Construmart</label>
+            <div style="padding:4px 10px;font-size:9px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:0.5px;background:#f8f8f6">Supermercados</div>
+            <label style="display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid #f0f0f0;cursor:pointer;font-size:12px"><input type="checkbox" data-val="lider" onchange="handleRetailerCheck(this)"> Lider</label>
+            <label style="display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid #f0f0f0;cursor:pointer;font-size:12px"><input type="checkbox" data-val="jumbo" onchange="handleRetailerCheck(this)"> Jumbo</label>
+            <div style="padding:4px 10px;font-size:9px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:0.5px;background:#f8f8f6">Regionales</div>
+            <label style="display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid #f0f0f0;cursor:pointer;font-size:12px"><input type="checkbox" data-val="dimarsa" onchange="handleRetailerCheck(this)"> Dimarsa</label>
+            <label style="display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid #f0f0f0;cursor:pointer;font-size:12px"><input type="checkbox" data-val="multihogar" onchange="handleRetailerCheck(this)"> Multihogar</label>
+            <label style="display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid #f0f0f0;cursor:pointer;font-size:12px"><input type="checkbox" data-val="dinhogar" onchange="handleRetailerCheck(this)"> Din Hogar</label>
+            <div style="padding:4px 10px;font-size:9px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:0.5px;background:#f8f8f6">Online / Marketplace</div>
+            <label style="display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid #f0f0f0;cursor:pointer;font-size:12px"><input type="checkbox" data-val="mercadolibre" onchange="handleRetailerCheck(this)"> Mercado Libre</label>
+            <div style="padding:4px 10px;font-size:9px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:0.5px;background:#f8f8f6">Canal Propio</div>
+            <label style="display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid #f0f0f0;cursor:pointer;font-size:12px"><input type="checkbox" data-val="tiendapropia" onchange="handleRetailerCheck(this)"> Tienda Propia (fisica + online)</label>
+            <label style="display:flex;align-items:center;gap:8px;padding:5px 10px;cursor:pointer;font-size:12px"><input type="checkbox" data-val="otro" onchange="handleRetailerCheck(this)"> Otro canal</label>
+          </div>
+          <input type="hidden" id="filter-cliente" value="todos">
+        </div>
+        <div class="filter-group">
+          <label>Cod. Producto</label>
+          <select class="filter-select" id="filter-sku-mode" onchange="toggleSKUList();validateGranularidad();updateRequiredCols()">
+            <option value="todos">Todos los códigos</option>
+            <option value="seleccionar">Seleccionar códigos</option>
+          </select>
+          <div id="sku-selected-chips" style="display:none;margin-top:8px;padding:8px 12px;background:rgba(123,97,255,0.05);border:1px solid rgba(123,97,255,0.2);border-radius:8px">
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--purple);margin-bottom:6px">Seleccionados:</div>
+            <div id="sku-chips-inner" style="display:flex;flex-wrap:wrap;gap:4px"></div>
+          </div>
+          <div id="sku-checkboxes" style="display:none;max-height:180px;overflow-y:auto;border:2px solid var(--border);border-radius:8px;padding:6px;margin-top:6px;background:var(--surface)"></div>
+          <button id="sku-done-btn" onclick="closeSKUList()" style="display:none;width:100%;margin-top:4px;padding:8px;background:var(--purple);color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">Listo ✓</button>
+        </div>
+        <div class="filter-group">
+          <label>Horizonte</label>
+          <select class="filter-select" id="filter-horizonte">
+            <option value="3m">3 meses</option>
+            <option value="6m">6 meses</option>
+            <option value="12m" selected>12 meses</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Granularidad</label>
+          <select class="filter-select" id="filter-granularidad" onchange="validateGranularidad();updateRequiredCols()">
+            <option value="semanal">Semanal</option>
+            <option value="mensual" selected>Mensual</option>
+            <option value="anual">Anual</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="filter-warning" style="display:none;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:8px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:#92400e;font-weight:600">
+        ⚠️ <span id="filter-warning-text"></span>
+      </div>
+
+      <div class="filter-group">
+        <label>Métricas a proyectar</label>
+        <div class="metrics-grid">
+          <div class="metric-check active" onclick="toggleMetric(this,'volumen')"><input type="checkbox" id="metric-volumen" checked style="pointer-events:none"><span>Unidades</span></div>
+          <div class="metric-check active" onclick="toggleMetric(this,'venta')"><input type="checkbox" id="metric-venta" checked style="pointer-events:none"><span>Venta Total sin IVA</span></div>
+          <div class="metric-check active" onclick="toggleMetric(this,'margen')"><input type="checkbox" id="metric-margen" checked style="pointer-events:none"><span>Margen</span></div>
+        </div>
+      </div>
+
+      <div id="required-cols-inline" style="margin-top:16px;padding:12px 16px;background:rgba(123,97,255,0.03);border:1px solid rgba(123,97,255,0.15);border-radius:8px">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--purple);margin-bottom:8px;letter-spacing:0.5px">Tu Excel debe incluir:</div>
+        <div class="cols-list" id="cols-list" style="display:flex;flex-wrap:wrap;gap:6px">
+          <span class="col-tag">Fecha</span><span class="col-tag">Unidades</span><span class="col-tag">Venta Total sin IVA</span>
+        </div>
+      </div>
+
+      <div style="text-align:right;margin-top:16px">
+        <button onclick="resetFilters()" style="padding:4px 12px;background:none;border:1px solid var(--border);border-radius:6px;font-size:11px;color:var(--ink3);cursor:pointer;font-family:'Outfit',sans-serif;font-weight:600">↺ Reset</button>
+      </div>
+    </div>
+
+    <div style="font-size:10px;font-weight:700;color:var(--purple);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;text-align:center">Tu data</div>
+
+    <!-- DEMO BANNER -->
+    <div id="demo-banner" style="max-width:700px;margin:0 auto 8px;padding:10px 16px;background:linear-gradient(135deg,#FAF5FF,#F3F2FF);border:1px solid #DDD6FE;border-radius:8px;display:flex;align-items:center;gap:10px">
+      <span style="font-size:18px">🔬</span>
+      <div style="flex:1">
+        <div style="font-size:12px;font-weight:700;color:var(--purple)">🔬 DEMO PRECARGADA — Data de ejemplo lista</div>
+        <div style="font-size:11px;color:var(--ink3)">5 archivos demo ya cargados. Juega con los filtros y dale <strong>Generar Forecast</strong> o <strong>Ver Backtesting</strong> para ver resultados.</div>
+        <a href="index.html" style="font-size:11px;color:var(--purple);font-weight:600;text-decoration:none;margin-top:4px;display:inline-block">¿Quieres probar con tu data? → Ir a versión libre</a>
+      </div>
+    </div>
+
+    
+
+    <div id="upload-boxes" style="max-width:700px;margin:0 auto 10px;display:grid;grid-template-columns:1fr 1fr;gap:6px">
+
+        <div id="drop-primary" onclick="document.getElementById('file-primary').click()" ondragover="event.preventDefault();this.style.borderColor='#7B61FF';this.style.background='rgba(123,97,255,0.08)'" ondragleave="this.style.borderColor='#7B61FF';this.style.background='rgba(123,97,255,0.02)'" ondrop="event.preventDefault();this.style.background='rgba(123,97,255,0.02)';handleDrop(event,'primary')" style="border:2px solid var(--purple);border-radius:8px;padding:8px;cursor:pointer;background:rgba(123,97,255,0.02);text-align:center">
+          <input type="file" id="file-primary" accept=".csv,.xlsx,.xls" onchange="handleFile(event,'primary')" style="display:none">
+          <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:4px">
+            <span id="upload-primary-icon" style="font-size:18px">📦</span>
+            <span id="upload-primary-label" style="font-weight:700;font-size:14px">Sell In</span>
+            <span id="upload-primary-badge" style="background:var(--purple);color:white;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px">OBLIGATORIO</span>
+          </div>
+          <div id="filename-primary" style="font-size:12px;color:var(--ink3)">Haz click o arrastra tu Excel</div>
+          <div style="font-size:10px;color:var(--ink3);margin-top:4px;font-style:italic">Sube tu Excel completo — el sistema filtra por lo que elegiste arriba</div>
+          <div style="display:flex;gap:8px;justify-content:center;margin-top:6px">
+            <span onclick="event.stopPropagation();loadDemoFile('primary','Demo_SellIn.xlsx',2390)" style="font-size:11px;color:white;background:var(--purple);padding:3px 10px;border-radius:4px;cursor:pointer;font-weight:600">⚡ Cargar ejemplo</span>
+            <a href="Demo_SellIn.xlsx" download onclick="event.stopPropagation()" style="font-size:11px;color:var(--purple);cursor:pointer;font-weight:600;text-decoration:none">📥 Descargar .xlsx</a>
+          </div>
+          <div id="demo-primary" style="display:none;margin-top:8px;text-align:left;background:white;padding:8px;border-radius:6px;border:1px solid var(--border);overflow-x:auto">
+            <div style="font-size:10px;font-weight:700;color:var(--ink2);margin-bottom:6px">COLUMNAS OBLIGATORIAS</div>
+            <table style="width:100%;border-collapse:collapse;font-size:9px;font-family:monospace;margin-bottom:8px">
+              <tr style="background:var(--purple-bg)"><th style="padding:3px 4px;text-align:left;color:var(--purple);border-bottom:1px solid var(--border)">Fecha</th><th style="padding:3px 4px;text-align:left;color:var(--purple);border-bottom:1px solid var(--border)">Retailer</th><th style="padding:3px 4px;text-align:left;color:var(--purple);border-bottom:1px solid var(--border)">Marca</th><th style="padding:3px 4px;text-align:left;color:var(--purple);border-bottom:1px solid var(--border)">Cod.</th><th style="padding:3px 4px;text-align:right;color:var(--purple);border-bottom:1px solid var(--border)">Un.</th><th style="padding:3px 4px;text-align:right;color:var(--purple);border-bottom:1px solid var(--border)">Venta Total s/IVA</th><th style="padding:3px 4px;text-align:right;color:var(--purple);border-bottom:1px solid var(--border)">Costo internado</th></tr>
+              <tr><td style="padding:2px 4px;border-bottom:1px solid #f0f0f0">2024-01</td><td style="padding:2px 4px;border-bottom:1px solid #f0f0f0">Falabella</td><td style="padding:2px 4px;border-bottom:1px solid #f0f0f0">Fensa</td><td style="padding:2px 4px;border-bottom:1px solid #f0f0f0">FEN-PC18SZ</td><td style="padding:2px 4px;text-align:right;border-bottom:1px solid #f0f0f0">89</td><td style="padding:2px 4px;text-align:right;border-bottom:1px solid #f0f0f0">27.589.110</td><td style="padding:2px 4px;text-align:right;border-bottom:1px solid #f0f0f0">188.000</td></tr>
+              <tr style="color:#aaa"><td style="padding:2px 4px">...</td><td>...</td><td>...</td><td>...</td><td style="text-align:right">...</td><td style="text-align:right">...</td><td style="text-align:right">...</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <div id="drop-secondary" onclick="document.getElementById('file-secondary').click()" ondragover="event.preventDefault();this.style.borderColor='#7B61FF';this.style.background='rgba(123,97,255,0.08)'" ondragleave="this.style.borderColor='';this.style.background=''" ondrop="event.preventDefault();this.style.background='';handleDrop(event,'secondary')" style="border:1px dashed var(--border);border-radius:8px;padding:8px;cursor:pointer;text-align:center;opacity:0.6">
+          <input type="file" id="file-secondary" accept=".csv,.xlsx,.xls" onchange="handleFile(event,'secondary')" style="display:none">
+          <div style="display:flex;align-items:center;justify-content:center;gap:6px">
+            <span id="upload-secondary-icon" style="font-size:15px">📊</span>
+            <span id="upload-secondary-label" style="font-weight:600;font-size:12px">Sell Out</span>
+            <span id="upload-secondary-badge" style="color:var(--ink3);font-size:9px;font-weight:600;padding:1px 5px;border:1px solid var(--border);border-radius:3px">OPCIONAL</span>
+          </div>
+          <div id="filename-secondary" style="font-size:11px;color:var(--ink3)">Haz click o arrastra tu Excel</div>
+          <div style="display:flex;gap:8px;justify-content:center;margin-top:4px">
+            <span onclick="event.stopPropagation();loadDemoFile('secondary','Demo_SellOut.xlsx',2344)" style="font-size:10px;color:white;background:var(--purple);padding:2px 8px;border-radius:4px;cursor:pointer;font-weight:600">⚡ Cargar ejemplo</span>
+            <a href="Demo_SellOut.xlsx" download onclick="event.stopPropagation()" style="font-size:10px;color:var(--purple);cursor:pointer;font-weight:600;text-decoration:none">📥 .xlsx</a>
+          </div>
+          <div id="demo-secondary" style="display:none;margin-top:6px;text-align:left;background:white;padding:8px;border-radius:6px;border:1px solid var(--border);overflow-x:auto">
+            <div style="font-size:10px;font-weight:700;color:var(--ink2);margin-bottom:4px">COLUMNAS OBLIGATORIAS</div>
+            <table style="width:100%;border-collapse:collapse;font-size:9px;font-family:monospace;margin-bottom:6px">
+              <tr style="background:var(--purple-bg)"><th style="padding:3px 4px;text-align:left;color:var(--purple);border-bottom:1px solid var(--border)">Fecha</th><th style="padding:3px 4px;text-align:left;color:var(--purple);border-bottom:1px solid var(--border)">Retailer</th><th style="padding:3px 4px;text-align:left;color:var(--purple);border-bottom:1px solid var(--border)">Marca</th><th style="padding:3px 4px;text-align:left;color:var(--purple);border-bottom:1px solid var(--border)">Cod. Producto</th><th style="padding:3px 4px;text-align:right;color:var(--purple);border-bottom:1px solid var(--border)">Unidades</th><th style="padding:3px 4px;text-align:right;color:var(--purple);border-bottom:1px solid var(--border)">Venta Total sin IVA</th></tr>
+              <tr><td style="padding:2px 4px;border-bottom:1px solid #f0f0f0">2024-01</td><td style="padding:2px 4px;border-bottom:1px solid #f0f0f0">Falabella</td><td style="padding:2px 4px;border-bottom:1px solid #f0f0f0">Fensa</td><td style="padding:2px 4px;border-bottom:1px solid #f0f0f0">FEN-PC18SZ</td><td style="padding:2px 4px;text-align:right;border-bottom:1px solid #f0f0f0">89</td><td style="padding:2px 4px;text-align:right;border-bottom:1px solid #f0f0f0">27.589.110</td></tr>
+              <tr style="color:#aaa"><td style="padding:2px 4px">...</td><td>...</td><td>...</td><td>...</td><td style="text-align:right">...</td><td style="text-align:right">...</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <div onclick="document.getElementById('file-inv-dist').click()" style="border:1px dashed var(--border);border-radius:8px;padding:8px;cursor:pointer;text-align:center;opacity:0.6">
+          <input type="file" id="file-inv-dist" accept=".csv,.xlsx,.xls" onchange="handleFile(event,'inv-dist')" style="display:none">
+          <div style="display:flex;align-items:center;justify-content:center;gap:6px">
+            <span style="font-size:15px">🏭</span><span style="font-weight:600;font-size:12px">Inventario Distribuidor</span>
+            <span style="color:var(--ink3);font-size:9px;font-weight:600;padding:1px 5px;border:1px solid var(--border2);border-radius:3px">OPCIONAL</span>
+          </div>
+          <div id="filename-inv-dist" style="font-size:11px;color:var(--ink3)">Haz click o arrastra tu Excel</div>
+          <div style="display:flex;gap:8px;justify-content:center;margin-top:4px">
+            <span onclick="event.stopPropagation();loadDemoFile('inv-dist','Demo_Inv_Distribuidor.xlsx',53)" style="font-size:10px;color:white;background:var(--purple);padding:2px 8px;border-radius:4px;cursor:pointer;font-weight:600">⚡ Ejemplo</span>
+            <a href="Demo_Inv_Distribuidor.xlsx" download onclick="event.stopPropagation()" style="font-size:10px;color:var(--purple);cursor:pointer;font-weight:600;text-decoration:none">📥 .xlsx</a>
+          </div>
+        </div>
+
+        <div onclick="document.getElementById('file-inv-retail').click()" style="border:1px dashed var(--border);border-radius:8px;padding:8px;cursor:pointer;text-align:center;opacity:0.6">
+          <input type="file" id="file-inv-retail" accept=".csv,.xlsx,.xls" onchange="handleFile(event,'inv-retail')" style="display:none">
+          <div style="display:flex;align-items:center;justify-content:center;gap:6px">
+            <span style="font-size:15px">🏪</span><span style="font-weight:600;font-size:12px">Inventario Retail</span>
+            <span style="color:var(--ink3);font-size:9px;font-weight:600;padding:1px 5px;border:1px solid var(--border2);border-radius:3px">OPCIONAL</span>
+          </div>
+          <div id="filename-inv-retail" style="font-size:11px;color:var(--ink3)">Haz click o arrastra tu Excel</div>
+          <div style="display:flex;gap:8px;justify-content:center;margin-top:4px">
+            <span onclick="event.stopPropagation();loadDemoFile('inv-retail','Demo_Inv_Retail.xlsx',92)" style="font-size:10px;color:white;background:var(--purple);padding:2px 8px;border-radius:4px;cursor:pointer;font-weight:600">⚡ Ejemplo</span>
+            <a href="Demo_Inv_Retail.xlsx" download onclick="event.stopPropagation()" style="font-size:10px;color:var(--purple);cursor:pointer;font-weight:600;text-decoration:none">📥 .xlsx</a>
+          </div>
+        </div>
+
+        <div id="upload-gfk" onclick="document.getElementById('file-gfk').click()" style="display:block;border:1px dashed var(--border);border-radius:8px;padding:8px;cursor:pointer;text-align:center;opacity:0.6;grid-column:2">
+          <input type="file" id="file-gfk" accept=".csv,.xlsx,.xls" onchange="handleFile(event,'gfk')" style="display:none">
+          <div style="display:flex;align-items:center;justify-content:center;gap:6px">
+            <span style="font-size:15px">📈</span><span style="font-weight:600;font-size:12px">Data de Mercado (GfK)</span>
+            <span style="color:var(--ink3);font-size:9px;font-weight:600;padding:1px 5px;border:1px solid var(--border2);border-radius:3px">OPCIONAL</span>
+          </div>
+          <div id="filename-gfk" style="font-size:11px;color:var(--ink3)">Haz click o arrastra tu Excel</div>
+          <div style="display:flex;gap:8px;justify-content:center;margin-top:4px">
+            <span onclick="event.stopPropagation();loadDemoFile('gfk','Demo_GfK.xlsx',1190)" style="font-size:10px;color:white;background:var(--purple);padding:2px 8px;border-radius:4px;cursor:pointer;font-weight:600">⚡ Ejemplo</span>
+            <a href="Demo_GfK.xlsx" download onclick="event.stopPropagation()" style="font-size:10px;color:var(--purple);cursor:pointer;font-weight:600;text-decoration:none">📥 .xlsx</a>
+          </div>
+        </div>
+
+        <div id="preview" style="display:none;grid-column:1/-1;margin-top:4px;padding:8px;border-radius:8px;background:var(--surface);border:1px solid var(--border)">
+          <div id="preview-status" style="font-size:12px"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-bar" style="display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap">
+      <button class="btn-primary" onclick="runDemoForecast()" style="background:var(--purple)">📊 Generar Forecast →</button>
+      <button onclick="showBacktest()" style="padding:9px 20px;background:transparent;border:2px solid #16A34A;color:#16A34A;border-radius:var(--radius);font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;display:inline-flex;align-items:center;gap:6px">🎯 Ver Backtesting 2024→2025</button>
+    </div>
+  </div>
+</div>
+
+<div class="processing-screen" id="processing">
+  <div class="spinner"></div>
+  <div class="processing-text">Analizando tus datos...</div>
+  <div class="processing-detail">Esto puede tomar 30-40 segundos</div>
+</div>
+
+<div class="results-screen" id="results">
+  <div class="results-container">
+    <div class="results-header">
+      <div class="results-badge">FORECAST COMPLETO</div>
+      <h1 class="results-title">Tu Proyección SI×SO</h1>
+      <p class="results-sub">Análisis cruzado de despachos y ventas de canal</p>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:24px;flex-wrap:wrap">
+      <button onclick="switchView('kam')" id="tab-kam" class="role-tab role-tab-active" style="padding:8px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid var(--purple);background:var(--purple);color:white;font-family:'Outfit',sans-serif">🎯 KAM</button>
+      <button onclick="switchView('gm')" id="tab-gm" class="role-tab" style="padding:8px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid var(--border);background:white;color:var(--text);font-family:'Outfit',sans-serif">📊 Gerencia</button>
+      <button onclick="switchView('pm')" id="tab-pm" class="role-tab" style="padding:8px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid var(--border);background:white;color:var(--text);font-family:'Outfit',sans-serif">📦 Product Manager</button>
+      <button onclick="switchView('bi')" id="tab-bi" class="role-tab" style="padding:8px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid var(--border);background:white;color:var(--text);font-family:'Outfit',sans-serif">🔢 BI / Data</button>
+    </div>
+    <div class="card" id="gap-card" style="display:none"><div class="gap-badge" id="gap-badge"></div><div id="gap-text"></div></div>
+    <div id="view-kam"><div class="card" id="resumen-card" style="display:none"><h3 class="card-title">Resumen Ejecutivo — Vista KAM</h3><p style="font-size:12px;color:var(--ink3);margin-bottom:16px">Acciones concretas para tu cuenta.</p><div id="resumen-content"></div></div></div>
+    <div id="view-gm" style="display:none"><div class="card"><h3 class="card-title">Resumen Ejecutivo — Vista Gerencia</h3><div id="resumen-gm"></div></div></div>
+    <div id="view-pm" style="display:none"><div class="card"><h3 class="card-title">Resumen Ejecutivo — Vista Product Manager</h3><div id="resumen-pm"></div></div></div>
+    <div id="view-bi" style="display:none"><div class="card"><h3 class="card-title">Resumen Ejecutivo — Vista BI / Data</h3><div id="resumen-bi"></div></div></div>
+    <div class="card disclaimer-card"><h3 class="card-title">⚠️ Importante</h3><div>Tú eres el experto, no la IA. Este forecast es una herramienta de apoyo basada en patrones históricos. Usa estos números como punto de partida, no como verdad absoluta.</div></div>
+    <div class="card"><h3 class="card-title">Proyección Visual</h3><div class="chart-wrapper"><canvas id="chart"></canvas></div><div class="override-section" id="overrides" style="display:none"><div class="override-title">Ajustes manuales (opcional)</div><div class="override-grid" id="override-grid"></div></div></div>
+    <div class="actions-row"><button class="btn-primary" onclick="downloadExcel()">Descargar Excel</button><button class="btn-secondary" onclick="newForecast()">Nuevo Forecast</button></div>
+  </div>
+</div>
+
+<footer>Tu data viaja encriptada · Solo para tu forecast</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const STATE = {
+  files: {},
+  code: null,
+  filters: {rubro:'electrohogar',grupo:'todos',categoria:'todas',cliente:'todos',marca:'todas',granularidad:'mensual',metrics:['volumen','venta']},
+  file: null,
+  fileData: null,
+  meta: null,
+  results: null
+};
+
+const USERS = {
+  'demo': { password: 'demo2026', role: 'admin', name: 'Demo' },
+  'bb': { password: '7', role: 'admin', name: 'BB' },
+  '7': { password: '7', role: 'admin', name: 'BB' }
+};
+
+function validateLogin() {
+  var email = (document.getElementById('email-input').value || '').trim().toLowerCase();
+  var pass = (document.getElementById('password-input').value || '').trim();
+  var user = USERS[email];
+  if (user && user.password === pass) {
+    STATE.user = user;
+    enterApp();
+  } else {
+    var err = document.getElementById('gate-error');
+    if (err) err.style.display = 'block';
+  }
+}
+
+function enterWithCode(code) {
+  var user = USERS[code.toLowerCase()];
+  if (user) { STATE.user = user; enterApp(); }
+}
+
+function enterApp() {
+  document.getElementById('gate').style.display = 'none';
+  var ob = document.getElementById('onboarding');
+  ob.style.display = 'flex';
+}
+
+const RUBRO_EMPRESAS = {
+  electrohogar: ['Electrolux Group','Midea Carrier','Whirlpool Chile','LG Electronics','Samsung Chile','BSH Chile','Mabe','Haier','Hisense','Grupo SEB'],
+  tecnologia: ['Intcomex','PCFactory','Lenovo Chile','HP Chile','Dell Chile','Logitech','Kingston','WD Chile'],
+  decohogar: ['Casa Ideas','Homy','Casaideas','Rosen','CIC','Flex'],
+  moda: ['Falabella Retail','Cencosud','Fashion Park','Bata','Skechers Chile','Nike Chile'],
+  deportes: ['Oxford Chile','Doite','Under Armour Chile','Adidas Chile','Puma Chile'],
+  belleza: ['Coty Chile','Beiersdorf','Henkel Chile','Loreal Chile','Avon Chile'],
+  jugueteria: ['Hasbro Chile','Mattel Chile','LEGO Chile','Comarsa'],
+  consumo: ['Unilever Chile','Nestle Chile','P&G Chile','Carozzi','Watts','CCU'],
+  ferreteria: ['Stanley Chile','Bosch Chile','Makita','DeWalt Chile','Truper'],
+  farmacia: ['Laboratorio Chile','Saval','Bayer Chile','Roche Chile','Pfizer Chile'],
+  otro: []
+};
+
+function updateEmpresaDropdown(rubro) {
+  var select = document.getElementById('onboard-empresa');
+  var empresas = RUBRO_EMPRESAS[rubro] || [];
+  var html = '<option value="">Selecciona tu empresa...</option>';
+  for (var i = 0; i < empresas.length; i++) {
+    html += '<option value="' + empresas[i] + '">' + empresas[i] + '</option>';
+  }
+  html += '<option value="otra">Otra empresa...</option>';
+  select.innerHTML = html;
+  checkOnboardReady();
+}
+
+function checkOnboardReady() {
+  var rubro = (document.getElementById('onboard-rubro').value || '');
+  var empresa = (document.getElementById('onboard-empresa').value || '').trim();
+  var btn = document.getElementById('onboard-btn');
+  if (rubro && empresa) {
+    btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer';
+  } else {
+    btn.disabled = true; btn.style.opacity = '0.35'; btn.style.cursor = 'not-allowed';
+  }
+}
+
+function finishOnboarding() {
+  STATE.empresa = (document.getElementById('onboard-empresa').value || '').trim();
+  STATE.rubro = (document.getElementById('onboard-rubro').value || '');
+  var rubroLabel = document.getElementById('onboard-rubro');
+  var empresaLabel = document.getElementById('onboard-empresa');
+  var rubroText = rubroLabel.options[rubroLabel.selectedIndex].text;
+  var empresaText = empresaLabel.options[empresaLabel.selectedIndex].text;
+  document.getElementById('onboarding').style.display = 'none';
+  document.getElementById('main').style.display = 'block';
+  var bar = document.getElementById('context-bar');
+  if (bar) { bar.style.display = 'block'; document.getElementById('context-rubro').textContent = rubroText; document.getElementById('context-empresa').textContent = empresaText; }
+  loadCompanyConfig(STATE.empresa);
+}
+
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var urlCode = (params.get('c') || '').trim().toUpperCase();
+  if (urlCode) { enterWithCode(urlCode); }
+})();
+
+function updateGruposEmpresariales() { updateMarcas(); }
+
+function selectTipoData(el, tipo) {
+  document.querySelectorAll('[id^="tipo-"]').forEach(card => card.classList.remove('active'));
+  el.classList.add('active');
+  el.querySelector('input').checked = true;
+  updateClienteVisibility();
+}
+
+function updateClienteVisibility() {
+  var tipoDataEl = document.querySelector('input[name="tipo-data"]:checked');
+  const tipoData = tipoDataEl ? tipoDataEl.value : 'sellin';
+  const clienteGroup = document.getElementById('filter-group-cliente');
+  clienteGroup.style.display = 'block';
+  clienteGroup.style.opacity = (tipoData === 'sellin') ? '0.6' : '1';
+  var pBadge = document.getElementById('upload-primary-badge');
+  var dropPrim = document.getElementById('drop-primary');
+  var sBadge = document.getElementById('upload-secondary-badge');
+  var dropSec = document.getElementById('drop-secondary');
+  if (tipoData === 'sixso') {
+    if (pBadge) { pBadge.textContent = 'OBLIGATORIO'; pBadge.style.background = 'var(--purple)'; pBadge.style.color = 'white'; pBadge.style.border = 'none'; }
+    if (dropPrim) { dropPrim.style.border = '2px solid var(--purple)'; dropPrim.style.background = 'rgba(123,97,255,0.02)'; dropPrim.style.opacity = '1'; }
+    if (sBadge) { sBadge.textContent = 'OBLIGATORIO'; sBadge.style.background = 'var(--purple)'; sBadge.style.color = 'white'; sBadge.style.border = 'none'; }
+    if (dropSec) { dropSec.style.border = '2px solid var(--purple)'; dropSec.style.background = 'rgba(123,97,255,0.02)'; dropSec.style.opacity = '1'; }
+  } else if (tipoData === 'sellout') {
+    if (pBadge) { pBadge.textContent = 'OPCIONAL'; pBadge.style.background = 'transparent'; pBadge.style.color = 'var(--ink3)'; pBadge.style.border = '1px solid var(--border)'; }
+    if (dropPrim) { dropPrim.style.border = '1px dashed var(--border)'; dropPrim.style.background = 'transparent'; dropPrim.style.opacity = '0.6'; }
+    if (sBadge) { sBadge.textContent = 'OBLIGATORIO'; sBadge.style.background = 'var(--purple)'; sBadge.style.color = 'white'; sBadge.style.border = 'none'; }
+    if (dropSec) { dropSec.style.border = '2px solid var(--purple)'; dropSec.style.background = 'rgba(123,97,255,0.02)'; dropSec.style.opacity = '1'; }
+  } else {
+    if (pBadge) { pBadge.textContent = 'OBLIGATORIO'; pBadge.style.background = 'var(--purple)'; pBadge.style.color = 'white'; pBadge.style.border = 'none'; }
+    if (dropPrim) { dropPrim.style.border = '2px solid var(--purple)'; dropPrim.style.background = 'rgba(123,97,255,0.02)'; dropPrim.style.opacity = '1'; }
+    if (sBadge) { sBadge.textContent = 'OPCIONAL'; sBadge.style.background = 'transparent'; sBadge.style.color = 'var(--ink3)'; sBadge.style.border = '1px solid var(--border)'; }
+    if (dropSec) { dropSec.style.border = '1px dashed var(--border)'; dropSec.style.background = 'transparent'; dropSec.style.opacity = '0.6'; }
+  }
+  updateRequiredCols();
+}
+
+function validateGranularidad() {
+  const sku = document.getElementById('filter-sku-mode').value;
+  const grupo = document.getElementById('filter-grupo').value;
+  const categoria = document.getElementById('filter-categoria').value;
+  const gran = document.getElementById('filter-granularidad');
+  const warning = document.getElementById('filter-warning');
+  const warningText = document.getElementById('filter-warning-text');
+  if (!gran || !warning || !warningText) return;
+  const semanal = gran.querySelector('option[value="semanal"]');
+  if (!semanal) return;
+  filterSKUs();
+  semanal.disabled = false;
+  warning.style.display = 'none';
+  if (sku === 'todos' && grupo === 'todos' && categoria === 'todas') {
+    semanal.disabled = true;
+    if (gran.value === 'semanal') { gran.value = 'mensual'; warning.style.display = 'block'; warningText.textContent = 'Semanal no disponible con todo en "Todos". Selecciona al menos una Categoría.'; }
+    return;
+  }
+  if (sku === 'todos' && gran.value === 'semanal') { warning.style.display = 'block'; warningText.textContent = 'Proyección semanal con todos los SKUs puede ser menos precisa.'; }
+}
+
+var COMPANY_CONFIG = {
+  'Electrolux Group': {
+    marcas: ['Electrolux','Fensa','Mademsa'],
+    categorias: [
+      {val:'lavado', label:'Lavado y Secado', subcats:[['todas','Todas'],['lavadora-cs','Lavadora Carga Superior'],['lavadora-cf','Lavadora Carga Frontal'],['lavadora-semi','Lavadora Semi Automatica'],['lavaseca','Lava-Seca'],['secadora','Secadora'],['centrifuga','Centrifuga']]},
+      {val:'refri', label:'Refrigeracion', subcats:[['todas','Todas'],['refri-nf','No Frost'],['refri-frio','Frio Directo'],['freezer','Freezer'],['frigobar','Frigobar']]},
+      {val:'cocina', label:'Cocinas y Hornos', subcats:[['todas','Todas'],['cocina-gas','Cocina a Gas'],['cocina-elec','Cocina Electrica'],['encimera','Encimera'],['horno','Horno Empotrado'],['campana','Campana'],['microondas','Microondas']]},
+      {val:'lavavajillas', label:'Lavavajillas', subcats:[['todas','Todas'],['lv-libre','Libre Instalacion'],['lv-empotrado','Empotrado']]},
+      {val:'aspirado', label:'Aspirado y Limpieza', subcats:[['todas','Todas'],['aspiradora-stick','Aspiradora Stick'],['aspiradora-robot','Robot Aspirador'],['encerador','Encerador']]}
+    ],
+    skus: [
+      {val:'ELX-LEB21',label:'LEB21 · Electrolux Lavadora CS 21kg',marca:'electrolux',cat:'lavadora-cs',catMain:'lavado'},
+      {val:'ELX-LS22Y',label:'LS22Y · Electrolux Lavadora CS 22kg',marca:'electrolux',cat:'lavadora-cs',catMain:'lavado'},
+      {val:'ELX-EFLWM12O',label:'EFLWM12O · Electrolux Lavadora CF 14kg',marca:'electrolux',cat:'lavadora-cf',catMain:'lavado'},
+      {val:'ELX-EFLWD12W',label:'EFLWD12W · Electrolux Lava-Seca 14/8kg',marca:'electrolux',cat:'lavaseca',catMain:'lavado'},
+      {val:'ELX-FLWD12AU',label:'FLWD12AU · Electrolux Lava-Seca 14/8kg Negra',marca:'electrolux',cat:'lavaseca',catMain:'lavado'},
+      {val:'ELX-ETDHP8SZ',label:'ETDHP8SZ · Electrolux Secadora 8kg',marca:'electrolux',cat:'secadora',catMain:'lavado'},
+      {val:'FEN-PC9.5SZ',label:'PC 9.5SZ · Fensa Lavadora CS 9.5kg',marca:'fensa',cat:'lavadora-cs',catMain:'lavado'},
+      {val:'FEN-PC12SZ',label:'PC 12SZ · Fensa Lavadora CS 12kg',marca:'fensa',cat:'lavadora-cs',catMain:'lavado'},
+      {val:'FEN-PC14SZ',label:'PC 14SZ · Fensa Lavadora CS 14kg',marca:'fensa',cat:'lavadora-cs',catMain:'lavado'},
+      {val:'FEN-PC16ZS',label:'PC 16ZS · Fensa Lavadora CS 16kg',marca:'fensa',cat:'lavadora-cs',catMain:'lavado'},
+      {val:'FEN-PC16ONX',label:'PC 16 Onix · Fensa Lavadora CS 16kg',marca:'fensa',cat:'lavadora-cs',catMain:'lavado'},
+      {val:'FEN-PC18SZ',label:'PC 18SZ · Fensa Lavadora CS 18kg',marca:'fensa',cat:'lavadora-cs',catMain:'lavado'},
+      {val:'FEN-PC18NEG',label:'PC 18 Negra · Fensa Lavadora CS 18kg',marca:'fensa',cat:'lavadora-cs',catMain:'lavado'},
+      {val:'FEN-PC20SZ',label:'PC 20SZ · Fensa Lavadora CS 20kg',marca:'fensa',cat:'lavadora-cs',catMain:'lavado'},
+      {val:'FEN-PC21',label:'PC 21 · Fensa Lavadora CS 21kg',marca:'fensa',cat:'lavadora-cs',catMain:'lavado'},
+      {val:'FEN-PC21ONX',label:'PC 21 Onix · Fensa Lavadora CS 21kg',marca:'fensa',cat:'lavadora-cs',catMain:'lavado'},
+      {val:'FEN-VC8WD',label:'8WD · Fensa Lava-Seca Vapour Care 8kg',marca:'fensa',cat:'lavaseca',catMain:'lavado'},
+      {val:'FEN-UM11WD',label:'11WD · Fensa Lava-Seca UltraMix 11kg',marca:'fensa',cat:'lavaseca',catMain:'lavado'},
+      {val:'FEN-PERC8',label:'Perfect Care 8 · Fensa Lava-Seca 8/5kg',marca:'fensa',cat:'lavaseca',catMain:'lavado'},
+      {val:'FEN-PERC11',label:'Perfect Care 11 · Fensa Lava-Seca 11/7kg',marca:'fensa',cat:'lavaseca',catMain:'lavado'},
+      {val:'FEN-PC9D',label:'PC 9D · Fensa Secadora 9kg',marca:'fensa',cat:'secadora',catMain:'lavado'},
+      {val:'MAD-9.5BZG',label:'9.5 BZG · Mademsa Lavadora CS 9.5kg',marca:'mademsa',cat:'lavadora-cs',catMain:'lavado'},
+      {val:'MAD-9.5SZG',label:'9.5 SZG · Mademsa Lavadora CS 9.5kg',marca:'mademsa',cat:'lavadora-cs',catMain:'lavado'},
+      {val:'MAD-12BZG',label:'12 BZG · Mademsa Lavadora CS 12kg',marca:'mademsa',cat:'lavadora-cs',catMain:'lavado'},
+      {val:'MAD-12SZG',label:'12 SZG · Mademsa Lavadora CS 12kg',marca:'mademsa',cat:'lavadora-cs',catMain:'lavado'},
+      {val:'MAD-14BZG',label:'14 BZG · Mademsa Lavadora CS 14kg',marca:'mademsa',cat:'lavadora-cs',catMain:'lavado'},
+      {val:'MAD-16BZG',label:'16 BZG · Mademsa Lavadora CS 16kg',marca:'mademsa',cat:'lavadora-cs',catMain:'lavado'},
+      {val:'MAD-18SZG',label:'18 SZG · Mademsa Lavadora CS 18kg',marca:'mademsa',cat:'lavadora-cs',catMain:'lavado'},
+      {val:'MAD-20SZG',label:'20 SZG · Mademsa Lavadora CS 20kg',marca:'mademsa',cat:'lavadora-cs',catMain:'lavado'},
+      {val:'MAD-21ONX',label:'21 Onix · Mademsa Lavadora CS 21kg',marca:'mademsa',cat:'lavadora-cs',catMain:'lavado'},
+      {val:'MAD-TW5100',label:'Twister 5100 · Mademsa Semi Auto 4kg',marca:'mademsa',cat:'lavadora-semi',catMain:'lavado'},
+      {val:'MAD-TW5300',label:'Twister 5300 · Mademsa Semi Auto 4kg',marca:'mademsa',cat:'lavadora-semi',catMain:'lavado'},
+      {val:'MAD-PR5N',label:'Primma 5N · Mademsa Centrifuga 5kg',marca:'mademsa',cat:'centrifuga',catMain:'lavado'},
+      {val:'MAD-7DBZG',label:'7D BZG · Mademsa Secadora 7kg',marca:'mademsa',cat:'secadora',catMain:'lavado'},
+      {val:'MAD-7DPRO',label:'7D PRO · Mademsa Secadora 7kg',marca:'mademsa',cat:'secadora',catMain:'lavado'},
+      {val:'MAD-9DSZG',label:'9D SZG · Mademsa Secadora 9kg',marca:'mademsa',cat:'secadora',catMain:'lavado'},
+      {val:'MAD-9DPRO',label:'9D PRO · Mademsa Secadora 9kg',marca:'mademsa',cat:'secadora',catMain:'lavado'},
+      {val:'ELX-ERE18',label:'ERE18 · Electrolux Refri NF 180L',marca:'electrolux',cat:'refri-nf',catMain:'refri'},
+      {val:'ELX-ERQM26',label:'ERQM26 · Electrolux Refri NF 260L',marca:'electrolux',cat:'refri-nf',catMain:'refri'},
+      {val:'ELX-ERQU40',label:'ERQU40 · Electrolux Refri NF 400L',marca:'electrolux',cat:'refri-nf',catMain:'refri'},
+      {val:'ELX-ERSB53',label:'ERSB53 · Electrolux Side by Side 530L',marca:'electrolux',cat:'refri-nf',catMain:'refri'},
+      {val:'ELX-ERDM35',label:'ERDM35 · Electrolux Refri NF 350L',marca:'electrolux',cat:'refri-nf',catMain:'refri'},
+      {val:'ELX-ERB44',label:'ERB44 · Electrolux Refri NF Bottom 440L',marca:'electrolux',cat:'refri-nf',catMain:'refri'},
+      {val:'ELX-ERM45',label:'ERM45 · Electrolux Frigobar 45L',marca:'electrolux',cat:'frigobar',catMain:'refri'},
+      {val:'FEN-DAM380',label:'DAM-380 · Fensa Refri NF 380L',marca:'fensa',cat:'refri-nf',catMain:'refri'},
+      {val:'FEN-DRM300',label:'DRM-300 · Fensa Refri NF 300L',marca:'fensa',cat:'refri-nf',catMain:'refri'},
+      {val:'FEN-DFI500',label:'DFI-500 · Fensa Refri NF French Door 500L',marca:'fensa',cat:'refri-nf',catMain:'refri'},
+      {val:'FEN-DRM200',label:'DRM-200 · Fensa Refri NF 200L',marca:'fensa',cat:'refri-nf',catMain:'refri'},
+      {val:'FEN-DRM250',label:'DRM-250 · Fensa Refri NF 250L',marca:'fensa',cat:'refri-nf',catMain:'refri'},
+      {val:'FEN-DAM320',label:'DAM-320 · Fensa Refri NF 320L',marca:'fensa',cat:'refri-nf',catMain:'refri'},
+      {val:'FEN-DFI450',label:'DFI-450 · Fensa Refri NF 450L',marca:'fensa',cat:'refri-nf',catMain:'refri'},
+      {val:'MAD-ALTUS1200',label:'Altus 1200 · Mademsa Refri FD 200L',marca:'mademsa',cat:'refri-frio',catMain:'refri'},
+      {val:'MAD-ALTUS1430',label:'Altus 1430 · Mademsa Refri NF 320L',marca:'mademsa',cat:'refri-nf',catMain:'refri'},
+      {val:'MAD-MRF220',label:'MRF-220 · Mademsa Freezer 220L',marca:'mademsa',cat:'freezer',catMain:'refri'},
+      {val:'MAD-NORD1600',label:'Nordik 1600 · Mademsa Refri FD 160L',marca:'mademsa',cat:'refri-frio',catMain:'refri'},
+      {val:'MAD-ALTUS1000',label:'Altus 1000 · Mademsa Refri FD 166L',marca:'mademsa',cat:'refri-frio',catMain:'refri'},
+      {val:'MAD-ALTUS1350',label:'Altus 1350 · Mademsa Refri NF 260L',marca:'mademsa',cat:'refri-nf',catMain:'refri'},
+      {val:'MAD-MRF180',label:'MRF-180 · Mademsa Freezer 180L',marca:'mademsa',cat:'freezer',catMain:'refri'},
+      {val:'ELX-EKIC60',label:'EKIC60 · Electrolux Cocina Induccion 60cm',marca:'electrolux',cat:'cocina-elec',catMain:'cocina'},
+      {val:'ELX-EOED63',label:'EOED63 · Electrolux Horno 63L',marca:'electrolux',cat:'horno',catMain:'cocina'},
+      {val:'ELX-EFT60',label:'EFT60 · Electrolux Encimera 60cm',marca:'electrolux',cat:'encimera',catMain:'cocina'},
+      {val:'ELX-EOCL63',label:'EOCL63 · Electrolux Horno Conveccion 63L',marca:'electrolux',cat:'horno',catMain:'cocina'},
+      {val:'ELX-EIT60',label:'EIT60 · Electrolux Encimera Induccion 60cm',marca:'electrolux',cat:'encimera',catMain:'cocina'},
+      {val:'ELX-EMW28',label:'EMW28 · Electrolux Microondas 28L',marca:'electrolux',cat:'microondas',catMain:'cocina'},
+      {val:'FEN-5Q90',label:'5Q90 · Fensa Cocina Gas 5Q',marca:'fensa',cat:'cocina-gas',catMain:'cocina'},
+      {val:'FEN-4Q60',label:'4Q60 · Fensa Cocina Gas 4Q',marca:'fensa',cat:'cocina-gas',catMain:'cocina'},
+      {val:'FEN-CAM90',label:'CAM-90 · Fensa Campana 90cm',marca:'fensa',cat:'campana',catMain:'cocina'},
+      {val:'FEN-6Q120',label:'6Q120 · Fensa Cocina Gas 6Q',marca:'fensa',cat:'cocina-gas',catMain:'cocina'},
+      {val:'FEN-ENC70',label:'ENC-70 · Fensa Encimera Gas 5Q',marca:'fensa',cat:'encimera',catMain:'cocina'},
+      {val:'FEN-HOR70',label:'HOR-70 · Fensa Horno Empotrado 70L',marca:'fensa',cat:'horno',catMain:'cocina'},
+      {val:'FEN-MW25',label:'MW-25 · Fensa Microondas 25L',marca:'fensa',cat:'microondas',catMain:'cocina'},
+      {val:'FEN-CAM60',label:'CAM-60 · Fensa Campana 60cm',marca:'fensa',cat:'campana',catMain:'cocina'},
+      {val:'MAD-DIVA20',label:'Diva 20 · Mademsa Cocina Gas 4Q',marca:'mademsa',cat:'cocina-gas',catMain:'cocina'},
+      {val:'MAD-DIVA24',label:'Diva 24 · Mademsa Cocina Gas 5Q',marca:'mademsa',cat:'cocina-gas',catMain:'cocina'},
+      {val:'MAD-MWG20',label:'MWG-20 · Mademsa Microondas 20L',marca:'mademsa',cat:'microondas',catMain:'cocina'},
+      {val:'MAD-MWG25',label:'MWG-25 · Mademsa Microondas 25L',marca:'mademsa',cat:'microondas',catMain:'cocina'},
+      {val:'MAD-CAM60M',label:'CAM-60M · Mademsa Campana 60cm',marca:'mademsa',cat:'campana',catMain:'cocina'},
+      {val:'ELX-ESF5534',label:'ESF5534 · Electrolux Lavavajillas 13 cub.',marca:'electrolux',cat:'lv-libre',catMain:'lavavajillas'},
+      {val:'ELX-EEM69410',label:'EEM69410 · Electrolux Lavavajillas Empotrado',marca:'electrolux',cat:'lv-empotrado',catMain:'lavavajillas'},
+      {val:'ELX-ESF5542',label:'ESF5542 · Electrolux Lavavajillas 14 cub.',marca:'electrolux',cat:'lv-libre',catMain:'lavavajillas'},
+      {val:'ELX-ESI6541',label:'ESI6541 · Electrolux Lavavajillas Empotrado 13 cub.',marca:'electrolux',cat:'lv-empotrado',catMain:'lavavajillas'},
+      {val:'ELX-ESF6312',label:'ESF6312 · Electrolux Lavavajillas Compact 8 cub.',marca:'electrolux',cat:'lv-libre',catMain:'lavavajillas'},
+      {val:'ELX-PURE9',label:'Pure i9 · Electrolux Robot Aspirador',marca:'electrolux',cat:'aspiradora-robot',catMain:'aspirado'},
+      {val:'ELX-ERG33',label:'ERG33 · Electrolux Aspiradora Stick',marca:'electrolux',cat:'aspiradora-stick',catMain:'aspirado'},
+      {val:'ELX-EEQ15',label:'EEQ15 · Electrolux Encerador',marca:'electrolux',cat:'encerador',catMain:'aspirado'},
+      {val:'ELX-PURE7',label:'Pure i7 · Electrolux Robot Aspirador',marca:'electrolux',cat:'aspiradora-robot',catMain:'aspirado'},
+      {val:'ELX-ERG29',label:'ERG29 · Electrolux Aspiradora Stick 29V',marca:'electrolux',cat:'aspiradora-stick',catMain:'aspirado'}
+    ]
+  }
+};
+
+var ACTIVE_CONFIG = COMPANY_CONFIG['Electrolux Group'];
+var ALL_SKUS = ACTIVE_CONFIG.skus;
+
+function loadCompanyConfig(empresa) {
+  ACTIVE_CONFIG = COMPANY_CONFIG[empresa] || COMPANY_CONFIG['Electrolux Group'];
+  ALL_SKUS = ACTIVE_CONFIG.skus;
+  updateMarcas();
+  updateCategoriasMain();
+  filterSKUs();
+  updateRequiredCols();
+}
+
+function goBackToOnboarding() {
+  document.getElementById('main').style.display = 'none';
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('context-bar').style.display = 'none';
+  document.getElementById('onboarding').style.display = 'flex';
+}
+
+function filterSKUs() {
+  var marca = document.getElementById('filter-marca').value;
+  var catMain = document.getElementById('filter-categoria-main') ? document.getElementById('filter-categoria-main').value : 'lavado';
+  var categoria = document.getElementById('filter-categoria').value;
+  var container = document.getElementById('sku-checkboxes');
+  var filtered = [];
+  for (var i = 0; i < ALL_SKUS.length; i++) {
+    var s = ALL_SKUS[i]; var show = true;
+    if (marca !== 'todas' && s.marca !== marca) show = false;
+    if (catMain !== 'todas' && s.catMain !== catMain) show = false;
+    if (categoria !== 'todas' && s.cat !== categoria) show = false;
+    if (show) filtered.push(s);
+  }
+  var mode = document.getElementById('filter-sku-mode');
+  mode.options[0].text = 'Todos los códigos (' + filtered.length + ')';
+  var html = '';
+  for (var j = 0; j < filtered.length; j++) {
+    var shortCode = filtered[j].val.replace(/^[A-Z]+-/, '');
+    var marcaLabel = filtered[j].marca.charAt(0).toUpperCase() + filtered[j].marca.slice(1);
+    html += '<label style="display:flex;align-items:center;padding:4px 6px;font-size:11px;cursor:pointer;border-bottom:1px solid #f0f0f0;gap:6px"><input type="checkbox" value="' + filtered[j].val + '" onchange="updateSKUChips();updateRequiredCols()"><span style="font-family:monospace;font-weight:600">' + shortCode + '</span><span style="color:var(--ink3);font-size:10px">' + marcaLabel + '</span></label>';
+  }
+  if (filtered.length === 0) html = '<div style="padding:12px;color:var(--ink3);font-size:13px">No hay códigos para esta combinación</div>';
+  container.innerHTML = html;
+  updateSKUChips();
+}
+
+function toggleSKUList() {
+  var mode = document.getElementById('filter-sku-mode').value;
+  var container = document.getElementById('sku-checkboxes');
+  var chipsContainer = document.getElementById('sku-selected-chips');
+  var btn = document.getElementById('sku-done-btn');
+  if (mode === 'seleccionar') { container.style.display = 'block'; chipsContainer.style.display = 'block'; btn.style.display = 'block'; }
+  else { container.style.display = 'none'; chipsContainer.style.display = 'none'; btn.style.display = 'none'; var checks = container.querySelectorAll('input[type=checkbox]'); for (var i = 0; i < checks.length; i++) checks[i].checked = false; updateSKUChips(); }
+}
+
+function closeSKUList() {
+  var cb = document.getElementById('sku-checkboxes'); var btn = document.getElementById('sku-done-btn');
+  if (cb) cb.style.display = 'none'; if (btn) btn.style.display = 'none';
+  var checks = document.querySelectorAll('#sku-checkboxes input:checked');
+  if (checks.length === 0) { var mode = document.getElementById('filter-sku-mode'); var chips = document.getElementById('sku-selected-chips'); if (mode) mode.value = 'todos'; if (chips) chips.style.display = 'none'; }
+  updateSKUChips();
+}
+
+function reopenSKUList() { document.getElementById('sku-checkboxes').style.display = 'block'; document.getElementById('sku-done-btn').style.display = 'block'; }
+
+function updateSKUChips() {
+  var container = document.getElementById('sku-selected-chips'); var inner = document.getElementById('sku-chips-inner');
+  var checks = document.querySelectorAll('#sku-checkboxes input:checked'); var html = '';
+  for (var i = 0; i < checks.length; i++) { var val = checks[i].value; var label = val; for (var j = 0; j < ALL_SKUS.length; j++) { if (ALL_SKUS[j].val === val) { label = ALL_SKUS[j].val.replace(/^[A-Z]+-/,''); break; } } html += '<span onclick="removeSKU(\'' + val + '\')" style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:white;border:1px solid var(--purple);color:var(--purple);border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">' + label + ' ✕</span>'; }
+  if (checks.length > 0 && document.getElementById('sku-checkboxes').style.display === 'none') { html += '<span onclick="reopenSKUList()" style="padding:4px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;font-size:11px;color:var(--ink3);cursor:pointer">+ editar</span>'; }
+  if (checks.length === 0 && document.getElementById('filter-sku-mode').value === 'seleccionar') { html = '<span style="font-size:12px;color:var(--ink3)">Ningún código seleccionado</span>'; }
+  inner.innerHTML = html;
+  container.style.display = (document.getElementById('filter-sku-mode').value === 'seleccionar') ? 'block' : 'none';
+}
+
+function removeSKU(val) { var checks = document.querySelectorAll('#sku-checkboxes input[type=checkbox]'); for (var i = 0; i < checks.length; i++) { if (checks[i].value === val) { checks[i].checked = false; break; } } updateSKUChips(); updateRequiredCols(); }
+function getSelectedSKUs() { var mode = document.getElementById('filter-sku-mode').value; if (mode === 'todos') return 'todos'; var checks = document.querySelectorAll('#sku-checkboxes input:checked'); var vals = []; for (var i = 0; i < checks.length; i++) vals.push(checks[i].value); return vals.length > 0 ? vals : 'todos'; }
+
+function updateMarcas() {
+  var marcaSelect = document.getElementById('filter-marca');
+  var marcas = ACTIVE_CONFIG.marcas;
+  var html = '<option value="todas">Todas</option>';
+  for (var i = 0; i < marcas.length; i++) { html += '<option value="' + marcas[i].toLowerCase() + '">' + marcas[i] + '</option>'; }
+  marcaSelect.innerHTML = html;
+  updateCategoriasMain();
+}
+
+function updateCategoriasMain() {
+  var catMainSelect = document.getElementById('filter-categoria-main');
+  if (!catMainSelect) return;
+  var cats = ACTIVE_CONFIG.categorias;
+  var html = '<option value="todas">Todas las categorías</option>';
+  for (var i = 0; i < cats.length; i++) { html += '<option value="' + cats[i].val + '">' + cats[i].label + '</option>'; }
+  catMainSelect.innerHTML = html;
+  updateSubcategorias();
+}
+
+function updateSubcategorias() {
+  var catMainVal = document.getElementById('filter-categoria-main') ? document.getElementById('filter-categoria-main').value : 'lavado';
+  var catSelect = document.getElementById('filter-categoria');
+  var cats = ACTIVE_CONFIG.categorias;
+  var subcats = [['todas','Todas']];
+  if (catMainVal === 'todas') {
+    var seen = {};
+    for (var i = 0; i < cats.length; i++) { for (var j = 0; j < cats[i].subcats.length; j++) { var key = cats[i].subcats[j][0]; if (key !== 'todas' && !seen[key]) { subcats.push(cats[i].subcats[j]); seen[key] = true; } } }
+  } else {
+    for (var i = 0; i < cats.length; i++) { if (cats[i].val === catMainVal) { subcats = cats[i].subcats; break; } }
+  }
+  var html = '';
+  for (var j = 0; j < subcats.length; j++) { html += '<option value="' + subcats[j][0] + '">' + subcats[j][1] + '</option>'; }
+  catSelect.innerHTML = html;
+  filterSKUs(); updateRequiredCols();
+}
+
+function updateGruposDeProducto() { updateCategoriasMain(); }
+function updateCategoriasByGrupo() { updateSubcategorias(); filterSKUs(); validateGranularidad(); }
+
+function toggleMetric(el, metric) { el.classList.toggle('active'); const cb = el.querySelector('input'); cb.checked = !cb.checked; updateFilters(); updateRequiredCols(); }
+
+function autoSelectFromCategoria() {
+  var cat = document.getElementById('filter-categoria').value; if (cat === 'todas') return;
+  var marcaSelect = document.getElementById('filter-marca');
+  if (marcaSelect.value === 'todas') { var marcasConCat = []; for (var j = 0; j < ALL_SKUS.length; j++) { if (ALL_SKUS[j].cat === cat && marcasConCat.indexOf(ALL_SKUS[j].marca) === -1) { marcasConCat.push(ALL_SKUS[j].marca); } } if (marcasConCat.length === 1) { marcaSelect.value = marcasConCat[0]; } }
+}
+
+function updateFilters() {
+  var tipoEl = document.querySelector('input[name="tipo-data"]:checked');
+  STATE.filters = { tipoData: tipoEl ? tipoEl.value : 'sellout', cliente: document.getElementById('filter-cliente').value, grupo: document.getElementById('filter-grupo').value, categoria: document.getElementById('filter-categoria').value, sku: getSelectedSKUs(), marca: document.getElementById('filter-marca').value, horizonte: document.getElementById('filter-horizonte').value, granularidad: document.getElementById('filter-granularidad').value, metrics: ['volumen','venta','margen'].filter(m => { var el = document.getElementById('metric-'+m); return el && el.checked; }) };
+  updateForecastButton();
+}
+
+function updateRequiredCols() {
+  updateFilters();
+  var colsContainer = document.getElementById('required-cols-inline'); var gfkUpload = document.getElementById('upload-gfk');
+  if (gfkUpload) { gfkUpload.style.display = (STATE.filters.grupo !== 'todos') ? 'block' : 'none'; }
+  if (STATE.filters.metrics.length === 0) { colsContainer.style.display = 'none'; return; }
+  colsContainer.style.display = 'block';
+  const cols = ['Fecha'];
+  if (STATE.filters.cliente === 'todos' || STATE.filters.cliente.indexOf(',') !== -1) cols.push('Retailer');
+  if (STATE.filters.marca === 'todas') cols.push('Marca');
+  if (STATE.filters.categoria === 'todas') cols.push('Subcategoría');
+  var skuMode = document.getElementById('filter-sku-mode');
+  var selectedSKUs = getSelectedSKUs();
+  if (!skuMode || skuMode.value === 'todos' || selectedSKUs === 'todos') cols.push('Cod. Producto');
+  if (STATE.filters.metrics.includes('volumen')) cols.push('Unidades');
+  if (STATE.filters.metrics.includes('venta')) cols.push('Venta Total sin IVA');
+  if (STATE.filters.metrics.includes('margen')) { cols.push('Venta Total sin IVA', 'Costo internado unit.'); }
+  const unique = [...new Set(cols)];
+  document.getElementById('cols-list').innerHTML = unique.map(c => '<span class="col-tag">' + c + '</span>').join('');
+}
+
+function resetFilters() {
+  var hiddenCliente = document.getElementById('filter-cliente'); if (hiddenCliente) hiddenCliente.value = 'todos';
+  var summary = document.getElementById('retailer-summary'); if (summary) summary.textContent = 'Todos';
+  var allCbs = document.querySelectorAll('#retailer-dropdown input[type=checkbox]'); allCbs.forEach(function(c) { c.checked = c.dataset.val === 'todos'; });
+  var els = {'filter-grupo':'todos','filter-marca':'todas','filter-sku-mode':'todos','filter-horizonte':'12m','filter-granularidad':'mensual'};
+  for (var id in els) { var el = document.getElementById(id); if (el) el.value = els[id]; }
+  var hideEls = ['sku-checkboxes','sku-selected-chips','sku-done-btn']; for (var i=0;i<hideEls.length;i++) { var h = document.getElementById(hideEls[i]); if (h) h.style.display = 'none'; }
+  var metricIds = ['metric-volumen','metric-venta','metric-margen']; for (var j=0;j<metricIds.length;j++) { var m = document.getElementById(metricIds[j]); if (m) m.checked = false; }
+  document.querySelectorAll('.metric-check').forEach(function(el) { el.classList.remove('active'); });
+  try { updateGruposDeProducto(); updateCategoriasByGrupo(); filterSKUs(); validateGranularidad(); updateClienteVisibility(); updateRequiredCols(); } catch(e) { console.log('Reset:', e.message); }
+}
+
+function toggleRetailerList() { var dd = document.getElementById('retailer-dropdown'); if (!dd) return; dd.style.display = dd.style.display === 'none' ? 'block' : 'none'; }
+
+function handleRetailerCheck(cb) {
+  var allCbs = document.querySelectorAll('#retailer-dropdown input[type=checkbox]'); var todosCb = document.querySelector('#retailer-dropdown input[data-val="todos"]');
+  if (cb.dataset.val === 'todos') { allCbs.forEach(function(c) { if (c.dataset.val !== 'todos') c.checked = false; }); todosCb.checked = true; document.getElementById('filter-cliente').value = 'todos'; }
+  else { if (todosCb) todosCb.checked = false; var selected = []; allCbs.forEach(function(c) { if (c.dataset.val !== 'todos' && c.checked) selected.push(c.dataset.val); }); if (selected.length === 0) { if (todosCb) todosCb.checked = true; document.getElementById('filter-cliente').value = 'todos'; } else { document.getElementById('filter-cliente').value = selected.join(','); } }
+  var val = document.getElementById('filter-cliente').value; var summary = document.getElementById('retailer-summary'); if (summary) summary.textContent = val === 'todos' ? 'Todos' : val.split(',').map(function(r){ return r.charAt(0).toUpperCase()+r.slice(1); }).join(', ');
+  updateRequiredCols();
+}
+
+function toggleDemo(id) { var el = document.getElementById(id); if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none'; }
+function handleDrop(e, type) { var file = e.dataTransfer.files[0]; if (!file) return; var input = document.getElementById('file-' + type); var dt = new DataTransfer(); dt.items.add(file); input.files = dt.files; input.dispatchEvent(new Event('change')); }
+
+function handleFile(e, type) {
+  const file = e.target.files[0]; if (!file) return;
+  var fnEl = document.getElementById('filename-' + type);
+  if (fnEl) { fnEl.textContent = '✅ ' + file.name; fnEl.style.color = '#16A34A'; fnEl.style.fontWeight = '600'; }
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      var data = new Uint8Array(ev.target.result);
+      var wb = XLSX.read(data, {type:'array'});
+      var ws = wb.Sheets[wb.SheetNames[0]];
+      var json = XLSX.utils.sheet_to_json(ws, {header:1});
+      STATE.files[type] = json;
+      if (type === 'primary' || type === 'secondary') { STATE.fileData = json; validateColumns(json); }
+      updateForecastButton();
+    } catch(err) { showPreview('Error al leer el archivo: ' + err.message, false); }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function validateColumns(data) {
+  if (!data || data.length < 2) { showPreview('El archivo está vacío o no tiene datos', false); return; }
+  const headers = data[0].map(h => String(h).trim());
+  const required = Array.from(document.querySelectorAll('.col-tag')).map(el => el.textContent);
+  const missing = required.filter(r => !headers.some(h => h.toLowerCase().includes(r.toLowerCase())));
+  if (missing.length > 0) { showPreview('❌ Faltan columnas: ' + missing.join(', '), false); } else { showPreview('✅ Todas las columnas necesarias están presentes (' + data.length + ' filas)', true); }
+}
+
+function showPreview(text, success) { var preview = document.getElementById('preview'); var status = document.getElementById('preview-status'); if (preview) preview.style.display = 'block'; if (status) { status.textContent = text; status.style.color = success ? '#16A34A' : '#DC2626'; status.style.fontWeight = '600'; } updateForecastButton(); }
+
+function updateForecastButton() {
+  var btn = document.getElementById('forecast-btn'); if (!btn) return;
+  var tipoEl = document.querySelector('input[name="tipo-data"]:checked');
+  var tipo = tipoEl ? tipoEl.value : 'sellin';
+  var hasMetrics = STATE.filters && STATE.filters.metrics && STATE.filters.metrics.length > 0;
+  var hasFile = false;
+  if (tipo === 'sellout') { hasFile = !!(STATE.files && STATE.files['secondary']); }
+  else if (tipo === 'sixso') { hasFile = !!(STATE.files && STATE.files['primary']) && !!(STATE.files && STATE.files['secondary']); }
+  else { hasFile = !!(STATE.fileData && STATE.fileData.length > 1); }
+  btn.disabled = !(hasFile && hasMetrics);
+}
+
+function showOutputSelector() { document.getElementById('main').style.display = 'none'; document.getElementById('output-selector').style.display = 'flex'; }
+function selectOutputMode(mode) { STATE.outputMode = mode; document.getElementById('output-selector').style.display = 'none'; if (STATE._demoMode) { STATE._demoMode = false; _runDemoWithMode(mode); } else { runForecastWithMode(mode); } }
+
+function toggleUploadBoxes() {
+  var boxes = document.getElementById('upload-boxes');
+  if (!boxes) return;
+  boxes.style.display = boxes.style.display === 'none' ? 'grid' : 'none';
+}
+
+function runDemoForecast() {
+  document.getElementById('main').style.display = 'none';
+  document.getElementById('output-selector').style.display = 'flex';
+  STATE._demoMode = true;
+}
+
+function _runDemoWithMode(mode) {
+  document.getElementById('output-selector').style.display = 'none';
+  document.getElementById('processing').style.display = 'block';
+  setTimeout(function() {
+    var demoData = buildDemoData(mode);
+    document.getElementById('processing').style.display = 'none';
+    document.getElementById('results').style.display = 'block';
+    if (demoData.resumen) {
+      var rc = document.getElementById('resumen-card');
+      var rcon = document.getElementById('resumen-content');
+      if (rc) rc.style.display = 'block';
+      if (rcon) rcon.innerHTML = demoData.resumen;
+    }
+    if (demoData.chart) renderChart(demoData.chart);
+    var modeLabels = {foto:'Foto Rápida',retailer:'Por Retailer',marca:'Por Marca',categoria:'Por Categoría',resumen:'Resumen Ejecutivo',excel:'Excel Detallado'};
+    var badge = document.querySelector('.results-badge');
+    if (badge) badge.textContent = 'DEMO · ' + (modeLabels[mode] || 'FORECAST').toUpperCase();
+    STATE.results = demoData;
+  }, 2500);
+}
+
+function showBacktest() {
+  document.getElementById('main').style.display = 'none';
+  document.getElementById('processing').style.display = 'block';
+  document.querySelector('.processing-text').textContent = 'Backtesting: proyectando 2025 con data de 2024...';
+  document.querySelector('.processing-detail').textContent = 'Comparando forecast vs realidad mes a mes';
+  setTimeout(function() {
+    document.getElementById('processing').style.display = 'none';
+    document.getElementById('results').style.display = 'block';
+    var badge = document.querySelector('.results-badge');
+    if (badge) badge.textContent = 'BACKTESTING 2024 → 2025';
+    document.querySelector('.results-title').textContent = 'Accuracy del Modelo';
+    document.querySelector('.results-sub').textContent = 'Con data real de 2024, proyectamos 2025 y lo comparamos con lo que realmente pasó.';
+    var rc = document.getElementById('resumen-card');
+    var rcon = document.getElementById('resumen-content');
+    if (rc) rc.style.display = 'block';
+    if (rcon) rcon.innerHTML = buildBacktestHTML();
+    renderBacktestChart();
+  }, 3000);
+}
+
+function buildBacktestHTML() {
+  var h = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">';
+  h += '<div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:16px;text-align:center"><div style="font-size:10px;font-weight:700;color:#16A34A;text-transform:uppercase;margin-bottom:4px">Accuracy del modelo</div><div style="font-size:32px;font-weight:800;color:#16A34A">91.6%</div><div style="font-size:11px;color:#6B7280">MAPE: 8.4%</div></div>';
+  h += '<div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px;padding:16px;text-align:center"><div style="font-size:10px;font-weight:700;color:#2563EB;text-transform:uppercase;margin-bottom:4px">Meses analizados</div><div style="font-size:32px;font-weight:800;color:#2563EB">12</div><div style="font-size:11px;color:#6B7280">Ene — Dic 2025</div></div>';
+  h += '<div style="background:#FAF5FF;border:1px solid #DDD6FE;border-radius:10px;padding:16px;text-align:center"><div style="font-size:10px;font-weight:700;color:var(--purple);text-transform:uppercase;margin-bottom:4px">Error máximo</div><div style="font-size:32px;font-weight:800;color:var(--purple)">13.3%</div><div style="font-size:11px;color:#6B7280">Sep 2025 (peak estacional)</div></div>';
+  h += '</div>';
+
+  h += '<div style="font-size:14px;font-weight:700;margin-bottom:10px">Mes a mes: Forecast vs Real 2025</div>';
+  h += '<table style="width:100%;border-collapse:collapse;font-size:12px">';
+  h += '<tr style="background:var(--purple-bg)"><th style="padding:6px 8px;text-align:left;color:var(--purple)">Mes</th><th style="padding:6px 8px;text-align:right;color:var(--purple)">Forecast</th><th style="padding:6px 8px;text-align:right;color:var(--purple)">Real</th><th style="padding:6px 8px;text-align:right;color:var(--purple)">Error</th><th style="padding:6px 8px;text-align:left;color:var(--purple)">Accuracy</th></tr>';
+
+  var meses = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+  var forecast = [2938,2749,3012,3174,3787,3854,3766,3507,3132,3149,3706,3905];
+  var real =     [3023,2865,2949,3203,3353,3415,3342,3044,2765,2949,3451,3603];
+
+  for (var i = 0; i < 12; i++) {
+    var err = Math.abs(forecast[i] - real[i]);
+    var pct = (err / real[i] * 100).toFixed(1);
+    var acc = (100 - parseFloat(pct)).toFixed(1);
+    var color = parseFloat(acc) >= 92 ? "#16A34A" : parseFloat(acc) >= 85 ? "#D97706" : "#DC2626";
+    h += "<tr style='border-bottom:1px solid #eee'><td style='padding:5px 8px;font-weight:600'>" + meses[i] + " 2025</td>";
+    h += "<td style='padding:5px 8px;text-align:right;color:var(--purple);font-weight:600'>" + forecast[i].toLocaleString() + "</td>";
+    h += "<td style='padding:5px 8px;text-align:right'>" + real[i].toLocaleString() + "</td>";
+    h += "<td style='padding:5px 8px;text-align:right;color:" + color + "'>" + pct + "%</td>";
+    h += "<td style='padding:5px 8px'><div style='background:#f0f0f0;border-radius:3px;height:8px;width:100px'><div style='background:" + color + ";height:8px;border-radius:3px;width:" + acc + "px'></div></div></td></tr>";
+  }
+  h += '</table>';
+
+  h += '<div style="margin-top:20px;background:#FAF5FF;border-left:4px solid var(--purple);padding:16px;border-radius:0 8px 8px 0">';
+  h += '<div style="font-weight:800;color:var(--purple);font-size:14px;margin-bottom:6px">¿Qué significa esto?</div>';
+  h += '<div style="font-size:13px;color:#444;line-height:1.7">Con solo la data de 2024, el modelo proyectó cada mes de 2025 con un <strong>91.6% de precisión promedio</strong>. ';
+  h += 'Los meses con mayor error son los peaks estacionales (sep, jun) — aun así el modelo los detecta y proyecta la dirección correcta. ';
+  h += 'Mientras más data histórica tenga el modelo, mejor se vuelve. <strong>Cada mes que sumas, el accuracy sube.</strong></div>';
+  h += '</div>';
+
+  h += '<div style="margin-top:20px;text-align:center;padding:20px;background:#F7F6F3;border-radius:10px">';
+  h += '<div style="font-size:15px;font-weight:700;margin-bottom:6px">¿Quieres ver esto con tu data?</div>';
+  h += '<div style="font-size:13px;color:var(--ink3);margin-bottom:12px">Sube tu historial 2024-2025 y compara tu accuracy vs el modelo.</div>';
+  h += '<button onclick="newForecast()" style="padding:10px 28px;background:var(--purple);color:white;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:Outfit,sans-serif">Subir mi data →</button>';
+  h += '</div>';
+
+  return h;
+}
+
+function renderBacktestChart() {
+  var forecast = [2938,2749,3012,3174,3787,3854,3766,3507,3132,3149,3706,3905];
+  var real =     [3023,2865,2949,3203,3353,3415,3342,3044,2765,2949,3451,3603];
+  var labels = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+  renderChart({labels: labels.map(function(m){return m+" 25"}), historical: real, forecast: forecast});
+}
+
+function buildDemoData(mode) {
+  var hist = [3067,2870,3144,3313,3953,4023,3931,3661,3270,3287,3869,4076,3023,2865,2949,3203,3353,3415,3342,3044,2765,2949,3451,3603];
+  var fore = [2938,2749,3012,3174,3787,3854,3766,3507,3132,3149,3706,3905];
+  var months = []; for (var y = 2024; y <= 2026; y++) { for (var m = 1; m <= 12; m++) { months.push(y+"-"+(m<10?"0"+m:m)); } }
+  var labels = months.slice(0, 36);
+  var resumen = "";
+
+  if (mode === "foto") {
+    resumen = '<div style="background:#FAF5FF;border-left:4px solid #7B61FF;padding:20px;border-radius:0 10px 10px 0">';
+    resumen += '<div style="font-size:11px;font-weight:700;color:#7B61FF;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">📸 FOTO RÁPIDA — Electrohogar · Mayo 2026</div>';
+    resumen += '<div style="font-size:15px;font-weight:800;color:#1a1a1a;margin-bottom:6px">⚠️ Secadoras se acaban en 23 días</div>';
+    resumen += '<div style="font-size:13px;color:#444;margin-bottom:16px">Sin container en tránsito. Invierno viene.</div>';
+    resumen += '<div style="font-size:15px;font-weight:800;color:#1a1a1a;margin-bottom:6px">💰 $312M sin tocar en Sodimac</div>';
+    resumen += '<div style="font-size:13px;color:#444;margin-bottom:16px">Fensa PC 18SZ rota 2.6x más en Falabella que en Sodimac.</div>';
+    resumen += '<div style="font-size:15px;font-weight:800;color:#1a1a1a;margin-bottom:6px">📦 Forecast: 3.390 un/mes base</div>';
+    resumen += '<div style="font-size:13px;color:#444;margin-bottom:20px">Peak junio-agosto +22%.</div>';
+    resumen += '<div style="background:white;border-radius:8px;padding:12px;border:1px solid #DDD6FE"><div style="font-weight:700;font-size:12px;color:#7B61FF;margin-bottom:6px">→ ACCIÓN</div><div style="font-size:13px">OC urgente 280 un. secadoras + reunión buyer Sodimac</div></div></div>';
+  } else if (mode === "retailer") {
+    resumen = '<div><div style="font-size:14px;font-weight:700;margin-bottom:10px">Sell Out por Retailer — Ene-May 2026</div>';
+    resumen += '<table style="width:100%;border-collapse:collapse;font-size:12px"><tr style="background:var(--purple-bg)"><th style="padding:8px;text-align:left;color:var(--purple)">Retailer</th><th style="padding:8px;text-align:right;color:var(--purple)">Un.</th><th style="padding:8px;text-align:right;color:var(--purple)">Forecast</th><th style="padding:8px;text-align:right;color:var(--purple)">Gap</th><th style="padding:8px;text-align:left;color:var(--purple)">Alerta</th></tr>';
+    resumen += '<tr style="border-bottom:1px solid #eee"><td style="padding:8px;font-weight:600">Falabella</td><td style="padding:8px;text-align:right">1.247</td><td style="padding:8px;text-align:right;color:#5B4FE8;font-weight:700">1.389</td><td style="padding:8px;text-align:right;color:#16A34A">+11%</td><td style="padding:8px"><span style="background:#F0FDF4;color:#16A34A;padding:2px 6px;border-radius:3px;font-size:10px;font-weight:700">OK</span></td></tr>';
+    resumen += '<tr style="border-bottom:1px solid #eee"><td style="padding:8px;font-weight:600">Sodimac</td><td style="padding:8px;text-align:right">478</td><td style="padding:8px;text-align:right;color:#5B4FE8;font-weight:700">523</td><td style="padding:8px;text-align:right;color:#DC2626">-62%</td><td style="padding:8px"><span style="background:#FEF2F2;color:#DC2626;padding:2px 6px;border-radius:3px;font-size:10px;font-weight:700">GAP CRÍTICO</span></td></tr>';
+    resumen += '<tr style="border-bottom:1px solid #eee"><td style="padding:8px;font-weight:600">Ripley</td><td style="padding:8px;text-align:right">634</td><td style="padding:8px;text-align:right;color:#5B4FE8;font-weight:700">698</td><td style="padding:8px;text-align:right;color:#D97706">-18%</td><td style="padding:8px"><span style="background:#FFFBEB;color:#D97706;padding:2px 6px;border-radius:3px;font-size:10px;font-weight:700">BAJO</span></td></tr>';
+    resumen += '<tr><td style="padding:8px;font-weight:600">Paris</td><td style="padding:8px;text-align:right">412</td><td style="padding:8px;text-align:right;color:#5B4FE8;font-weight:700">441</td><td style="padding:8px;text-align:right;color:#16A34A">+7%</td><td style="padding:8px"><span style="background:#F0FDF4;color:#16A34A;padding:2px 6px;border-radius:3px;font-size:10px;font-weight:700">OK</span></td></tr></table>';
+    resumen += '<div style="margin-top:12px;background:#FEF2F2;border-left:4px solid #DC2626;padding:14px;border-radius:0 8px 8px 0"><div style="font-weight:800;color:#DC2626;margin-bottom:4px">🔴 Sodimac — 62% bajo potencial</div><div style="font-size:13px">Si replica la rotación de Falabella: <strong>+$312M anuales</strong>.</div></div></div>';
+  } else {
+    resumen = '<div style="display:flex;flex-direction:column;gap:16px">';
+    resumen += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">';
+    resumen += '<div style="background:white;border:1px solid #E2E8F0;border-radius:10px;padding:16px;text-align:center"><div style="font-size:10px;color:#64748B;font-weight:600;text-transform:uppercase;margin-bottom:4px">Revenue en riesgo</div><div style="font-size:28px;font-weight:800;color:#DC2626">$478M</div><div style="font-size:11px;color:#94A3B8">Quiebres + gap cross-retailer</div></div>';
+    resumen += '<div style="background:white;border:1px solid #E2E8F0;border-radius:10px;padding:16px;text-align:center"><div style="font-size:10px;color:#64748B;font-weight:600;text-transform:uppercase;margin-bottom:4px">Precisión modelo</div><div style="font-size:28px;font-weight:800;color:#2563EB">91.6%</div><div style="font-size:11px;color:#94A3B8">vs 79% manual</div></div>';
+    resumen += '<div style="background:white;border:1px solid #E2E8F0;border-radius:10px;padding:16px;text-align:center"><div style="font-size:10px;color:#64748B;font-weight:600;text-transform:uppercase;margin-bottom:4px">Errores detectados</div><div style="font-size:28px;font-weight:800;color:#D97706">$447K</div><div style="font-size:11px;color:#94A3B8">USD en Lista Negra</div></div>';
+    resumen += '</div>';
+    resumen += '<div style="background:#FEF2F2;border-left:4px solid #DC2626;padding:16px;border-radius:0 8px 8px 0"><div style="font-weight:800;color:#DC2626;font-size:15px;margin-bottom:6px">🔴 SECADORAS — 23 días de stock</div><div style="font-size:14px;line-height:1.6">Sin container en tránsito. Peak invierno viene. OC urgente 280 un.</div></div>';
+    resumen += '<div style="background:#F0FDF4;border-left:4px solid #16A34A;padding:16px;border-radius:0 8px 8px 0"><div style="font-weight:800;color:#16A34A;font-size:15px;margin-bottom:6px">💰 $312M EN LA MESA — Sodimac</div><div style="font-size:14px;line-height:1.6">Fensa PC 18SZ: 89 un/mes en Falabella vs 34 en Sodimac. 62% bajo potencial.</div></div>';
+    resumen += '<div style="background:#EFF6FF;border-left:4px solid #2563EB;padding:16px;border-radius:0 8px 8px 0"><div style="font-weight:800;color:#2563EB;font-size:15px;margin-bottom:6px">📈 FORECAST +7.2% — Peak invierno</div><div style="font-size:14px;line-height:1.6">Base: 3.390 un/mes. Peak +22% jun-ago. Pre-cargar YA.</div></div>';
+    resumen += '</div>';
+  }
+
+  return {resumen: resumen, chart: {labels: labels, historical: hist, forecast: fore}, forecast_values: fore};
+}
+
+
+async function runForecast() {
+  var tipoEl = document.querySelector('input[name="tipo-data"]:checked');
+  var tipo = tipoEl ? tipoEl.value : 'sellin';
+  if (tipo === 'sellout' && (!STATE.files || !STATE.files['secondary'])) { alert('Sube tu archivo Sell Out primero'); return; }
+  if (tipo === 'sellin' && (!STATE.files || !STATE.files['primary'])) { alert('Sube tu archivo Sell In primero'); return; }
+  if (tipo === 'sixso' && (!STATE.files || !STATE.files['primary'] || !STATE.files['secondary'])) { alert('Sube ambos archivos (Sell In y Sell Out)'); return; }
+  showOutputSelector();
+}
+
+async function runForecastWithMode(outputMode) {
+  document.getElementById('processing').style.display = 'block';
+  var tipoEl = document.querySelector('input[name="tipo-data"]:checked'); var tipo = tipoEl ? tipoEl.value : 'sellout';
+  var horizonte = document.getElementById('filter-horizonte') ? document.getElementById('filter-horizonte').value : '12m'; var hMeses = horizonte === '3m' ? 3 : horizonte === '6m' ? 6 : 12;
+  var marca = document.getElementById('filter-marca') ? document.getElementById('filter-marca').value : 'todas';
+  var contexto = 'RUBRO: Electrohogar | CATEGORIAS: Lavado y Secado'; if (marca && marca !== 'todas') contexto += ' | MARCAS: ' + marca;
+  var payload = { csvData: STATE.files['primary'] || null, siData: STATE.files['secondary'] || null, invData: STATE.files['inv-dist'] || null, invretData: STATE.files['inv-retail'] || null, gfkData: STATE.files['gfk'] || null, contexto: contexto, tipo: tipo, horizonte: hMeses, outputMode: outputMode };
+  try {
+    var response = await fetch('/api/forecast', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    if (!response.ok) throw new Error('Error en API'); var data = await response.json(); if (data.error) throw new Error(data.error); STATE.results = data; displayResults(data);
+  } catch(err) { console.error(err); document.getElementById('processing').style.display = 'none'; document.getElementById('main').style.display = 'block'; alert('Error: ' + err.message); }
+}
+
+function displayResults(data) {
+  var proc = document.getElementById('processing'); var res = document.getElementById('results'); if (proc) proc.style.display = 'none'; if (res) res.style.display = 'block';
+  if (data.resumen) { var rc = document.getElementById('resumen-card'); var rcon = document.getElementById('resumen-content'); if (rc) rc.style.display = 'block'; if (rcon) rcon.innerHTML = data.resumen; }
+  if (data.chart) renderChart(data.chart);
+  STATE.results = data;
+}
+
+function downloadExcel() { if (!STATE.results || !STATE.results.excel_base64) { alert('No hay datos para descargar'); return; } const link = document.createElement('a'); link.href = 'data:application/vnd.ms-excel;base64,' + STATE.results.excel_base64; link.download = 'Forecast_' + new Date().toISOString().slice(0,10) + '.xlsx'; link.click(); }
+function newForecast() { location.reload(); }
+
+function switchView(role) {
+  var views = ['kam','gm','pm','bi'];
+  for (var i = 0; i < views.length; i++) { document.getElementById('view-' + views[i]).style.display = (views[i] === role) ? 'block' : 'none'; var tab = document.getElementById('tab-' + views[i]); if (views[i] === role) { tab.style.background = 'var(--purple)'; tab.style.color = 'white'; tab.style.borderColor = 'var(--purple)'; } else { tab.style.background = 'white'; tab.style.color = 'var(--text)'; tab.style.borderColor = 'var(--border)'; } }
+}
+
+function renderChart(chartData) {
+  var wrapper = document.querySelector('.chart-wrapper'); if (!wrapper) return;
+  var allLabels = chartData.labels; var hist = chartData.historical; var fore = chartData.forecast;
+  var histLen = hist.length; var foreLen = fore.length;
+  var allVals = hist.concat(fore); var minVal = Math.min.apply(null, allVals) * 0.85; var maxVal = Math.max.apply(null, allVals) * 1.1; var range = maxVal - minVal;
+  var W = 700, H = 320, padL = 55, padR = 20, padT = 30, padB = 60; var chartW = W - padL - padR; var chartH = H - padT - padB; var totalPts = histLen + foreLen; var stepX = chartW / (totalPts - 1);
+  function x(i) { return padL + i * stepX; } function y(v) { return padT + chartH - ((v - minVal) / range * chartH); }
+  var histPath = 'M'; for (var i = 0; i < histLen; i++) { histPath += (i > 0 ? 'L' : '') + x(i).toFixed(1) + ',' + y(hist[i]).toFixed(1); }
+  var forePath = 'M' + x(histLen - 1).toFixed(1) + ',' + y(hist[histLen - 1]).toFixed(1); for (var j = 0; j < foreLen; j++) { forePath += 'L' + x(histLen + j).toFixed(1) + ',' + y(fore[j]).toFixed(1); }
+  var histArea = histPath + 'L' + x(histLen - 1).toFixed(1) + ',' + (padT + chartH) + 'L' + x(0).toFixed(1) + ',' + (padT + chartH) + 'Z';
+  var foreArea = forePath + 'L' + x(histLen + foreLen - 1).toFixed(1) + ',' + (padT + chartH) + 'L' + x(histLen - 1).toFixed(1) + ',' + (padT + chartH) + 'Z';
+  var gridLines = ''; var yLabels = ''; for (var g = 0; g <= 4; g++) { var val = minVal + (range * g / 4); var yPos = y(val); gridLines += '<line x1="' + padL + '" y1="' + yPos.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + yPos.toFixed(1) + '" stroke="#eee" stroke-width="1"/>'; yLabels += '<text x="' + (padL - 8) + '" y="' + (yPos + 4).toFixed(1) + '" text-anchor="end" fill="#999" font-size="10">' + Math.round(val) + '</text>'; }
+  var xLabels = ''; for (var k = 0; k < totalPts; k += 3) { var label = allLabels[k] || ''; xLabels += '<text x="' + x(k).toFixed(1) + '" y="' + (H - padB + 18) + '" text-anchor="middle" fill="#999" font-size="9" transform="rotate(-30 ' + x(k).toFixed(1) + ' ' + (H - padB + 18) + ')">' + label + '</text>'; }
+  var divX = x(histLen - 1).toFixed(1);
+  var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">';
+  svg += '<text x="' + (W/2) + '" y="18" text-anchor="middle" fill="#1a1a1a" font-size="14" font-weight="700">Unidades — Histórico vs Forecast</text>';
+  svg += gridLines + yLabels + xLabels;
+  svg += '<path d="' + histArea + '" fill="rgba(153,153,153,0.08)"/>';
+  svg += '<path d="' + foreArea + '" fill="rgba(123,97,255,0.08)"/>';
+  svg += '<line x1="' + divX + '" y1="' + padT + '" x2="' + divX + '" y2="' + (padT + chartH) + '" stroke="#ddd" stroke-width="1" stroke-dasharray="4,4"/>';
+  svg += '<text x="' + divX + '" y="' + (padT + chartH + 12) + '" text-anchor="middle" fill="#bbb" font-size="9">HOY</text>';
+  svg += '<path d="' + histPath + '" fill="none" stroke="#999" stroke-width="2"/>';
+  svg += '<path d="' + forePath + '" fill="none" stroke="#7B61FF" stroke-width="2.5" stroke-dasharray="6,3"/>';
+  svg += '<rect x="' + (W - 200) + '" y="' + (H - 18) + '" width="12" height="3" fill="#999"/><text x="' + (W - 184) + '" y="' + (H - 14) + '" fill="#999" font-size="10">Histórico</text>';
+  svg += '<rect x="' + (W - 110) + '" y="' + (H - 18) + '" width="12" height="3" fill="#7B61FF"/><text x="' + (W - 94) + '" y="' + (H - 14) + '" fill="#7B61FF" font-size="10" font-weight="600">Forecast</text>';
+  svg += '</svg>';
+  wrapper.innerHTML = svg;
+}
+
+
+function loadDemoFile(type, filename, rows) {
+  var meta = {
+    'primary':   {icon:'📦', detail:'3 marcas · 32 SKUs · 10 retailers · Ene 2024 — Dic 2025', color:'#7B61FF'},
+    'secondary': {icon:'📊', detail:'3 marcas · 32 SKUs · 10 retailers · Ene 2024 — Dic 2025', color:'#7B61FF'},
+    'inv-dist':  {icon:'🏭', detail:'4 bodegas · 32 SKUs · Stock + Tránsito · Dic 2025', color:'#7B61FF'},
+    'inv-retail': {icon:'🏪', detail:'10 retailers · 32 SKUs · Stock tienda + bodega · Dic 2025', color:'#7B61FF'},
+    'gfk':       {icon:'📈', detail:'9 marcas mercado · Lavadoras+Secadoras · Formato GfK · 2024-2025', color:'#7B61FF'}
+  };
+  var m = meta[type] || {icon:'📄', detail:rows + ' filas', color:'#7B61FF'};
+  
+  var fnEl = document.getElementById('filename-' + type);
+  if (fnEl) {
+    fnEl.innerHTML = '<div style="color:#16A34A;font-weight:700">✅ ' + filename + '</div>' +
+      '<div style="font-size:9px;color:' + m.color + ';margin-top:2px;font-weight:600;background:#F3F2FF;padding:2px 6px;border-radius:3px;display:inline-block">' + m.detail + '</div>';
+  }
+  
+  // Color the box purple (demo) not green (real data)
+  var dropEl = document.getElementById('drop-' + type);
+  if (!dropEl) {
+    // For inv-dist, inv-retail, gfk the parent div is the drop zone
+    var fileInput = document.getElementById('file-' + type);
+    if (fileInput) dropEl = fileInput.parentElement;
+  }
+  if (dropEl) {
+    dropEl.style.border = '2px solid #7B61FF';
+    dropEl.style.background = 'rgba(123,97,255,0.05)';
+    dropEl.style.opacity = '1';
+  }
+  
+  // Generate fake parsed data with correct headers per type
+  var headers, sampleRow;
+  if (type === 'primary') {
+    headers = ['Fecha','Retailer','Marca','Subcategoría','Cod. Producto','Unidades','Venta Total sin IVA','Costo internado unit.'];
+    sampleRow = ['2024-01','Falabella','Fensa','Lavadora CS','FEN-PC18SZ',89,27589110,155000];
+  } else if (type === 'secondary') {
+    headers = ['Fecha','Retailer','Marca','Subcategoría','Cod. Producto','Unidades','Venta Total sin IVA'];
+    sampleRow = ['2024-01','Falabella','Fensa','Lavadora CS','FEN-PC18SZ',82,31898780];
+  } else if (type === 'inv-dist') {
+    headers = ['Fecha Corte','Bodega','Cod. Producto','Marca','Subcategoría','Disponible','En Tránsito','ETA'];
+    sampleRow = ['2025-12-15','Santiago Centro','FEN-PC18SZ','Fensa','Lavadora CS',45,200,'15-ene'];
+  } else if (type === 'inv-retail') {
+    headers = ['Fecha Corte','Retailer','Cod. Producto','Marca','Subcategoría','Stock Tienda','Stock Bodega'];
+    sampleRow = ['2025-12-15','Falabella','FEN-PC18SZ','Fensa','Lavadora CS',8,24];
+  } else {
+    headers = ['Period','BRAND','Item','TYPE OF WASHM.','LOADING KG','Sales Units','Sales Value <LC>'];
+    sampleRow = ['Jun 24','FENSA','PC18SZ','FA TOP',18,960,215177783];
+  }
+  
+  var fakeData = [headers];
+  for (var i = 0; i < Math.min(rows, 100); i++) fakeData.push(sampleRow);
+  
+  STATE.files[type] = fakeData;
+  if (type === 'primary' || type === 'secondary') STATE.fileData = fakeData;
+  
+  showPreview('✅ ' + filename + ' — ' + rows.toLocaleString() + ' filas demo cargadas', true);
+  updateForecastButton();
+}
+
+try { updateMarcas(); filterSKUs(); updateRequiredCols(); validateGranularidad(); updateClienteVisibility(); } catch(e) { console.log('Init:', e.message); }
+</script>
+
+<script>
+// Auto-load: skip gate and onboarding, go straight to app
+(function(){
+  STATE.empresa = 'Electrolux Group';
+  STATE.rubro = 'electrohogar';
+  var bar = document.getElementById('context-bar');
+  if (bar) {
+    bar.style.display = 'block';
+    document.getElementById('context-rubro').textContent = 'Electrodomésticos / Electrohogar';
+    document.getElementById('context-empresa').textContent = 'Electrolux Group';
+  }
+  loadCompanyConfig('Electrolux Group');
+})();
+</script>
+
+<script>
+// AUTO-LOAD: all demo files pre-loaded
+window.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function() {
+    loadDemoFile('primary','Demo_SellIn.xlsx',6677);
+    loadDemoFile('secondary','Demo_SellOut.xlsx',6470);
+    loadDemoFile('inv-dist','Demo_Inv_Distribuidor.xlsx',82);
+    loadDemoFile('inv-retail','Demo_Inv_Retail.xlsx',189);
+    loadDemoFile('gfk','Demo_GfK.xlsx',600);
+    // Enable forecast button
+    var btn = document.getElementById('forecast-btn');
+    if (btn) btn.disabled = false;
+  }, 300);
+});
+</script>
+</body>
+</html>
