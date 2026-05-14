@@ -89,7 +89,10 @@ footer{text-align:center;padding:24px;color:var(--ink3);font-size:12px;border-to
 
 <nav>
   <a href="#" class="logo">Forecast<span>Demo</span></a>
-  
+  <div style="display:flex;gap:4px">
+    <button onclick="switchMode('demo')" id="mode-demo" style="padding:6px 14px;border:none;background:var(--purple);color:white;font-size:12px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;border-radius:4px">🔬 Demo</button>
+    <button onclick="switchMode('libre')" id="mode-libre" style="padding:6px 14px;border:none;background:transparent;color:var(--ink3);font-size:12px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;border-radius:4px">📂 Tu Data</button>
+  </div>
 </nav>
 
 <div class="gate-screen" id="gate" style="display:none">
@@ -325,19 +328,21 @@ footer{text-align:center;padding:24px;color:var(--ink3);font-size:12px;border-to
 
     <div style="font-size:10px;font-weight:700;color:var(--purple);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;text-align:center">Tu data</div>
 
-    <!-- DEMO BANNER -->
-    <div id="demo-banner" style="max-width:700px;margin:0 auto 8px;padding:10px 16px;background:linear-gradient(135deg,#FAF5FF,#F3F2FF);border:1px solid #DDD6FE;border-radius:8px;display:flex;align-items:center;gap:10px">
-      <span style="font-size:18px">🔬</span>
-      <div style="flex:1">
-        <div style="font-size:12px;font-weight:700;color:var(--purple)">🔓 VERSIÓN LIBRE — Sube tu data</div>
-        <div style="font-size:11px;color:var(--ink3)">Sube tus archivos Excel para generar tu forecast. Usa los botones <strong>⚡ Cargar ejemplo</strong> en cada caja para probar con data demo.</div>
-        <a href="demo.html" style="font-size:11px;color:var(--purple);font-weight:600;text-decoration:none;margin-top:4px;display:inline-block">¿Quieres ver la demo precargada? → Ver demo</a>
-      </div>
+    
+    
+    <!-- DEMO INFO (visible in demo mode) -->
+    <div id="demo-info" style="max-width:700px;margin:0 auto 8px;padding:8px 14px;background:linear-gradient(135deg,#FAF5FF,#F3F2FF);border:1px solid #DDD6FE;border-radius:8px">
+      <div style="font-size:11px;color:var(--ink3)">5 archivos demo ya cargados · Juega con los filtros y dale <strong style="color:var(--purple)">Generar Forecast</strong> o <strong style="color:var(--purple)">Ver Backtesting</strong></div>
+    </div>
+    
+    <!-- LIBRE INFO (hidden by default) -->
+    <div id="libre-info" style="display:none;max-width:700px;margin:0 auto 8px;padding:8px 14px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px">
+      <div style="font-size:11px;color:var(--ink3)">Sube tus archivos Excel en las cajas de abajo. Usa <strong style="color:var(--purple)">⚡ Cargar ejemplo</strong> para probar con data demo.</div>
     </div>
 
     
 
-    <div id="upload-boxes" style="max-width:700px;margin:0 auto 10px;display:grid;grid-template-columns:1fr 1fr;gap:6px">
+    <div id="upload-boxes" style="display:none;max-width:700px;margin:0 auto 10px;grid-template-columns:1fr 1fr;gap:6px">
 
         <div id="drop-primary" onclick="document.getElementById('file-primary').click()" ondragover="event.preventDefault();this.style.borderColor='#7B61FF';this.style.background='rgba(123,97,255,0.08)'" ondragleave="this.style.borderColor='#7B61FF';this.style.background='rgba(123,97,255,0.02)'" ondrop="event.preventDefault();this.style.background='rgba(123,97,255,0.02)';handleDrop(event,'primary')" style="border:2px solid var(--purple);border-radius:8px;padding:8px;cursor:pointer;background:rgba(123,97,255,0.02);text-align:center">
           <input type="file" id="file-primary" accept=".csv,.xlsx,.xls" onchange="handleFile(event,'primary')" style="display:none">
@@ -1160,6 +1165,51 @@ function renderChart(chartData) {
 }
 
 
+
+function switchMode(mode) {
+  var demoBtn = document.getElementById('mode-demo');
+  var libreBtn = document.getElementById('mode-libre');
+  var demoInfo = document.getElementById('demo-info');
+  var libreInfo = document.getElementById('libre-info');
+  var uploadBoxes = document.getElementById('upload-boxes');
+  
+  if (mode === 'demo') {
+    demoBtn.style.background = 'var(--purple)'; demoBtn.style.color = 'white';
+    libreBtn.style.background = 'white'; libreBtn.style.color = 'var(--ink2)';
+    demoInfo.style.display = 'block';
+    libreInfo.style.display = 'none';
+    if (uploadBoxes) uploadBoxes.style.display = 'none';
+    // Auto-load demo files
+    loadDemoFile('primary','Demo_SellIn.xlsx',6677);
+    loadDemoFile('secondary','Demo_SellOut.xlsx',6470);
+    loadDemoFile('inv-dist','Demo_Inv_Distribuidor.xlsx',82);
+    loadDemoFile('inv-retail','Demo_Inv_Retail.xlsx',189);
+    loadDemoFile('gfk','Demo_GfK.xlsx',600);
+    var btn = document.getElementById('forecast-btn');
+    if (btn) btn.disabled = false;
+  } else {
+    libreBtn.style.background = 'var(--purple)'; libreBtn.style.color = 'white';
+    demoBtn.style.background = 'white'; demoBtn.style.color = 'var(--ink2)';
+    demoInfo.style.display = 'none';
+    libreInfo.style.display = 'block';
+    if (uploadBoxes) uploadBoxes.style.display = 'grid';
+    // Reset files
+    STATE.files = {}; STATE.fileData = null;
+    ['primary','secondary','inv-dist','inv-retail','gfk'].forEach(function(t) {
+      var fn = document.getElementById('filename-' + t);
+      if (fn) { fn.textContent = 'Haz click o arrastra tu Excel'; fn.style.color = 'var(--ink3)'; fn.style.fontWeight = '400'; }
+      var drop = document.getElementById('drop-' + t);
+      if (drop) { drop.style.border = '1px dashed var(--border)'; drop.style.background = ''; drop.style.opacity = '0.6'; }
+    });
+    // Fix primary box style
+    var pDrop = document.getElementById('drop-primary');
+    if (pDrop) { pDrop.style.border = '2px solid var(--purple)'; pDrop.style.background = 'rgba(123,97,255,0.02)'; pDrop.style.opacity = '1'; }
+    var preview = document.getElementById('preview');
+    if (preview) preview.style.display = 'none';
+    updateForecastButton();
+  }
+}
+
 function loadDemoFile(type, filename, rows) {
   var meta = {
     'primary':   {icon:'📦', detail:'3 marcas · 32 SKUs · 10 retailers · Ene 2024 — Dic 2025', color:'#7B61FF'},
@@ -1234,6 +1284,13 @@ try { updateMarcas(); filterSKUs(); updateRequiredCols(); validateGranularidad()
   }
   loadCompanyConfig('Electrolux Group');
 })();
+</script>
+
+<script>
+// Auto-load demo mode on page load
+window.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function() { switchMode('demo'); }, 300);
+});
 </script>
 </body>
 </html>
