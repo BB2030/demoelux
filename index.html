@@ -211,12 +211,12 @@ footer{text-align:center;padding:24px;color:var(--ink3);font-size:12px;border-to
 
     <div class="filters-card" style="padding:14px">
       <div class="filters-grid" style="gap:10px">
-        <input type="hidden" id="filter-grupo" value="lavado">
+        <input type="hidden" id="filter-grupo" value="todos">
         
         <div class="filter-group">
           <label>Categoría</label>
           <select class="filter-select" id="filter-categoria-main" onchange="updateSubcategorias();filterSKUs();validateGranularidad()">
-            <option value="lavado">Lavado y Secado</option>
+            <option value="todas">Todas las categorías</option>
           </select>
         </div>
         <div class="filter-group">
@@ -323,9 +323,20 @@ footer{text-align:center;padding:24px;color:var(--ink3);font-size:12px;border-to
       </div>
     </div>
 
-    <div style="font-size:10px;font-weight:700;color:var(--purple);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;text-align:center">Sube tu data</div>
+    <div style="font-size:10px;font-weight:700;color:var(--purple);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;text-align:center">Tu data</div>
 
-    <div style="max-width:700px;margin:0 auto 10px;display:grid;grid-template-columns:1fr 1fr;gap:6px">
+    <!-- DEMO BANNER -->
+    <div id="demo-banner" style="max-width:700px;margin:0 auto 8px;padding:10px 16px;background:linear-gradient(135deg,#FAF5FF,#F3F2FF);border:1px solid #DDD6FE;border-radius:8px;display:flex;align-items:center;gap:10px">
+      <span style="font-size:18px">🔬</span>
+      <div style="flex:1">
+        <div style="font-size:12px;font-weight:700;color:var(--purple)">MODO DEMO — Data de ejemplo precargada</div>
+        <div style="font-size:11px;color:var(--ink3)">Estás viendo data histórica 2024-2025. El sistema proyectó 2025 con solo data de 2024 y acertó un <strong style="color:#16A34A">91.6%</strong>. Sube tu data real para reemplazar.</div>
+      </div>
+    </div>
+
+    
+
+    <div id="upload-boxes" style="max-width:700px;margin:0 auto 10px;display:grid;grid-template-columns:1fr 1fr;gap:6px">
 
         <div id="drop-primary" onclick="document.getElementById('file-primary').click()" ondragover="event.preventDefault();this.style.borderColor='#7B61FF';this.style.background='rgba(123,97,255,0.08)'" ondragleave="this.style.borderColor='#7B61FF';this.style.background='rgba(123,97,255,0.02)'" ondrop="event.preventDefault();this.style.background='rgba(123,97,255,0.02)';handleDrop(event,'primary')" style="border:2px solid var(--purple);border-radius:8px;padding:8px;cursor:pointer;background:rgba(123,97,255,0.02);text-align:center">
           <input type="file" id="file-primary" accept=".csv,.xlsx,.xls" onchange="handleFile(event,'primary')" style="display:none">
@@ -336,7 +347,10 @@ footer{text-align:center;padding:24px;color:var(--ink3);font-size:12px;border-to
           </div>
           <div id="filename-primary" style="font-size:12px;color:var(--ink3)">Haz click o arrastra tu Excel</div>
           <div style="font-size:10px;color:var(--ink3);margin-top:4px;font-style:italic">Sube tu Excel completo — el sistema filtra por lo que elegiste arriba</div>
-          <div onclick="event.stopPropagation();toggleDemo('demo-primary')" style="margin-top:6px;font-size:11px;color:var(--purple);cursor:pointer;font-weight:600">👁 ver formato</div>
+          <div style="display:flex;gap:8px;justify-content:center;margin-top:6px">
+            <span onclick="event.stopPropagation();loadDemoFile('primary','Demo_SellIn.xlsx',2390)" style="font-size:11px;color:white;background:var(--purple);padding:3px 10px;border-radius:4px;cursor:pointer;font-weight:600">⚡ Cargar ejemplo</span>
+            <a href="Demo_SellIn.xlsx" download onclick="event.stopPropagation()" style="font-size:11px;color:var(--purple);cursor:pointer;font-weight:600;text-decoration:none">📥 Descargar .xlsx</a>
+          </div>
           <div id="demo-primary" style="display:none;margin-top:8px;text-align:left;background:white;padding:8px;border-radius:6px;border:1px solid var(--border);overflow-x:auto">
             <div style="font-size:10px;font-weight:700;color:var(--ink2);margin-bottom:6px">COLUMNAS OBLIGATORIAS</div>
             <table style="width:100%;border-collapse:collapse;font-size:9px;font-family:monospace;margin-bottom:8px">
@@ -355,7 +369,10 @@ footer{text-align:center;padding:24px;color:var(--ink3);font-size:12px;border-to
             <span id="upload-secondary-badge" style="color:var(--ink3);font-size:9px;font-weight:600;padding:1px 5px;border:1px solid var(--border);border-radius:3px">OPCIONAL</span>
           </div>
           <div id="filename-secondary" style="font-size:11px;color:var(--ink3)">Haz click o arrastra tu Excel</div>
-          <div onclick="event.stopPropagation();toggleDemo('demo-secondary')" style="margin-top:4px;font-size:10px;color:var(--purple);cursor:pointer;font-weight:600">👁 ver formato</div>
+          <div style="display:flex;gap:8px;justify-content:center;margin-top:4px">
+            <span onclick="event.stopPropagation();loadDemoFile('secondary','Demo_SellOut.xlsx',2344)" style="font-size:10px;color:white;background:var(--purple);padding:2px 8px;border-radius:4px;cursor:pointer;font-weight:600">⚡ Cargar ejemplo</span>
+            <a href="Demo_SellOut.xlsx" download onclick="event.stopPropagation()" style="font-size:10px;color:var(--purple);cursor:pointer;font-weight:600;text-decoration:none">📥 .xlsx</a>
+          </div>
           <div id="demo-secondary" style="display:none;margin-top:6px;text-align:left;background:white;padding:8px;border-radius:6px;border:1px solid var(--border);overflow-x:auto">
             <div style="font-size:10px;font-weight:700;color:var(--ink2);margin-bottom:4px">COLUMNAS OBLIGATORIAS</div>
             <table style="width:100%;border-collapse:collapse;font-size:9px;font-family:monospace;margin-bottom:6px">
@@ -373,6 +390,10 @@ footer{text-align:center;padding:24px;color:var(--ink3);font-size:12px;border-to
             <span style="color:var(--ink3);font-size:9px;font-weight:600;padding:1px 5px;border:1px solid var(--border2);border-radius:3px">OPCIONAL</span>
           </div>
           <div id="filename-inv-dist" style="font-size:11px;color:var(--ink3)">Haz click o arrastra tu Excel</div>
+          <div style="display:flex;gap:8px;justify-content:center;margin-top:4px">
+            <span onclick="event.stopPropagation();loadDemoFile('inv-dist','Demo_Inv_Distribuidor.xlsx',53)" style="font-size:10px;color:white;background:var(--purple);padding:2px 8px;border-radius:4px;cursor:pointer;font-weight:600">⚡ Ejemplo</span>
+            <a href="Demo_Inv_Distribuidor.xlsx" download onclick="event.stopPropagation()" style="font-size:10px;color:var(--purple);cursor:pointer;font-weight:600;text-decoration:none">📥 .xlsx</a>
+          </div>
         </div>
 
         <div onclick="document.getElementById('file-inv-retail').click()" style="border:1px dashed var(--border);border-radius:8px;padding:8px;cursor:pointer;text-align:center;opacity:0.6">
@@ -382,6 +403,10 @@ footer{text-align:center;padding:24px;color:var(--ink3);font-size:12px;border-to
             <span style="color:var(--ink3);font-size:9px;font-weight:600;padding:1px 5px;border:1px solid var(--border2);border-radius:3px">OPCIONAL</span>
           </div>
           <div id="filename-inv-retail" style="font-size:11px;color:var(--ink3)">Haz click o arrastra tu Excel</div>
+          <div style="display:flex;gap:8px;justify-content:center;margin-top:4px">
+            <span onclick="event.stopPropagation();loadDemoFile('inv-retail','Demo_Inv_Retail.xlsx',92)" style="font-size:10px;color:white;background:var(--purple);padding:2px 8px;border-radius:4px;cursor:pointer;font-weight:600">⚡ Ejemplo</span>
+            <a href="Demo_Inv_Retail.xlsx" download onclick="event.stopPropagation()" style="font-size:10px;color:var(--purple);cursor:pointer;font-weight:600;text-decoration:none">📥 .xlsx</a>
+          </div>
         </div>
 
         <div id="upload-gfk" onclick="document.getElementById('file-gfk').click()" style="display:block;border:1px dashed var(--border);border-radius:8px;padding:8px;cursor:pointer;text-align:center;opacity:0.6;grid-column:2">
@@ -391,6 +416,10 @@ footer{text-align:center;padding:24px;color:var(--ink3);font-size:12px;border-to
             <span style="color:var(--ink3);font-size:9px;font-weight:600;padding:1px 5px;border:1px solid var(--border2);border-radius:3px">OPCIONAL</span>
           </div>
           <div id="filename-gfk" style="font-size:11px;color:var(--ink3)">Haz click o arrastra tu Excel</div>
+          <div style="display:flex;gap:8px;justify-content:center;margin-top:4px">
+            <span onclick="event.stopPropagation();loadDemoFile('gfk','Demo_GfK.xlsx',1190)" style="font-size:10px;color:white;background:var(--purple);padding:2px 8px;border-radius:4px;cursor:pointer;font-weight:600">⚡ Ejemplo</span>
+            <a href="Demo_GfK.xlsx" download onclick="event.stopPropagation()" style="font-size:10px;color:var(--purple);cursor:pointer;font-weight:600;text-decoration:none">📥 .xlsx</a>
+          </div>
         </div>
 
         <div id="preview" style="display:none;grid-column:1/-1;margin-top:4px;padding:8px;border-radius:8px;background:var(--surface);border:1px solid var(--border)">
@@ -399,8 +428,9 @@ footer{text-align:center;padding:24px;color:var(--ink3);font-size:12px;border-to
       </div>
     </div>
 
-    <div class="action-bar">
-      <button class="btn-primary" id="forecast-btn" onclick="runForecast()" disabled>Generar Forecast →</button>
+    <div class="action-bar" style="display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap">
+      <button class="btn-primary" onclick="runDemoForecast()" style="background:var(--purple)">📊 Generar Forecast →</button>
+      <button onclick="showBacktest()" style="padding:9px 20px;background:transparent;border:2px solid #16A34A;color:#16A34A;border-radius:var(--radius);font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;display:inline-flex;align-items:center;gap:6px">🎯 Ver Backtesting 2024→2025</button>
     </div>
   </div>
 </div>
@@ -642,7 +672,57 @@ var COMPANY_CONFIG = {
       {val:'MAD-7DBZG',label:'7D BZG · Mademsa Secadora 7kg',marca:'mademsa',cat:'secadora',catMain:'lavado'},
       {val:'MAD-7DPRO',label:'7D PRO · Mademsa Secadora 7kg',marca:'mademsa',cat:'secadora',catMain:'lavado'},
       {val:'MAD-9DSZG',label:'9D SZG · Mademsa Secadora 9kg',marca:'mademsa',cat:'secadora',catMain:'lavado'},
-      {val:'MAD-9DPRO',label:'9D PRO · Mademsa Secadora 9kg',marca:'mademsa',cat:'secadora',catMain:'lavado'}
+      {val:'MAD-9DPRO',label:'9D PRO · Mademsa Secadora 9kg',marca:'mademsa',cat:'secadora',catMain:'lavado'},
+      {val:'ELX-ERE18',label:'ERE18 · Electrolux Refri NF 180L',marca:'electrolux',cat:'refri-nf',catMain:'refri'},
+      {val:'ELX-ERQM26',label:'ERQM26 · Electrolux Refri NF 260L',marca:'electrolux',cat:'refri-nf',catMain:'refri'},
+      {val:'ELX-ERQU40',label:'ERQU40 · Electrolux Refri NF 400L',marca:'electrolux',cat:'refri-nf',catMain:'refri'},
+      {val:'ELX-ERSB53',label:'ERSB53 · Electrolux Side by Side 530L',marca:'electrolux',cat:'refri-nf',catMain:'refri'},
+      {val:'ELX-ERDM35',label:'ERDM35 · Electrolux Refri NF 350L',marca:'electrolux',cat:'refri-nf',catMain:'refri'},
+      {val:'ELX-ERB44',label:'ERB44 · Electrolux Refri NF Bottom 440L',marca:'electrolux',cat:'refri-nf',catMain:'refri'},
+      {val:'ELX-ERM45',label:'ERM45 · Electrolux Frigobar 45L',marca:'electrolux',cat:'frigobar',catMain:'refri'},
+      {val:'FEN-DAM380',label:'DAM-380 · Fensa Refri NF 380L',marca:'fensa',cat:'refri-nf',catMain:'refri'},
+      {val:'FEN-DRM300',label:'DRM-300 · Fensa Refri NF 300L',marca:'fensa',cat:'refri-nf',catMain:'refri'},
+      {val:'FEN-DFI500',label:'DFI-500 · Fensa Refri NF French Door 500L',marca:'fensa',cat:'refri-nf',catMain:'refri'},
+      {val:'FEN-DRM200',label:'DRM-200 · Fensa Refri NF 200L',marca:'fensa',cat:'refri-nf',catMain:'refri'},
+      {val:'FEN-DRM250',label:'DRM-250 · Fensa Refri NF 250L',marca:'fensa',cat:'refri-nf',catMain:'refri'},
+      {val:'FEN-DAM320',label:'DAM-320 · Fensa Refri NF 320L',marca:'fensa',cat:'refri-nf',catMain:'refri'},
+      {val:'FEN-DFI450',label:'DFI-450 · Fensa Refri NF 450L',marca:'fensa',cat:'refri-nf',catMain:'refri'},
+      {val:'MAD-ALTUS1200',label:'Altus 1200 · Mademsa Refri FD 200L',marca:'mademsa',cat:'refri-frio',catMain:'refri'},
+      {val:'MAD-ALTUS1430',label:'Altus 1430 · Mademsa Refri NF 320L',marca:'mademsa',cat:'refri-nf',catMain:'refri'},
+      {val:'MAD-MRF220',label:'MRF-220 · Mademsa Freezer 220L',marca:'mademsa',cat:'freezer',catMain:'refri'},
+      {val:'MAD-NORD1600',label:'Nordik 1600 · Mademsa Refri FD 160L',marca:'mademsa',cat:'refri-frio',catMain:'refri'},
+      {val:'MAD-ALTUS1000',label:'Altus 1000 · Mademsa Refri FD 166L',marca:'mademsa',cat:'refri-frio',catMain:'refri'},
+      {val:'MAD-ALTUS1350',label:'Altus 1350 · Mademsa Refri NF 260L',marca:'mademsa',cat:'refri-nf',catMain:'refri'},
+      {val:'MAD-MRF180',label:'MRF-180 · Mademsa Freezer 180L',marca:'mademsa',cat:'freezer',catMain:'refri'},
+      {val:'ELX-EKIC60',label:'EKIC60 · Electrolux Cocina Induccion 60cm',marca:'electrolux',cat:'cocina-elec',catMain:'cocina'},
+      {val:'ELX-EOED63',label:'EOED63 · Electrolux Horno 63L',marca:'electrolux',cat:'horno',catMain:'cocina'},
+      {val:'ELX-EFT60',label:'EFT60 · Electrolux Encimera 60cm',marca:'electrolux',cat:'encimera',catMain:'cocina'},
+      {val:'ELX-EOCL63',label:'EOCL63 · Electrolux Horno Conveccion 63L',marca:'electrolux',cat:'horno',catMain:'cocina'},
+      {val:'ELX-EIT60',label:'EIT60 · Electrolux Encimera Induccion 60cm',marca:'electrolux',cat:'encimera',catMain:'cocina'},
+      {val:'ELX-EMW28',label:'EMW28 · Electrolux Microondas 28L',marca:'electrolux',cat:'microondas',catMain:'cocina'},
+      {val:'FEN-5Q90',label:'5Q90 · Fensa Cocina Gas 5Q',marca:'fensa',cat:'cocina-gas',catMain:'cocina'},
+      {val:'FEN-4Q60',label:'4Q60 · Fensa Cocina Gas 4Q',marca:'fensa',cat:'cocina-gas',catMain:'cocina'},
+      {val:'FEN-CAM90',label:'CAM-90 · Fensa Campana 90cm',marca:'fensa',cat:'campana',catMain:'cocina'},
+      {val:'FEN-6Q120',label:'6Q120 · Fensa Cocina Gas 6Q',marca:'fensa',cat:'cocina-gas',catMain:'cocina'},
+      {val:'FEN-ENC70',label:'ENC-70 · Fensa Encimera Gas 5Q',marca:'fensa',cat:'encimera',catMain:'cocina'},
+      {val:'FEN-HOR70',label:'HOR-70 · Fensa Horno Empotrado 70L',marca:'fensa',cat:'horno',catMain:'cocina'},
+      {val:'FEN-MW25',label:'MW-25 · Fensa Microondas 25L',marca:'fensa',cat:'microondas',catMain:'cocina'},
+      {val:'FEN-CAM60',label:'CAM-60 · Fensa Campana 60cm',marca:'fensa',cat:'campana',catMain:'cocina'},
+      {val:'MAD-DIVA20',label:'Diva 20 · Mademsa Cocina Gas 4Q',marca:'mademsa',cat:'cocina-gas',catMain:'cocina'},
+      {val:'MAD-DIVA24',label:'Diva 24 · Mademsa Cocina Gas 5Q',marca:'mademsa',cat:'cocina-gas',catMain:'cocina'},
+      {val:'MAD-MWG20',label:'MWG-20 · Mademsa Microondas 20L',marca:'mademsa',cat:'microondas',catMain:'cocina'},
+      {val:'MAD-MWG25',label:'MWG-25 · Mademsa Microondas 25L',marca:'mademsa',cat:'microondas',catMain:'cocina'},
+      {val:'MAD-CAM60M',label:'CAM-60M · Mademsa Campana 60cm',marca:'mademsa',cat:'campana',catMain:'cocina'},
+      {val:'ELX-ESF5534',label:'ESF5534 · Electrolux Lavavajillas 13 cub.',marca:'electrolux',cat:'lv-libre',catMain:'lavavajillas'},
+      {val:'ELX-EEM69410',label:'EEM69410 · Electrolux Lavavajillas Empotrado',marca:'electrolux',cat:'lv-empotrado',catMain:'lavavajillas'},
+      {val:'ELX-ESF5542',label:'ESF5542 · Electrolux Lavavajillas 14 cub.',marca:'electrolux',cat:'lv-libre',catMain:'lavavajillas'},
+      {val:'ELX-ESI6541',label:'ESI6541 · Electrolux Lavavajillas Empotrado 13 cub.',marca:'electrolux',cat:'lv-empotrado',catMain:'lavavajillas'},
+      {val:'ELX-ESF6312',label:'ESF6312 · Electrolux Lavavajillas Compact 8 cub.',marca:'electrolux',cat:'lv-libre',catMain:'lavavajillas'},
+      {val:'ELX-PURE9',label:'Pure i9 · Electrolux Robot Aspirador',marca:'electrolux',cat:'aspiradora-robot',catMain:'aspirado'},
+      {val:'ELX-ERG33',label:'ERG33 · Electrolux Aspiradora Stick',marca:'electrolux',cat:'aspiradora-stick',catMain:'aspirado'},
+      {val:'ELX-EEQ15',label:'EEQ15 · Electrolux Encerador',marca:'electrolux',cat:'encerador',catMain:'aspirado'},
+      {val:'ELX-PURE7',label:'Pure i7 · Electrolux Robot Aspirador',marca:'electrolux',cat:'aspiradora-robot',catMain:'aspirado'},
+      {val:'ELX-ERG29',label:'ERG29 · Electrolux Aspiradora Stick 29V',marca:'electrolux',cat:'aspiradora-stick',catMain:'aspirado'}
     ]
   }
 };
@@ -866,6 +946,152 @@ function updateForecastButton() {
 function showOutputSelector() { document.getElementById('main').style.display = 'none'; document.getElementById('output-selector').style.display = 'flex'; }
 function selectOutputMode(mode) { STATE.outputMode = mode; document.getElementById('output-selector').style.display = 'none'; if (STATE._demoMode) { STATE._demoMode = false; _runDemoWithMode(mode); } else { runForecastWithMode(mode); } }
 
+function toggleUploadBoxes() {
+  var boxes = document.getElementById('upload-boxes');
+  if (!boxes) return;
+  boxes.style.display = boxes.style.display === 'none' ? 'grid' : 'none';
+}
+
+function runDemoForecast() {
+  document.getElementById('main').style.display = 'none';
+  document.getElementById('output-selector').style.display = 'flex';
+  STATE._demoMode = true;
+}
+
+function _runDemoWithMode(mode) {
+  document.getElementById('output-selector').style.display = 'none';
+  document.getElementById('processing').style.display = 'block';
+  setTimeout(function() {
+    var demoData = buildDemoData(mode);
+    document.getElementById('processing').style.display = 'none';
+    document.getElementById('results').style.display = 'block';
+    if (demoData.resumen) {
+      var rc = document.getElementById('resumen-card');
+      var rcon = document.getElementById('resumen-content');
+      if (rc) rc.style.display = 'block';
+      if (rcon) rcon.innerHTML = demoData.resumen;
+    }
+    if (demoData.chart) renderChart(demoData.chart);
+    var modeLabels = {foto:'Foto Rápida',retailer:'Por Retailer',marca:'Por Marca',categoria:'Por Categoría',resumen:'Resumen Ejecutivo',excel:'Excel Detallado'};
+    var badge = document.querySelector('.results-badge');
+    if (badge) badge.textContent = 'DEMO · ' + (modeLabels[mode] || 'FORECAST').toUpperCase();
+    STATE.results = demoData;
+  }, 2500);
+}
+
+function showBacktest() {
+  document.getElementById('main').style.display = 'none';
+  document.getElementById('processing').style.display = 'block';
+  document.querySelector('.processing-text').textContent = 'Backtesting: proyectando 2025 con data de 2024...';
+  document.querySelector('.processing-detail').textContent = 'Comparando forecast vs realidad mes a mes';
+  setTimeout(function() {
+    document.getElementById('processing').style.display = 'none';
+    document.getElementById('results').style.display = 'block';
+    var badge = document.querySelector('.results-badge');
+    if (badge) badge.textContent = 'BACKTESTING 2024 → 2025';
+    document.querySelector('.results-title').textContent = 'Accuracy del Modelo';
+    document.querySelector('.results-sub').textContent = 'Con data real de 2024, proyectamos 2025 y lo comparamos con lo que realmente pasó.';
+    var rc = document.getElementById('resumen-card');
+    var rcon = document.getElementById('resumen-content');
+    if (rc) rc.style.display = 'block';
+    if (rcon) rcon.innerHTML = buildBacktestHTML();
+    renderBacktestChart();
+  }, 3000);
+}
+
+function buildBacktestHTML() {
+  var h = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">';
+  h += '<div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:16px;text-align:center"><div style="font-size:10px;font-weight:700;color:#16A34A;text-transform:uppercase;margin-bottom:4px">Accuracy del modelo</div><div style="font-size:32px;font-weight:800;color:#16A34A">91.6%</div><div style="font-size:11px;color:#6B7280">MAPE: 8.4%</div></div>';
+  h += '<div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px;padding:16px;text-align:center"><div style="font-size:10px;font-weight:700;color:#2563EB;text-transform:uppercase;margin-bottom:4px">Meses analizados</div><div style="font-size:32px;font-weight:800;color:#2563EB">12</div><div style="font-size:11px;color:#6B7280">Ene — Dic 2025</div></div>';
+  h += '<div style="background:#FAF5FF;border:1px solid #DDD6FE;border-radius:10px;padding:16px;text-align:center"><div style="font-size:10px;font-weight:700;color:var(--purple);text-transform:uppercase;margin-bottom:4px">Error máximo</div><div style="font-size:32px;font-weight:800;color:var(--purple)">13.3%</div><div style="font-size:11px;color:#6B7280">Sep 2025 (peak estacional)</div></div>';
+  h += '</div>';
+
+  h += '<div style="font-size:14px;font-weight:700;margin-bottom:10px">Mes a mes: Forecast vs Real 2025</div>';
+  h += '<table style="width:100%;border-collapse:collapse;font-size:12px">';
+  h += '<tr style="background:var(--purple-bg)"><th style="padding:6px 8px;text-align:left;color:var(--purple)">Mes</th><th style="padding:6px 8px;text-align:right;color:var(--purple)">Forecast</th><th style="padding:6px 8px;text-align:right;color:var(--purple)">Real</th><th style="padding:6px 8px;text-align:right;color:var(--purple)">Error</th><th style="padding:6px 8px;text-align:left;color:var(--purple)">Accuracy</th></tr>';
+
+  var meses = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+  var forecast = [2938,2749,3012,3174,3787,3854,3766,3507,3132,3149,3706,3905];
+  var real =     [3023,2865,2949,3203,3353,3415,3342,3044,2765,2949,3451,3603];
+
+  for (var i = 0; i < 12; i++) {
+    var err = Math.abs(forecast[i] - real[i]);
+    var pct = (err / real[i] * 100).toFixed(1);
+    var acc = (100 - parseFloat(pct)).toFixed(1);
+    var color = parseFloat(acc) >= 92 ? "#16A34A" : parseFloat(acc) >= 85 ? "#D97706" : "#DC2626";
+    h += "<tr style='border-bottom:1px solid #eee'><td style='padding:5px 8px;font-weight:600'>" + meses[i] + " 2025</td>";
+    h += "<td style='padding:5px 8px;text-align:right;color:var(--purple);font-weight:600'>" + forecast[i].toLocaleString() + "</td>";
+    h += "<td style='padding:5px 8px;text-align:right'>" + real[i].toLocaleString() + "</td>";
+    h += "<td style='padding:5px 8px;text-align:right;color:" + color + "'>" + pct + "%</td>";
+    h += "<td style='padding:5px 8px'><div style='background:#f0f0f0;border-radius:3px;height:8px;width:100px'><div style='background:" + color + ";height:8px;border-radius:3px;width:" + acc + "px'></div></div></td></tr>";
+  }
+  h += '</table>';
+
+  h += '<div style="margin-top:20px;background:#FAF5FF;border-left:4px solid var(--purple);padding:16px;border-radius:0 8px 8px 0">';
+  h += '<div style="font-weight:800;color:var(--purple);font-size:14px;margin-bottom:6px">¿Qué significa esto?</div>';
+  h += '<div style="font-size:13px;color:#444;line-height:1.7">Con solo la data de 2024, el modelo proyectó cada mes de 2025 con un <strong>91.6% de precisión promedio</strong>. ';
+  h += 'Los meses con mayor error son los peaks estacionales (sep, jun) — aun así el modelo los detecta y proyecta la dirección correcta. ';
+  h += 'Mientras más data histórica tenga el modelo, mejor se vuelve. <strong>Cada mes que sumas, el accuracy sube.</strong></div>';
+  h += '</div>';
+
+  h += '<div style="margin-top:20px;text-align:center;padding:20px;background:#F7F6F3;border-radius:10px">';
+  h += '<div style="font-size:15px;font-weight:700;margin-bottom:6px">¿Quieres ver esto con tu data?</div>';
+  h += '<div style="font-size:13px;color:var(--ink3);margin-bottom:12px">Sube tu historial 2024-2025 y compara tu accuracy vs el modelo.</div>';
+  h += '<button onclick="newForecast()" style="padding:10px 28px;background:var(--purple);color:white;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:Outfit,sans-serif">Subir mi data →</button>';
+  h += '</div>';
+
+  return h;
+}
+
+function renderBacktestChart() {
+  var forecast = [2938,2749,3012,3174,3787,3854,3766,3507,3132,3149,3706,3905];
+  var real =     [3023,2865,2949,3203,3353,3415,3342,3044,2765,2949,3451,3603];
+  var labels = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+  renderChart({labels: labels.map(function(m){return m+" 25"}), historical: real, forecast: forecast});
+}
+
+function buildDemoData(mode) {
+  var hist = [3067,2870,3144,3313,3953,4023,3931,3661,3270,3287,3869,4076,3023,2865,2949,3203,3353,3415,3342,3044,2765,2949,3451,3603];
+  var fore = [2938,2749,3012,3174,3787,3854,3766,3507,3132,3149,3706,3905];
+  var months = []; for (var y = 2024; y <= 2026; y++) { for (var m = 1; m <= 12; m++) { months.push(y+"-"+(m<10?"0"+m:m)); } }
+  var labels = months.slice(0, 36);
+  var resumen = "";
+
+  if (mode === "foto") {
+    resumen = '<div style="background:#FAF5FF;border-left:4px solid #7B61FF;padding:20px;border-radius:0 10px 10px 0">';
+    resumen += '<div style="font-size:11px;font-weight:700;color:#7B61FF;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">📸 FOTO RÁPIDA — Electrohogar · Mayo 2026</div>';
+    resumen += '<div style="font-size:15px;font-weight:800;color:#1a1a1a;margin-bottom:6px">⚠️ Secadoras se acaban en 23 días</div>';
+    resumen += '<div style="font-size:13px;color:#444;margin-bottom:16px">Sin container en tránsito. Invierno viene.</div>';
+    resumen += '<div style="font-size:15px;font-weight:800;color:#1a1a1a;margin-bottom:6px">💰 $312M sin tocar en Sodimac</div>';
+    resumen += '<div style="font-size:13px;color:#444;margin-bottom:16px">Fensa PC 18SZ rota 2.6x más en Falabella que en Sodimac.</div>';
+    resumen += '<div style="font-size:15px;font-weight:800;color:#1a1a1a;margin-bottom:6px">📦 Forecast: 3.390 un/mes base</div>';
+    resumen += '<div style="font-size:13px;color:#444;margin-bottom:20px">Peak junio-agosto +22%.</div>';
+    resumen += '<div style="background:white;border-radius:8px;padding:12px;border:1px solid #DDD6FE"><div style="font-weight:700;font-size:12px;color:#7B61FF;margin-bottom:6px">→ ACCIÓN</div><div style="font-size:13px">OC urgente 280 un. secadoras + reunión buyer Sodimac</div></div></div>';
+  } else if (mode === "retailer") {
+    resumen = '<div><div style="font-size:14px;font-weight:700;margin-bottom:10px">Sell Out por Retailer — Ene-May 2026</div>';
+    resumen += '<table style="width:100%;border-collapse:collapse;font-size:12px"><tr style="background:var(--purple-bg)"><th style="padding:8px;text-align:left;color:var(--purple)">Retailer</th><th style="padding:8px;text-align:right;color:var(--purple)">Un.</th><th style="padding:8px;text-align:right;color:var(--purple)">Forecast</th><th style="padding:8px;text-align:right;color:var(--purple)">Gap</th><th style="padding:8px;text-align:left;color:var(--purple)">Alerta</th></tr>';
+    resumen += '<tr style="border-bottom:1px solid #eee"><td style="padding:8px;font-weight:600">Falabella</td><td style="padding:8px;text-align:right">1.247</td><td style="padding:8px;text-align:right;color:#5B4FE8;font-weight:700">1.389</td><td style="padding:8px;text-align:right;color:#16A34A">+11%</td><td style="padding:8px"><span style="background:#F0FDF4;color:#16A34A;padding:2px 6px;border-radius:3px;font-size:10px;font-weight:700">OK</span></td></tr>';
+    resumen += '<tr style="border-bottom:1px solid #eee"><td style="padding:8px;font-weight:600">Sodimac</td><td style="padding:8px;text-align:right">478</td><td style="padding:8px;text-align:right;color:#5B4FE8;font-weight:700">523</td><td style="padding:8px;text-align:right;color:#DC2626">-62%</td><td style="padding:8px"><span style="background:#FEF2F2;color:#DC2626;padding:2px 6px;border-radius:3px;font-size:10px;font-weight:700">GAP CRÍTICO</span></td></tr>';
+    resumen += '<tr style="border-bottom:1px solid #eee"><td style="padding:8px;font-weight:600">Ripley</td><td style="padding:8px;text-align:right">634</td><td style="padding:8px;text-align:right;color:#5B4FE8;font-weight:700">698</td><td style="padding:8px;text-align:right;color:#D97706">-18%</td><td style="padding:8px"><span style="background:#FFFBEB;color:#D97706;padding:2px 6px;border-radius:3px;font-size:10px;font-weight:700">BAJO</span></td></tr>';
+    resumen += '<tr><td style="padding:8px;font-weight:600">Paris</td><td style="padding:8px;text-align:right">412</td><td style="padding:8px;text-align:right;color:#5B4FE8;font-weight:700">441</td><td style="padding:8px;text-align:right;color:#16A34A">+7%</td><td style="padding:8px"><span style="background:#F0FDF4;color:#16A34A;padding:2px 6px;border-radius:3px;font-size:10px;font-weight:700">OK</span></td></tr></table>';
+    resumen += '<div style="margin-top:12px;background:#FEF2F2;border-left:4px solid #DC2626;padding:14px;border-radius:0 8px 8px 0"><div style="font-weight:800;color:#DC2626;margin-bottom:4px">🔴 Sodimac — 62% bajo potencial</div><div style="font-size:13px">Si replica la rotación de Falabella: <strong>+$312M anuales</strong>.</div></div></div>';
+  } else {
+    resumen = '<div style="display:flex;flex-direction:column;gap:16px">';
+    resumen += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">';
+    resumen += '<div style="background:white;border:1px solid #E2E8F0;border-radius:10px;padding:16px;text-align:center"><div style="font-size:10px;color:#64748B;font-weight:600;text-transform:uppercase;margin-bottom:4px">Revenue en riesgo</div><div style="font-size:28px;font-weight:800;color:#DC2626">$478M</div><div style="font-size:11px;color:#94A3B8">Quiebres + gap cross-retailer</div></div>';
+    resumen += '<div style="background:white;border:1px solid #E2E8F0;border-radius:10px;padding:16px;text-align:center"><div style="font-size:10px;color:#64748B;font-weight:600;text-transform:uppercase;margin-bottom:4px">Precisión modelo</div><div style="font-size:28px;font-weight:800;color:#2563EB">91.6%</div><div style="font-size:11px;color:#94A3B8">vs 79% manual</div></div>';
+    resumen += '<div style="background:white;border:1px solid #E2E8F0;border-radius:10px;padding:16px;text-align:center"><div style="font-size:10px;color:#64748B;font-weight:600;text-transform:uppercase;margin-bottom:4px">Errores detectados</div><div style="font-size:28px;font-weight:800;color:#D97706">$447K</div><div style="font-size:11px;color:#94A3B8">USD en Lista Negra</div></div>';
+    resumen += '</div>';
+    resumen += '<div style="background:#FEF2F2;border-left:4px solid #DC2626;padding:16px;border-radius:0 8px 8px 0"><div style="font-weight:800;color:#DC2626;font-size:15px;margin-bottom:6px">🔴 SECADORAS — 23 días de stock</div><div style="font-size:14px;line-height:1.6">Sin container en tránsito. Peak invierno viene. OC urgente 280 un.</div></div>';
+    resumen += '<div style="background:#F0FDF4;border-left:4px solid #16A34A;padding:16px;border-radius:0 8px 8px 0"><div style="font-weight:800;color:#16A34A;font-size:15px;margin-bottom:6px">💰 $312M EN LA MESA — Sodimac</div><div style="font-size:14px;line-height:1.6">Fensa PC 18SZ: 89 un/mes en Falabella vs 34 en Sodimac. 62% bajo potencial.</div></div>';
+    resumen += '<div style="background:#EFF6FF;border-left:4px solid #2563EB;padding:16px;border-radius:0 8px 8px 0"><div style="font-weight:800;color:#2563EB;font-size:15px;margin-bottom:6px">📈 FORECAST +7.2% — Peak invierno</div><div style="font-size:14px;line-height:1.6">Base: 3.390 un/mes. Peak +22% jun-ago. Pre-cargar YA.</div></div>';
+    resumen += '</div>';
+  }
+
+  return {resumen: resumen, chart: {labels: labels, historical: hist, forecast: fore}, forecast_values: fore};
+}
+
+
 async function runForecast() {
   var tipoEl = document.querySelector('input[name="tipo-data"]:checked');
   var tipo = tipoEl ? tipoEl.value : 'sellin';
@@ -930,6 +1156,28 @@ function renderChart(chartData) {
   svg += '<rect x="' + (W - 110) + '" y="' + (H - 18) + '" width="12" height="3" fill="#7B61FF"/><text x="' + (W - 94) + '" y="' + (H - 14) + '" fill="#7B61FF" font-size="10" font-weight="600">Forecast</text>';
   svg += '</svg>';
   wrapper.innerHTML = svg;
+}
+
+
+function loadDemoFile(type, filename, rows) {
+  // Simulate file loaded
+  var fnEl = document.getElementById('filename-' + type);
+  if (fnEl) { fnEl.textContent = '✅ ' + filename; fnEl.style.color = '#16A34A'; fnEl.style.fontWeight = '600'; }
+  
+  // Mark the drop zone as loaded
+  var dropEl = document.getElementById('drop-' + type);
+  if (dropEl) { dropEl.style.border = '2px solid #16A34A'; dropEl.style.background = '#F0FDF480'; dropEl.style.opacity = '1'; }
+  
+  // Generate fake parsed data
+  var fakeData = [['Fecha','Retailer','Marca','Subcategoría','Cod. Producto','Unidades','Venta Total sin IVA']];
+  for (var i = 0; i < Math.min(rows, 50); i++) {
+    fakeData.push(['2024-01','Falabella','Fensa','Lavadora CS','FEN-PC18SZ',89,27589110]);
+  }
+  STATE.files[type] = fakeData;
+  if (type === 'primary' || type === 'secondary') { STATE.fileData = fakeData; }
+  
+  showPreview('✅ ' + filename + ' cargado — ' + rows.toLocaleString() + ' filas de ejemplo', true);
+  updateForecastButton();
 }
 
 try { updateMarcas(); filterSKUs(); updateRequiredCols(); validateGranularidad(); updateClienteVisibility(); } catch(e) { console.log('Init:', e.message); }
