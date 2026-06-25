@@ -91,6 +91,22 @@ nav {
   margin: 0 auto;
 }
 
+.hero-cta {
+  font-family: 'Lato', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--dk);
+  margin-top: 20px;
+}
+
+.hero-greeting {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 18px;
+  font-style: italic;
+  color: var(--violet);
+  margin-bottom: 16px;
+}
+
 .hero-date {
   font-family: 'Lato', sans-serif;
   font-size: 11px;
@@ -201,6 +217,25 @@ nav {
 .m-card-title.sky  { color: var(--red); }
 .m-card-sub { font-size: 12px; color: var(--text2); font-weight: 300; line-height: 1.45; }
 
+.does-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.does-item {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px 22px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+.does-icon { font-size: 24px; flex-shrink: 0; }
+.does-text { font-size: 14px; color: var(--text2); line-height: 1.5; font-weight: 300; }
+.does-text strong { color: var(--dk); font-weight: 700; display: block; margin-bottom: 2px; }
+@media (max-width:680px){ .does-grid { grid-template-columns: 1fr; } }
+
 .alt-card {
   border: 1.5px solid var(--violet);
   border-radius: 8px;
@@ -226,7 +261,26 @@ nav {
   .section { padding: 32px 20px; }
   .matrix-wrap { display: none; }
   .matrix-mobile { display: block; }
-  .alt-card { padding: 20px; }
+  .does-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.does-item {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px 22px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+.does-icon { font-size: 24px; flex-shrink: 0; }
+.does-text { font-size: 14px; color: var(--text2); line-height: 1.5; font-weight: 300; }
+.does-text strong { color: var(--dk); font-weight: 700; display: block; margin-bottom: 2px; }
+@media (max-width:680px){ .does-grid { grid-template-columns: 1fr; } }
+
+.alt-card { padding: 20px; }
   .foot { padding: 16px 20px; }
 }
 </style>
@@ -240,14 +294,31 @@ nav {
   </a>
   <ul class="nav-links">
     <li><a href="#" class="active">Inicio</a></li>
-    <li><a href="demo.html">Demo</a></li>
   </ul>
 </div></nav>
 
 <div class="hero">
   <div class="hero-date">Julio 2026</div>
-  <h1>Tu data ya existe.<br>Esta app la junta, la cruza con <span class="highlight">AI</span><br>y la hace conversar en tiempo real.</h1>
-  <p>Sell Out · Sell In · Inv. Retail · Inv. Distrib. · GfK — cruzados en tiempo real.</p>
+  <h1>Hola Martín,<br>creamos una app que cruza la data que ya tienes y la hace <span class="highlight">conversar</span>.</h1>
+  <p>Sell Out · Sell In · Inv. Retail · Inv. Distrib. · GfK — cruzados con AI en tiempo real.</p>
+  <div class="does-grid" style="margin-top:40px;text-align:left">
+    <div class="does-item">
+      <div class="does-icon">📈</div>
+      <div class="does-text"><strong>Proyecta el forecast</strong> y mide tu accuracy en el tiempo</div>
+    </div>
+    <div class="does-item">
+      <div class="does-icon">🚨</div>
+      <div class="does-text"><strong>Detecta riesgos</strong> antes de que cuesten plata</div>
+    </div>
+    <div class="does-item">
+      <div class="does-icon">⚙️</div>
+      <div class="does-text"><strong>Optimiza recursos</strong> — inventario, caja y despachos</div>
+    </div>
+    <div class="does-item">
+      <div class="does-icon">🎯</div>
+      <div class="does-text"><strong>Entrega acciones</strong> concretas para llegar al target</div>
+    </div>
+  </div>
 </div>
 
 <div class="section" style="padding-top:0;">
