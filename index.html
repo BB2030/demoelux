@@ -3,609 +3,323 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Electrolux Chile · Informe Competitividad LCS · Julio 2026</title>
+<title>Electrolux Chile · Inteligencia Competitiva</title>
 <style>
-  :root {
-    --navy: #0A1628;
-    --blue: #1A3A6B;
-    --elux: #0082C8;
-    --elux-light: #E6F4FB;
-    --accent: #FF6B35;
-    --gray-100: #F7F8FA;
-    --gray-200: #E8EBF0;
-    --gray-400: #9BA3B0;
-    --gray-700: #3D4554;
-    --white: #FFFFFF;
-    --danger: #D93025;
-    --ok: #1A7A3A;
-    --warn: #B45309;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--navy);
-    color: var(--white);
-    min-height: 100vh;
-  }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#F0F2F5;color:#0D2145;min-height:100vh}
+a{color:inherit;text-decoration:none}
 
-  /* HEADER */
-  .header {
-    background: var(--navy);
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-    padding: 18px 48px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .header-left { display: flex; align-items: center; gap: 16px; }
-  .elux-badge {
-    background: var(--elux);
-    color: var(--white);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    padding: 4px 10px;
-    border-radius: 3px;
-    text-transform: uppercase;
-  }
-  .header-title {
-    font-size: 14px;
-    color: rgba(255,255,255,0.6);
-    font-weight: 400;
-  }
-  .demo-pill {
-    background: rgba(255,107,53,0.15);
-    border: 1px solid rgba(255,107,53,0.4);
-    color: #FF8C5A;
-    font-size: 11px;
-    font-weight: 600;
-    padding: 4px 12px;
-    border-radius: 20px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
+/* HEADER — navy Electrolux exacto */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 40px;background:#0D2145;border-bottom:none}
+.hdr-l{display:flex;align-items:center;gap:14px}
+.logo{font-size:14px;font-weight:700;color:#fff;letter-spacing:0.04em}
+.logo span{color:#4AB8F0}
+.sep{color:rgba(255,255,255,0.25);font-size:16px}
+.hdr-sub{font-size:12px;color:rgba(255,255,255,0.55)}
+.demo-tag{font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;background:rgba(74,184,240,0.2);border:1px solid rgba(74,184,240,0.4);color:#4AB8F0;padding:3px 10px;border-radius:20px}
 
-  /* HERO */
-  .hero {
-    padding: 64px 48px 48px;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  .hero-eyebrow {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--elux);
-    margin-bottom: 16px;
-  }
-  .hero-title {
-    font-size: 42px;
-    font-weight: 700;
-    line-height: 1.15;
-    color: var(--white);
-    margin-bottom: 16px;
-    max-width: 680px;
-  }
-  .hero-title span { color: var(--elux); }
-  .hero-sub {
-    font-size: 16px;
-    color: rgba(255,255,255,0.55);
-    line-height: 1.6;
-    max-width: 560px;
-    margin-bottom: 40px;
-  }
-  .hero-meta {
-    display: flex;
-    gap: 32px;
-    flex-wrap: wrap;
-    padding-top: 32px;
-    border-top: 1px solid rgba(255,255,255,0.08);
-  }
-  .meta-item { display: flex; flex-direction: column; gap: 4px; }
-  .meta-label { font-size: 11px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.1em; }
-  .meta-value { font-size: 15px; font-weight: 600; color: var(--white); }
+/* CATEGORY TABS — navy más claro */
+.cats{display:flex;align-items:center;gap:0;padding:0 40px;background:#132D5A;overflow-x:auto}
+.cat-tab{padding:11px 18px;font-size:12px;font-weight:500;color:rgba(255,255,255,0.45);border-bottom:2px solid transparent;white-space:nowrap;cursor:default;transition:color 0.15s}
+.cat-tab.active{color:#fff;border-bottom-color:#4AB8F0}
+.cat-tab.soon::after{content:'Próx';font-size:9px;font-weight:700;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.3);padding:1px 5px;border-radius:3px;margin-left:6px}
 
-  /* DEMO NOTICE */
-  .demo-notice {
-    margin: 0 48px 40px;
-    max-width: 1200px;
-    margin-left: auto;
-    margin-right: auto;
-    background: rgba(255,107,53,0.08);
-    border: 1px solid rgba(255,107,53,0.25);
-    border-radius: 8px;
-    padding: 16px 24px;
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-  }
-  .notice-icon {
-    font-size: 18px;
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
-  .notice-text { font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.6; }
-  .notice-text strong { color: #FF8C5A; }
+/* HERO — blanco */
+.hero{padding:36px 40px 28px;background:#fff;border-bottom:1px solid #DDE3EC}
+.hero-top{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:24px}
+.hero-eyebrow{font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#4AB8F0;margin-bottom:10px}
+.hero-title{font-size:26px;font-weight:700;line-height:1.2;color:#0D2145;margin-bottom:8px}
+.hero-desc{font-size:13px;color:#6A7D99;line-height:1.6;max-width:480px}
+.hero-meta{display:flex;gap:24px;flex-wrap:wrap}
+.meta-i{display:flex;flex-direction:column;gap:3px}
+.meta-l{font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:#9BABBE}
+.meta-v{font-size:14px;font-weight:600;color:#0D2145}
 
-  /* KPI ROW */
-  .kpi-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 1px;
-    background: rgba(255,255,255,0.06);
-    border-top: 1px solid rgba(255,255,255,0.06);
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    margin-bottom: 48px;
-  }
-  .kpi {
-    background: var(--navy);
-    padding: 28px 32px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .kpi-n { font-size: 36px; font-weight: 700; line-height: 1; }
-  .kpi-n.danger { color: var(--danger); }
-  .kpi-n.warn { color: #F59E0B; }
-  .kpi-n.ok { color: #34D399; }
-  .kpi-n.blue { color: var(--elux); }
-  .kpi-label { font-size: 12px; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.08em; }
-  .kpi-sub { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 2px; }
+/* NOTICE */
+.notice{margin:16px 40px;background:#EBF5FC;border:1px solid #BDD9EE;border-left:3px solid #0D2145;border-radius:0 4px 4px 0;padding:10px 16px;font-size:12px;color:#3A5470;line-height:1.6}
+.notice strong{color:#0D2145}
 
-  /* SECTIONS */
-  .section {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 48px 56px;
-  }
-  .section-header {
-    display: flex;
-    align-items: baseline;
-    gap: 12px;
-    margin-bottom: 24px;
-    padding-bottom: 14px;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-  }
-  .section-num {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--elux);
-    letter-spacing: 0.1em;
-    opacity: 0.7;
-  }
-  .section-title { font-size: 18px; font-weight: 600; color: var(--white); }
-  .section-date { font-size: 12px; color: rgba(255,255,255,0.3); margin-left: auto; }
+/* KPI STRIP — blanco con borde */
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);background:#fff;border-top:1px solid #DDE3EC;border-bottom:3px solid #0D2145}
+.kpi{padding:18px 22px;border-right:1px solid #DDE3EC}
+.kpi:last-child{border-right:none}
+.kpi-n{font-size:26px;font-weight:800;line-height:1;margin-bottom:4px}
+.kpi-n.r{color:#C0392B}
+.kpi-n.y{color:#B45309}
+.kpi-n.g{color:#1A6B3A}
+.kpi-n.b{color:#0D2145}
+.kpi-l{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:#6A7D99}
+.kpi-s{font-size:10px;color:#9BABBE;margin-top:3px}
 
-  /* TOP 10 */
-  .top10 { display: flex; flex-direction: column; gap: 2px; }
-  .accion {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 6px;
-    padding: 16px 20px;
-    display: grid;
-    grid-template-columns: 32px 1fr auto;
-    gap: 16px;
-    align-items: start;
-    transition: background 0.15s;
-  }
-  .accion:hover { background: rgba(255,255,255,0.06); }
-  .accion-num {
-    font-size: 22px;
-    font-weight: 800;
-    line-height: 1;
-    color: rgba(255,255,255,0.12);
-    padding-top: 2px;
-  }
-  .accion.p1 .accion-num { color: var(--danger); }
-  .accion.p2 .accion-num { color: var(--danger); }
-  .accion.p3 .accion-num { color: #F59E0B; }
-  .accion-body { display: flex; flex-direction: column; gap: 5px; }
-  .accion-title { font-size: 14px; font-weight: 600; color: var(--white); line-height: 1.3; }
-  .accion-sku { font-size: 11px; color: rgba(255,255,255,0.35); font-family: monospace; }
-  .accion-detail { font-size: 12px; color: rgba(255,255,255,0.5); line-height: 1.5; margin-top: 2px; }
-  .accion-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
-  .tag {
-    font-size: 10px;
-    font-weight: 600;
-    padding: 2px 8px;
-    border-radius: 10px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-  .tag-danger { background: rgba(217,48,37,0.15); color: #FF6B6B; border: 1px solid rgba(217,48,37,0.3); }
-  .tag-warn { background: rgba(245,158,11,0.12); color: #FBB040; border: 1px solid rgba(245,158,11,0.25); }
-  .tag-ok { background: rgba(52,211,153,0.1); color: #34D399; border: 1px solid rgba(52,211,153,0.2); }
-  .tag-blue { background: rgba(0,130,200,0.12); color: #4BB3E8; border: 1px solid rgba(0,130,200,0.25); }
-  .accion-when {
-    font-size: 11px;
-    font-weight: 600;
-    white-space: nowrap;
-    padding-top: 3px;
-    color: rgba(255,255,255,0.3);
-  }
-  .accion.p1 .accion-when, .accion.p2 .accion-when { color: var(--danger); }
-  .accion.p3 .accion-when { color: #F59E0B; }
+/* CONTENT */
+.content{display:grid;grid-template-columns:1fr 320px;min-height:calc(100vh - 280px)}
+.main{padding:28px 40px;border-right:1px solid #DDE3EC;background:#fff}
+.side{padding:20px 24px;background:#F0F2F5}
 
-  /* EXCEL DOWNLOAD */
-  .downloads {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 16px;
-  }
-  .download-card {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 8px;
-    padding: 20px 24px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    text-decoration: none;
-    transition: background 0.15s, border-color 0.15s;
-  }
-  .download-card:hover {
-    background: rgba(0,130,200,0.08);
-    border-color: rgba(0,130,200,0.3);
-  }
-  .dl-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    flex-shrink: 0;
-  }
-  .dl-icon.green { background: rgba(26,122,58,0.2); }
-  .dl-icon.blue { background: rgba(0,130,200,0.15); }
-  .dl-body { display: flex; flex-direction: column; gap: 3px; }
-  .dl-name { font-size: 14px; font-weight: 600; color: var(--white); }
-  .dl-desc { font-size: 12px; color: rgba(255,255,255,0.4); }
-  .dl-size { font-size: 11px; color: rgba(255,255,255,0.25); margin-top: 2px; }
+/* SECTION */
+.sec-hdr{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid #0D2145}
+.sec-hdr h2{font-size:13px;font-weight:700;color:#0D2145;text-transform:uppercase;letter-spacing:0.06em}
+.sec-num{font-size:10px;font-weight:700;color:#4AB8F0;letter-spacing:0.1em}
 
-  /* DEMO LINK */
-  .demo-link-section {
-    background: rgba(0,130,200,0.06);
-    border-top: 1px solid rgba(0,130,200,0.15);
-    padding: 32px 48px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 24px;
-    flex-wrap: wrap;
-  }
-  .demo-link-text { max-width: 500px; }
-  .demo-link-title { font-size: 16px; font-weight: 600; color: var(--white); margin-bottom: 6px; }
-  .demo-link-sub { font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.5; }
-  .btn-demo {
-    background: var(--elux);
-    color: var(--white);
-    font-size: 14px;
-    font-weight: 600;
-    padding: 12px 28px;
-    border-radius: 6px;
-    text-decoration: none;
-    white-space: nowrap;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    transition: background 0.15s;
-  }
-  .btn-demo:hover { background: #006BA8; }
-  .btn-demo svg { width: 16px; height: 16px; }
+/* TOP 10 */
+.accion{display:grid;grid-template-columns:28px 1fr 72px;gap:12px;align-items:start;padding:13px 16px;border-radius:4px;border:1px solid #DDE3EC;border-left:3px solid #DDE3EC;margin-bottom:4px;background:#fff;transition:border-left-color 0.12s,background 0.12s}
+.accion:hover{background:#F7F9FC;border-left-color:#4AB8F0}
+.a1{border-left-color:#C0392B}
+.a2{border-left-color:#C0392B}
+.a3{border-left-color:#B45309}
+.a4{border-left-color:#B45309}
+.a-num{font-size:18px;font-weight:800;color:#DDE3EC;line-height:1;padding-top:2px}
+.a1 .a-num,.a2 .a-num{color:#C0392B}
+.a3 .a-num,.a4 .a-num{color:#B45309}
+.a-body{display:flex;flex-direction:column;gap:4px}
+.a-title{font-size:13px;font-weight:600;color:#0D2145;line-height:1.3}
+.a-title a{color:#0D2145;text-decoration:none;border-bottom:1px solid #BDD9EE}
+.a-title a:hover{color:#132D5A;border-bottom-color:#0D2145}
+.a-sku{font-size:10px;color:#9BABBE;font-family:monospace}
+.a-detail{font-size:11px;color:#6A7D99;line-height:1.5;margin-top:2px}
+.a-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px}
+.tag{font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;text-transform:uppercase;letter-spacing:0.05em}
+.tr{background:#FDECEA;color:#C0392B;border:1px solid #F5C0BB}
+.ty{background:#FEF3E2;color:#B45309;border:1px solid #F5D99A}
+.tg{background:#E8F5EE;color:#1A6B3A;border:1px solid #A8D5B8}
+.tb{background:#EBF5FC;color:#132D5A;border:1px solid #BDD9EE}
+.a-when{font-size:10px;font-weight:700;text-align:right;padding-top:3px;color:#9BABBE}
+.a1 .a-when,.a2 .a-when{color:#C0392B}
+.a3 .a-when,.a4 .a-when{color:#B45309}
 
-  /* FOOTER */
-  footer {
-    border-top: 1px solid rgba(255,255,255,0.06);
-    padding: 24px 48px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-  .footer-left { font-size: 12px; color: rgba(255,255,255,0.2); }
-  .footer-right { font-size: 12px; color: rgba(255,255,255,0.15); }
+/* SIDEBAR */
+.dl-card{display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:4px;border:1px solid #DDE3EC;margin-bottom:8px;background:#fff;transition:border-color 0.12s}
+.dl-card:hover{border-color:#0D2145}
+.dl-icon{width:36px;height:36px;border-radius:4px;background:#0D2145;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.dl-name{font-size:12px;font-weight:600;color:#0D2145;margin-bottom:2px}
+.dl-desc{font-size:10px;color:#6A7D99}
 
-  @media (max-width: 700px) {
-    .header, .hero, .section, .demo-link-section, footer { padding-left: 20px; padding-right: 20px; }
-    .hero-title { font-size: 28px; }
-    .demo-notice { margin-left: 20px; margin-right: 20px; }
-    .accion { grid-template-columns: 28px 1fr; }
-    .accion-when { display: none; }
-  }
+.insight-card{background:#fff;border:1px solid #DDE3EC;border-radius:4px;padding:13px 16px;margin-bottom:6px}
+.insight-tag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#132D5A;margin-bottom:5px}
+.insight-text{font-size:11px;color:#6A7D99;line-height:1.55}
+.insight-text strong{color:#0D2145}
+
+.btn-demo{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border-radius:4px;background:#0D2145;color:#fff;font-size:13px;font-weight:600;margin-top:14px;transition:background 0.15s}
+.btn-demo:hover{background:#132D5A}
+
+/* FOOTER */
+footer{padding:14px 40px;background:#0D2145;display:flex;justify-content:space-between;align-items:center}
+footer span{font-size:11px;color:rgba(255,255,255,0.35)}
+
+@media(max-width:900px){
+  .kpis{grid-template-columns:repeat(3,1fr)}
+  .kpi:nth-child(3){border-right:none}
+  .content{grid-template-columns:1fr}
+  .side{border-top:1px solid #DDE3EC}
+  .hdr,.hero,.main,.side,.notice{padding-left:20px;padding-right:20px}
+  .cats{padding:0 20px}
+}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<header class="header">
-  <div class="header-left">
-    <span class="elux-badge">Electrolux Group Chile</span>
-    <span class="header-title">Inteligencia Competitiva · LCS</span>
+<header class="hdr">
+  <div class="hdr-l">
+    <div class="logo">ELECTROLUX<span>.</span>CL</div>
+    <span class="sep">·</span>
+    <span class="hdr-sub">Inteligencia Competitiva Online</span>
   </div>
-  <span class="demo-pill">⚡ Demo</span>
+  <span class="demo-tag">Demo</span>
 </header>
 
-<!-- HERO -->
+<nav class="cats">
+  <div class="cat-tab active">Lavadora Carga Superior</div>
+  <div class="cat-tab soon">Lavadora Carga Frontal</div>
+  <div class="cat-tab soon">Refrigeradores</div>
+  <div class="cat-tab soon">Cocinas</div>
+  <div class="cat-tab soon">Hornos</div>
+  <div class="cat-tab soon">Microondas</div>
+  <div class="cat-tab soon">Campanas</div>
+  <div class="cat-tab soon">Secadoras</div>
+</nav>
+
 <div class="hero">
-  <div class="hero-eyebrow">Lavadora Carga Superior · Chile · 11 retailers</div>
-  <h1 class="hero-title">Informe de competitividad <span>online</span><br>semana del 3 de julio 2026</h1>
-  <p class="hero-sub">Precios, disponibilidad de stock y cobertura de canal del portfolio Mademsa + Fensa vs el mercado completo. Datos extraídos de fuentes públicas.</p>
-  <div class="hero-meta">
-    <div class="meta-item">
-      <span class="meta-label">Retailers monitoreados</span>
-      <span class="meta-value">11 canales</span>
+  <div class="hero-top">
+    <div>
+      <div class="hero-eyebrow">Lavadora Carga Superior · Chile · 11 retailers</div>
+      <h1 class="hero-title">Informe semanal<br>3 julio 2026</h1>
+      <p class="hero-desc">Precios, stock y cobertura de canal del portfolio Mademsa + Fensa vs el mercado. Datos extraídos de fuentes públicas.</p>
     </div>
-    <div class="meta-item">
-      <span class="meta-label">SKUs analizados</span>
-      <span class="meta-value">28 SKUs</span>
-    </div>
-    <div class="meta-item">
-      <span class="meta-label">Marcas incluidas</span>
-      <span class="meta-value">7 marcas</span>
-    </div>
-    <div class="meta-item">
-      <span class="meta-label">Fecha de extracción</span>
-      <span class="meta-value">3 Jul 2026</span>
-    </div>
-    <div class="meta-item">
-      <span class="meta-label">Categoría</span>
-      <span class="meta-value">Lav. Carga Superior</span>
+    <div class="hero-meta">
+      <div class="meta-i"><span class="meta-l">Retailers</span><span class="meta-v">11 canales</span></div>
+      <div class="meta-i"><span class="meta-l">SKUs</span><span class="meta-v">28</span></div>
+      <div class="meta-i"><span class="meta-l">Marcas</span><span class="meta-v">7</span></div>
+      <div class="meta-i"><span class="meta-l">Extracción</span><span class="meta-v">3 Jul 2026</span></div>
     </div>
   </div>
 </div>
 
-<!-- DEMO NOTICE -->
-<div style="max-width:1200px;margin:0 auto;padding:0 48px 32px;">
-<div class="demo-notice">
-  <span class="notice-icon">⚠️</span>
-  <div class="notice-text">
-    <strong>Esto es una demostración.</strong> Los datos de precios y disponibilidad provienen de búsquedas públicas en Falabella, Ripley, Sodimac, Paris, Tottus, Lider, AbcDin, Hites y MercadoLibre al 3 de julio de 2026. En producción, este informe se genera automáticamente cada lunes cruzando Sell Out, Sell In, Inventario Retail, Inventario Distribuidor y GfK en tiempo real con los datos propios de Electrolux. El stock debe verificarse haciendo click en cada celda del archivo Excel adjunto — el estado puede cambiar intraday.
-  </div>
-</div>
+<div class="notice">
+  <strong>Demo.</strong> Datos de precios y disponibilidad de Falabella, Ripley, Sodimac, Paris, Tottus, Lider, AbcDin, Hites y MercadoLibre al 3 Jul 2026. En producción este informe se genera cada lunes cruzando Sell Out × Sell In × Inventario Retail × Inventario Distribuidor × GfK con datos propios de Electrolux. Stock se verifica haciendo click en cada celda del Excel adjunto.
 </div>
 
-<!-- KPIs -->
-<div class="kpi-row">
-  <div class="kpi">
-    <span class="kpi-n danger">1</span>
-    <span class="kpi-label">Precio corrupto detectado</span>
-    <span class="kpi-sub">Fensa 18 Negra en Hites: $469K vs $289K real</span>
-  </div>
-  <div class="kpi">
-    <span class="kpi-n danger">2</span>
-    <span class="kpi-label">SKUs Elux a verificar stock</span>
-    <span class="kpi-sub">Fensa 14 SZ · Mademsa 12 BZG en Falabella</span>
-  </div>
-  <div class="kpi">
-    <span class="kpi-n warn">6</span>
-    <span class="kpi-label">Oportunidades de canal</span>
-    <span class="kpi-sub">Competencia ausente en esos retailers</span>
-  </div>
-  <div class="kpi">
-    <span class="kpi-n blue">9</span>
-    <span class="kpi-label">Canales activos Mademsa 20kg</span>
-    <span class="kpi-sub">Mejor distribución del portfolio LCS</span>
-  </div>
-  <div class="kpi">
-    <span class="kpi-n ok">0</span>
-    <span class="kpi-label">Competidores no-inv 14kg</span>
-    <span class="kpi-sub">LG y Samsung solo tienen inverter a $310K+</span>
-  </div>
-  <div class="kpi">
-    <span class="kpi-n warn">$160K</span>
-    <span class="kpi-label">Gap precio Fensa 21kg vs LG</span>
-    <span class="kpi-sub">$299K vs $459K — sin reviews que lo soporten</span>
-  </div>
+<div class="kpis">
+  <div class="kpi"><div class="kpi-n r">1</div><div class="kpi-l">Precio corrupto</div><div class="kpi-s">Fensa 18 Negra en Hites $469K vs $289K real</div></div>
+  <div class="kpi"><div class="kpi-n r">2</div><div class="kpi-l">SKUs a verificar stock</div><div class="kpi-s">Fensa 14 SZ · Mademsa 12 BZG en Falabella</div></div>
+  <div class="kpi"><div class="kpi-n y">6</div><div class="kpi-l">Oportunidades de canal</div><div class="kpi-s">Competencia ausente en esos retailers</div></div>
+  <div class="kpi"><div class="kpi-n b">9</div><div class="kpi-l">Canales Mademsa 20kg</div><div class="kpi-s">Mejor distribución del portfolio LCS</div></div>
+  <div class="kpi"><div class="kpi-n g">0</div><div class="kpi-l">Competidores no-inv 14kg</div><div class="kpi-s">LG/Samsung solo inverter a $310K+</div></div>
+  <div class="kpi"><div class="kpi-n y">$160K</div><div class="kpi-l">Gap Fensa 21kg vs LG</div><div class="kpi-s">$299K vs $459K — sin reviews</div></div>
 </div>
 
-<!-- TOP 10 ACCIONABLES -->
-<div class="section">
-  <div class="section-header">
-    <span class="section-num">01</span>
-    <span class="section-title">Top 10 accionables — de más a menos urgente</span>
-    <span class="section-date">3 Jul 2026</span>
-  </div>
-  <div class="top10">
-
-    <div class="accion p1">
-      <div class="accion-num">1</div>
-      <div class="accion-body">
-        <div class="accion-title">Corregir precio corrupto Fensa 18 Negra en Hites</div>
-        <div class="accion-sku">Fensa Premium Care 18 Negra · SKU Hites · hites.com/lavadoras</div>
-        <div class="accion-detail">Aparece listada a $469.990 cuando el precio real es $289.990. Cada comprador que busca 18kg en Hites ve ese precio y abandona. Dato sucio activamente dañino — la marca pierde ventas sin saberlo.</div>
-        <div class="accion-tags">
-          <span class="tag tag-danger">Precio corrupto</span>
-          <span class="tag tag-blue">Hites.com</span>
-          <span class="tag tag-danger">Pérdida silenciosa</span>
-        </div>
-      </div>
-      <div class="accion-when">HOY</div>
+<div class="content">
+  <div class="main">
+    <div class="sec-hdr">
+      <span class="sec-num">01</span>
+      <h2>Top 10 accionables — de más a menos urgente</h2>
     </div>
 
-    <div class="accion p1">
-      <div class="accion-num">2</div>
-      <div class="accion-body">
-        <div class="accion-title">Verificar y reponer stock Fensa 14 SZ en Falabella</div>
-        <div class="accion-sku">Fensa 14 SZ Premium Care · Falabella cod. 16765749</div>
-        <div class="accion-detail">Antes estaba agotado. Es el único no-inverter 14kg del mercado completo. LG y Samsung solo tienen inverter en 14kg a $310K–$340K. Gap de $50–80K que Fensa no está aprovechando. Cada día sin stock = comprador va a LG.</div>
-        <div class="accion-tags">
-          <span class="tag tag-danger">Verificar stock ahora</span>
-          <span class="tag tag-blue">Falabella</span>
-          <span class="tag tag-ok">Único no-inv 14kg</span>
-        </div>
+    <div class="accion a1">
+      <div class="a-num">1</div>
+      <div class="a-body">
+        <div class="a-title"><a href="https://www.hites.com/electro-hogar/lavado-y-secado/lavadoras/" target="_blank">Corregir precio corrupto Fensa 18 Negra en Hites ↗</a></div>
+        <div class="a-sku">Fensa Premium Care 18 Negra · hites.com</div>
+        <div class="a-detail">Aparece a $469.990, precio real $289.990. El comprador abandona creyendo que es cara. Pérdida silenciosa sin que nadie lo detecte.</div>
+        <div class="a-tags"><span class="tag tr">Precio corrupto</span><span class="tag tb">Hites</span></div>
       </div>
-      <div class="accion-when">HOY</div>
+      <div class="a-when">HOY</div>
     </div>
 
-    <div class="accion p1">
-      <div class="accion-num">3</div>
-      <div class="accion-body">
-        <div class="accion-title">Retirar o bajar precio Fensa 9,5 SZ a máx $189.990 en Falabella</div>
-        <div class="accion-sku">Fensa 9,5 SZ Premium Care · Falabella cod. 16392302</div>
-        <div class="accion-detail">$239.990 con 0 reviews. Mademsa 9,5 vale $149K en Tottus. Hisense 10kg vale $159K en Ripley. La Fensa canibaliza a Mademsa y pierde contra Hisense sin ningún diferenciador visible. Como está, daña al portafolio.</div>
-        <div class="accion-tags">
-          <span class="tag tag-danger">Canibalización interna</span>
-          <span class="tag tag-blue">Falabella</span>
-          <span class="tag tag-warn">0 reviews</span>
-        </div>
+    <div class="accion a1">
+      <div class="a-num">2</div>
+      <div class="a-body">
+        <div class="a-title"><a href="https://www.falabella.com/falabella-cl/product/16765749/Lavadora-Carga-Superior-14-Kg-Premium-Care-14-SZ-Silver-Fensa/16765749" target="_blank">Verificar y reponer stock Fensa 14 SZ en Falabella ↗</a></div>
+        <div class="a-sku">Fensa 14 SZ · Falabella cod. 16765749</div>
+        <div class="a-detail">Antes agotado. Único no-inverter 14kg del mercado. LG/Samsung cobran $50–80K más con inverter. Cada día sin stock el comprador va a LG.</div>
+        <div class="a-tags"><span class="tag tr">Verificar ahora</span><span class="tag tg">Único no-inv 14kg</span><span class="tag tb">Falabella</span></div>
       </div>
-      <div class="accion-when">ESTA SEMANA</div>
+      <div class="a-when">HOY</div>
     </div>
 
-    <div class="accion p3">
-      <div class="accion-num">4</div>
-      <div class="accion-body">
-        <div class="accion-title">Activar programa reviews Fensa 21kg en Falabella</div>
-        <div class="accion-sku">Fensa 21kg Premium Care · Falabella cod. 17292736</div>
-        <div class="accion-detail">$299.990 vs LG $459.990 — gap de $160K. Fensa tiene 0 reviews, LG tiene 7. El comprador digital elige LG aunque pague $160K más. Sin reviews, el stock no convierte. Programa email post-compra + cupón accesorios. Meta: 20 reviews en 30 días.</div>
-        <div class="accion-tags">
-          <span class="tag tag-warn">0 reviews</span>
-          <span class="tag tag-blue">Falabella</span>
-          <span class="tag tag-ok">$160K más barata que LG</span>
-        </div>
+    <div class="accion a3">
+      <div class="a-num">3</div>
+      <div class="a-body">
+        <div class="a-title"><a href="https://www.falabella.com/falabella-cl/product/16392302/Lavadora-Automatica-Superior-9.5-Kg-Fensa/16392302" target="_blank">Retirar o bajar Fensa 9,5 SZ a máx $189.990 ↗</a></div>
+        <div class="a-sku">Fensa 9,5 SZ · Falabella cod. 16392302</div>
+        <div class="a-detail">$239.990 con 0 reviews. Mademsa 9,5 a $149K en Tottus. Hisense 10kg a $159K en Ripley. Canibaliza al Grupo sin vender.</div>
+        <div class="a-tags"><span class="tag tr">Canibalización</span><span class="tag ty">0 reviews</span><span class="tag tb">Falabella</span></div>
       </div>
-      <div class="accion-when">ESTA SEMANA</div>
+      <div class="a-when">ESTA SEMANA</div>
     </div>
 
-    <div class="accion p3">
-      <div class="accion-num">5</div>
-      <div class="accion-body">
-        <div class="accion-title">Ingresar Mademsa 21 Onix a Falabella y Ripley</div>
-        <div class="accion-sku">Mademsa 21 Onix · Solo en Tottus + AbcDin + TiendaMademsa</div>
-        <div class="accion-detail">El SKU de mayor capacidad de Mademsa CS no está en los dos canales de mayor volumen. LG 21kg ($459K) y Samsung 21kg ($439K) sí están en Falabella. Coordinar ingreso con buyers Falabella y Ripley — el producto existe, falta el listing.</div>
-        <div class="accion-tags">
-          <span class="tag tag-warn">Sin Falabella ni Ripley</span>
-          <span class="tag tag-ok">Oportunidad canal</span>
-        </div>
+    <div class="accion a3">
+      <div class="a-num">4</div>
+      <div class="a-body">
+        <div class="a-title"><a href="https://www.falabella.com/falabella-cl/product/17292736/Lavadora-Automatica-Superior-21Kg-PREMIUM-CARE-21-Fensa/17292736" target="_blank">Activar reviews Fensa 21kg en Falabella ↗</a></div>
+        <div class="a-sku">Fensa 21kg Premium Care · Falabella cod. 17292736</div>
+        <div class="a-detail">$299.990 vs LG $459.990 — gap de $160K. Fensa tiene 0 reviews, LG tiene 7. Sin reviews el comprador digital elige LG aunque pague $160K más. Email post-compra + cupón accesorios. Meta: 20 reviews en 30 días.</div>
+        <div class="a-tags"><span class="tag ty">0 reviews</span><span class="tag tg">$160K más barata que LG</span></div>
       </div>
-      <div class="accion-when">ESTA SEMANA</div>
+      <div class="a-when">ESTA SEMANA</div>
     </div>
 
     <div class="accion">
-      <div class="accion-num">6</div>
-      <div class="accion-body">
-        <div class="accion-title">Verificar stock tienda física Mademsa 12 BZG en Falabella</div>
-        <div class="accion-sku">Mademsa 12 BZG · Falabella cod. 139094311</div>
-        <div class="accion-detail">Antes sin stock en tienda, solo despacho web. El comprador presencial no lo ve y elige LG 13kg o Samsung 13kg que sí están físicamente. Hisense 13kg en Ripley al mismo precio ($209K) con stock activo. Reponer tienda física.</div>
-        <div class="accion-tags">
-          <span class="tag tag-warn">Solo despacho web</span>
-          <span class="tag tag-blue">Falabella tienda</span>
-          <span class="tag tag-danger">Hisense gana a $209K</span>
-        </div>
+      <div class="a-num">5</div>
+      <div class="a-body">
+        <div class="a-title"><a href="https://www.tiendamademsa.cl/lavadora-carga-superior-mademsa-21-onix/p" target="_blank">Ingresar Mademsa 21 Onix a Falabella y Ripley ↗</a></div>
+        <div class="a-sku">Mademsa 21 Onix · Solo Tottus + AbcDin + TiendaMademsa</div>
+        <div class="a-detail">SKU de mayor capacidad sin listing en los dos canales de mayor volumen. LG 21kg ($459K) y Samsung 21kg ($439K) sí están en Falabella. Producto existe, falta el listing.</div>
+        <div class="a-tags"><span class="tag ty">Sin Falabella ni Ripley</span><span class="tag tg">Oportunidad canal</span></div>
       </div>
-      <div class="accion-when">ESTE MES</div>
+      <div class="a-when">ESTA SEMANA</div>
     </div>
 
     <div class="accion">
-      <div class="accion-num">7</div>
-      <div class="accion-body">
-        <div class="accion-title">Distribuir Fensa 21kg en Ripley y AbcDin</div>
-        <div class="accion-sku">Fensa 21kg Premium Care · Actualmente solo Falabella + TiendaFensa</div>
-        <div class="accion-detail">LG 21kg ($459K) y Samsung 21kg ($439K) no están en Ripley ni AbcDin. Fensa 21kg a $299K puede entrar como el único 21kg disponible en esos canales — ventaja de precio y de primer movedor. Negociar listing con ambos buyers.</div>
-        <div class="accion-tags">
-          <span class="tag tag-ok">LG ausente en Ripley/AbcDin</span>
-          <span class="tag tag-blue">Ripley · AbcDin</span>
-        </div>
+      <div class="a-num">6</div>
+      <div class="a-body">
+        <div class="a-title"><a href="https://www.falabella.com/falabella-cl/product/139094311/Lavadora-Automatica-Mademsa-12Kg-Carga-Superior-Fuzzy-Automatico-12-BZG-Blanca/139094312" target="_blank">Verificar stock tienda física Mademsa 12 BZG Falabella ↗</a></div>
+        <div class="a-sku">Mademsa 12 BZG · Falabella cod. 139094311</div>
+        <div class="a-detail">Antes solo despacho web, sin stock tienda. El comprador presencial no lo ve. Hisense 13kg en Ripley al mismo precio ($209K) con stock activo. Reponer tienda física.</div>
+        <div class="a-tags"><span class="tag ty">Solo despacho web</span><span class="tag tr">Hisense gana $209K</span></div>
       </div>
-      <div class="accion-when">ESTE MES</div>
+      <div class="a-when">ESTE MES</div>
     </div>
 
     <div class="accion">
-      <div class="accion-num">8</div>
-      <div class="accion-body">
-        <div class="accion-title">Posicionar Mademsa 20 SZG como sustituto del 19kg</div>
-        <div class="accion-sku">Mademsa 20 SZG $279K · AbcDin + Hites + MercadoLibre</div>
-        <div class="accion-detail">El Grupo no tiene SKU 19kg. Midea MLS-190 19kg está a $259K en Ripley sin competencia del Grupo. Táctica sin costo: cambiar título y descripción en fichas a "20kg — 1kg más al mismo precio que la competencia de 19kg." No requiere nuevo producto.</div>
-        <div class="accion-tags">
-          <span class="tag tag-ok">Sin costo de implementación</span>
-          <span class="tag tag-warn">Gap 19kg sin cubrir</span>
-        </div>
+      <div class="a-num">7</div>
+      <div class="a-body">
+        <div class="a-title"><a href="https://simple.ripley.cl/electro/lavanderia/lavadoras" target="_blank">Distribuir Fensa 21kg en Ripley y AbcDin ↗</a></div>
+        <div class="a-sku">Fensa 21kg Premium Care · Solo Falabella + TiendaFensa</div>
+        <div class="a-detail">LG 21kg y Samsung 21kg no están en Ripley ni AbcDin. Fensa 21kg a $299K puede entrar como el único 21kg disponible en esos canales. Negociar listing con ambos buyers.</div>
+        <div class="a-tags"><span class="tag tg">LG ausente en Ripley/AbcDin</span><span class="tag tb">Ripley · AbcDin</span></div>
       </div>
-      <div class="accion-when">ESTE MES</div>
+      <div class="a-when">ESTE MES</div>
     </div>
 
     <div class="accion">
-      <div class="accion-num">9</div>
-      <div class="accion-body">
-        <div class="accion-title">Ingresar Mademsa 18 SZG a Ripley</div>
-        <div class="accion-sku">Mademsa 18 SZG $269K · Actualmente: Falabella + AbcDin + TiendaMademsa</div>
-        <div class="accion-detail">LG 18kg ($339K) no está en Ripley. Samsung no tiene 18kg. En Ripley el segmento 18kg está completamente vacío. Mademsa 18 SZG puede entrar como único jugador a $269K — $70K más barata que LG donde LG sí está (Falabella).</div>
-        <div class="accion-tags">
-          <span class="tag tag-ok">Único en Ripley 18kg</span>
-          <span class="tag tag-blue">Ripley</span>
-        </div>
+      <div class="a-num">8</div>
+      <div class="a-body">
+        <div class="a-title"><a href="https://www.abc.cl/lavadora-automatica-mademsa-20-szg-20-kg./26301904.html" target="_blank">Posicionar Mademsa 20 SZG como sustituto del 19kg ↗</a></div>
+        <div class="a-sku">Mademsa 20 SZG $279K · AbcDin + Hites + MercadoLibre</div>
+        <div class="a-detail">Sin SKU 19kg propio. Midea MLS-190 19kg a $259K en Ripley sin competencia del Grupo. Cambiar título/descripción en fichas: "20kg — 1kg más al mismo precio que la competencia 19kg." Sin costo.</div>
+        <div class="a-tags"><span class="tag tg">Sin costo de implementación</span><span class="tag ty">Gap 19kg</span></div>
       </div>
-      <div class="accion-when">ESTE MES</div>
+      <div class="a-when">ESTE MES</div>
     </div>
 
     <div class="accion">
-      <div class="accion-num">10</div>
-      <div class="accion-body">
-        <div class="accion-title">Listar Mademsa 16 Mdwmt16s en Falabella</div>
-        <div class="accion-sku">Mademsa 16 Mdwmt16s $259K · En Hites + AbcDin + TiendaMademsa — NO en Falabella</div>
-        <div class="accion-detail">Es el SKU de 16kg más barato del mercado completo ($259K vs Fensa 16 ZS $281K vs LG $339K) y Falabella no lo tiene listado. El canal de mayor volumen no tiene el precio más competitivo del portafolio. Pedir ingreso urgente a buyer Falabella.</div>
-        <div class="accion-tags">
-          <span class="tag tag-warn">Sin listing en Falabella</span>
-          <span class="tag tag-ok">Precio más bajo del segmento</span>
-        </div>
+      <div class="a-num">9</div>
+      <div class="a-body">
+        <div class="a-title"><a href="https://www.tiendamademsa.cl/lavadora-mademsa-carga-superior-18kg-silver-240085913/p" target="_blank">Ingresar Mademsa 18 SZG a Ripley en exclusiva 45 días ↗</a></div>
+        <div class="a-sku">Mademsa 18 SZG $269K · Falabella + AbcDin + TiendaMademsa</div>
+        <div class="a-detail">LG 18kg no está en Ripley. Samsung no tiene 18kg. Segmento 18kg completamente vacío en Ripley. Proponer exclusividad web 45 días a Ripley a cambio de banner categoría — sin pagar co-marketing completo.</div>
+        <div class="a-tags"><span class="tag tg">Único en Ripley 18kg</span><span class="tag tb">Exclusiva táctica</span></div>
       </div>
-      <div class="accion-when">ESTE MES</div>
+      <div class="a-when">ESTE MES</div>
+    </div>
+
+    <div class="accion">
+      <div class="a-num">10</div>
+      <div class="a-body">
+        <div class="a-title"><a href="https://www.hites.com/lavadora-mademsa-mdwmt16s-16-kilos-10515000197901.html" target="_blank">Listar Mademsa 16 Mdwmt16s en Falabella ↗</a></div>
+        <div class="a-sku">Mademsa 16 Mdwmt16s $259K · Hites + AbcDin + TiendaMademsa — NO en Falabella</div>
+        <div class="a-detail">SKU de 16kg más barato del mercado y el canal de mayor volumen no lo tiene. Fensa 16 ZS sola a $281K no cubre el precio más competitivo. Pedir ingreso a buyer Falabella.</div>
+        <div class="a-tags"><span class="tag ty">Sin listing Falabella</span><span class="tag tg">Precio más bajo 16kg</span></div>
+      </div>
+      <div class="a-when">ESTE MES</div>
     </div>
 
   </div>
-</div>
 
-<!-- DESCARGAS -->
-<div class="section">
-  <div class="section-header">
-    <span class="section-num">02</span>
-    <span class="section-title">Archivos del informe</span>
-  </div>
-  <div class="downloads">
-    <a class="download-card" href="benchmark_elux_LCS_3jul2026.xlsx" download>
-      <div class="dl-icon green">📊</div>
-      <div class="dl-body">
+  <div class="side">
+    <div class="sec-hdr">
+      <span class="sec-num">02</span>
+      <h2>Archivos del informe</h2>
+    </div>
+
+    <a class="dl-card" href="benchmark_elux_LCS_3jul2026.xlsx" download>
+      <div class="dl-icon">📊</div>
+      <div>
         <div class="dl-name">Benchmark competitivo LCS</div>
-        <div class="dl-desc">Precios por SKU · Inverter vs No-inv · Brecha vs mercado · Señales accionables</div>
-        <div class="dl-size">3 hojas · Excel · 3 Jul 2026</div>
+        <div class="dl-desc">Precios · Inverter/No-inv · Brecha vs mercado · 3 hojas</div>
       </div>
     </a>
-    <a class="download-card" href="stock_11retailers_elux_LCS_3jul2026.xlsx" download>
-      <div class="dl-icon green">🗺️</div>
-      <div class="dl-body">
-        <div class="dl-name">Mapa de stock × 11 retailers</div>
-        <div class="dl-desc">Disponibilidad por canal · Links directos a cada producto · Oportunidades y riesgos</div>
-        <div class="dl-size">3 hojas · Excel · 3 Jul 2026</div>
+
+    <a class="dl-card" href="stock_11retailers_elux_LCS_3jul2026.xlsx" download>
+      <div class="dl-icon">🗺️</div>
+      <div>
+        <div class="dl-name">Mapa stock × 11 retailers</div>
+        <div class="dl-desc">Links directos a cada producto · Oportunidades y riesgos</div>
       </div>
+    </a>
+
+
+
+    <a class="btn-demo" href="demo.html">
+      → Abrir demo interactiva
     </a>
   </div>
 </div>
 
-<!-- DEMO LINK -->
-<div class="demo-link-section">
-  <div class="demo-link-text">
-    <div class="demo-link-title">Ver análisis completo de la semana</div>
-    <div class="demo-link-sub">Dashboard interactivo con cruce de Sell Out × Sell In × Inventario Retail × Inventario Distribuidor × GfK — alertas SKU × Retailer con decisión AI y costo de inacción.</div>
-  </div>
-  <a href="demo.html" class="btn-demo">
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M3 8h10M9 4l4 4-4 4"/>
-    </svg>
-    Abrir demo interactiva
-  </a>
-</div>
-
-<!-- FOOTER -->
 <footer>
-  <div class="footer-left">Informe generado el 3 de julio de 2026 · Datos: fuentes públicas online · Para uso interno Electrolux Group Chile</div>
-  <div class="footer-right">Demo — no distribuir</div>
+  <span>3 Jul 2026 · Datos públicos · Uso interno Electrolux Group Chile</span>
+  <span>Demo — no distribuir</span>
 </footer>
 
 </body>
 </html>
-
