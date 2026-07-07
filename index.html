@@ -30,24 +30,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 input[type=file]{display:none}
 
 /* PROGRESS */
-.prog-wrap{background:#0D2145;border-radius:12px;padding:28px 32px;max-width:580px;width:100%;font-family:monospace}
-.prog-title{font-size:12px;font-weight:700;color:#4AB8F0;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em}
-.prog-file{font-size:11px;color:rgba(255,255,255,.35);margin-bottom:20px}
+.prog-wrap{background:#fff;border:2px solid #0D2145;border-radius:12px;padding:32px 36px;max-width:620px;width:100%;font-family:monospace}
+.prog-title{font-size:15px;font-weight:800;color:#0D2145;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em}
+.prog-file{font-size:12px;color:#6A7D99;margin-bottom:24px;font-family:monospace}
 .prog-step{display:flex;flex-direction:column;gap:3px;margin-bottom:12px;opacity:.3;transition:opacity .3s}
 .prog-step.done,.prog-step.cur{opacity:1}
 .step-row{display:flex;align-items:center;gap:10px}
-.sico{width:16px;font-size:12px;flex-shrink:0}
-.step-lbl{font-size:12px;color:rgba(255,255,255,.6)}
-.prog-step.done .step-lbl{color:#34D399}
-.prog-step.cur .step-lbl{color:#4AB8F0;font-weight:700}
-.step-tx{display:none;font-size:10px;padding-left:26px;margin-top:2px}
+.sico{width:24px;font-size:18px;flex-shrink:0}
+.step-lbl{font-size:15px;color:#9BABBE}
+.prog-step.done .step-lbl{color:#1A6B3A;font-weight:600}
+.prog-step.cur .step-lbl{color:#0082C8;font-weight:800;font-size:16px}
+.step-tx{display:none;font-size:13px;padding-left:28px;margin-top:6px}
 .prog-step.done .step-tx,.prog-step.cur .step-tx{display:block}
-.tx-b{color:#F87171;background:rgba(248,113,113,.1);padding:1px 6px;border-radius:2px}
-.tx-a{color:#34D399;background:rgba(52,211,153,.1);padding:1px 6px;border-radius:2px}
-.tx-arr{color:rgba(255,255,255,.25);margin:0 6px}
-.bar-wrap{background:rgba(255,255,255,.08);border-radius:4px;height:4px;margin-top:16px}
-.bar-fill{background:linear-gradient(90deg,#0082C8,#4AB8F0);height:4px;border-radius:4px;transition:width .5s ease;width:0%}
-.bar-lbl{font-size:10px;color:rgba(255,255,255,.25);margin-top:6px;text-align:right}
+.tx-b{color:#C0392B;background:#FCEBEB;padding:3px 10px;border-radius:4px;font-size:12px;font-weight:600}
+.tx-a{color:#1A6B3A;background:#E8F5EE;padding:3px 10px;border-radius:4px;font-size:12px;font-weight:600}
+.tx-arr{color:#9BABBE;margin:0 8px;font-size:14px}
+.bar-wrap{background:#F0F2F5;border-radius:6px;height:10px;margin-top:24px;border:1px solid #DDE3EC}
+.bar-fill{background:linear-gradient(90deg,#0D2145,#0082C8);height:10px;border-radius:6px;transition:width 1.2s ease;width:0%}
+.bar-lbl{font-size:13px;color:#0082C8;font-weight:700;margin-top:8px;text-align:right}
 
 /* RESPUESTAS */
 .body{max-width:880px;margin:0 auto;padding:32px 24px}
@@ -209,42 +209,59 @@ function handleFile(file){
     const text=e.target.result;
     const line0=text.split('\n')[0];
     const sep=(line0.match(/;/g)||[]).length>=(line0.match(/,/g)||[]).length?';':',';
+
+    // Paso 1→2: leer y parsear CSV (1.8s para que se lea)
     setTimeout(()=>{
       Papa.parse(text,{
         header:true,delimiter:sep,skipEmptyLines:true,
         complete(res){
-          step(2,30);
           const raw=res.data;
+
+          // Paso 2: parsear fechas (2s)
           setTimeout(()=>{
-            const rows=raw.map(r=>{
-              const pf=r.period_from_file||r.period||r.Period||Object.values(r)[0];
-              const dt=parseDate(pf);
-              const pg=(r.product_group||'').trim();
-              const uv=r['sales_units fake']||r.units||r.sales_units||Object.values(r).slice(-1)[0];
-              return{
-                _dt:dt,
-                _y:dt?dt.getFullYear():null,
-                _m:dt?dt.getMonth()+1:null,
-                _q:dt?Math.ceil((dt.getMonth()+1)/3):null,
-                _pg:CAT_MAP[pg]||pg,
-                _co:(r.company||'').trim(),
-                _it:(r.item||'').trim(),
-                _u:parseFloat(String(uv).replace(',','.'))||0
-              };
-            }).filter(r=>r._y&&r._y>2000&&r._y<2030);
-            step(3,55);
+            step(2,30);
             setTimeout(()=>{
-              const D=buildData(rows);
-              step(4,80);
+              const rows=raw.map(r=>{
+                const pf=r.period_from_file||r.period||r.Period||Object.values(r)[0];
+                const dt=parseDate(pf);
+                const pg=(r.product_group||'').trim();
+                const uv=r['sales_units fake']||r.units||r.sales_units||Object.values(r).slice(-1)[0];
+                return{
+                  _dt:dt,
+                  _y:dt?dt.getFullYear():null,
+                  _m:dt?dt.getMonth()+1:null,
+                  _q:dt?Math.ceil((dt.getMonth()+1)/3):null,
+                  _pg:CAT_MAP[pg]||pg,
+                  _co:(r.company||'').trim(),
+                  _it:(r.item||'').trim(),
+                  _u:parseFloat(String(uv).replace(',','.'))||0
+                };
+              }).filter(r=>r._y&&r._y>2000&&r._y<2030);
+
+              // Paso 3: homologar categorías (2s)
               setTimeout(()=>{
-                step(5,100);
-                setTimeout(()=>showAnswers(D,file.name,rows.length),400);
-              },300);
-            },200);
+                step(3,55);
+                setTimeout(()=>{
+                  const D=buildData(rows);
+
+                  // Paso 4: calcular KPIs (2s)
+                  setTimeout(()=>{
+                    step(4,80);
+                    setTimeout(()=>{
+
+                      // Paso 5: generar respuestas (1.5s)
+                      step(5,100);
+                      setTimeout(()=>showAnswers(D,file.name,rows.length),1500);
+
+                    },2000);
+                  },2000);
+                },2000);
+              },200);
+            },2000);
           },200);
         }
       });
-    },100);
+    },1800);
   };
   reader.readAsText(file);
 }
@@ -319,18 +336,19 @@ function buildData(rows){
     p7[c]={lider,eluxTop:topElux?{item:topElux[0],units:Math.round(topElux[1])}:{item:'N/A',units:0}};
   });
 
-  // P8 — promedio share 12M
+  // P8 — share mensual real últimos 12 meses
+  const MN=['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
   const p8={};
   CATS.forEach(c=>{
-    const recentRows=rows.filter(r=>r._y>=lastY-1&&r._pg===c);
+    const recentRows=rows.filter(r=>r._pg===c);
     const months=[...new Set(recentRows.map(r=>r._y*100+r._m))].sort().slice(-12);
-    const shares=months.map(ym=>{
+    const result=months.map(ym=>{
       const y=Math.floor(ym/100),m=ym%100;
       const tot=recentRows.filter(r=>r._y===y&&r._m===m).reduce((a,b)=>a+b._u,0);
       const elux=recentRows.filter(r=>r._y===y&&r._m===m&&r._co==='ELECTROLUX GRP.').reduce((a,b)=>a+b._u,0);
-      return tot>0?elux/tot*100:0;
+      return{period:`${MN[m]} ${y}`,share:tot>0?(elux/tot*100).toFixed(1):0};
     });
-    p8[c]=(shares.reduce((a,b)=>a+b,0)/shares.length).toFixed(1);
+    p8[c]={rows:result};
   });
 
   // P9 — top SKUs
@@ -484,12 +502,12 @@ ${['REFRIGERACIÓN','LAVADO','COCINAS'].map(c=>`<tr><td>${c}</td><td><strong>${D
 <div class="q-body"><table><thead><tr><th>Categoría</th><th>Amenaza principal</th><th>Share</th></tr></thead><tbody>
 ${['LAVADO','REFRIGERACIÓN','COCINAS'].map(c=>`<tr><td>${c}</td><td class="dn"><strong>${D.p5[c].co}</strong></td><td class="dn">${D.p5[c].share}%</td></tr>`).join('')}
 </tbody></table>
-<div class="note">OTHERS excluido por ser grupo residual. Competidores reales identificados.</div>
+
 </div></div>
 
 <!-- P6 -->
 <div class="q-block"><div class="q-hdr"><span class="q-num">P6</span><div class="q-text">¿Qué ítems de Electrolux están con precio por encima del principal competidor?</div></div>
-<div class="unavail"><div class="warn">⚠️ No disponible. El dataset GfK T3 contiene solo unidades — no hay precios. Se necesita cruzar con precios de retailer o lista de precios interna.</div></div></div>
+<div class="unavail"><div class="warn">⚠️ No es posible responder esta pregunta con el dataset disponible.</div></div></div>
 
 <!-- P7 -->
 <div class="q-block"><div class="q-hdr"><span class="q-num">P7</span><div class="q-text">¿Qué ítem de Electrolux es el mejor para competir con el principal ítem de la competencia?</div></div>
@@ -500,9 +518,14 @@ ${['LAVADO','REFRIGERACIÓN','COCINAS'].map(c=>`<tr><td>${c}</td><td>${D.p7[c].l
 <!-- P8 -->
 <div class="q-block"><div class="q-hdr"><span class="q-num">P8</span><div class="q-text">¿Cuál es el market share por categoría y mes en los últimos 12 meses?</div></div>
 <div class="q-body">
-<div class="kpi-row">
-${['COCINAS','LAVADO','REFRIGERACIÓN'].map(c=>`<div class="kpi"><div class="kpi-v">${D.p8[c]}%</div><div class="kpi-l">${c} — promedio 12M</div></div>`).join('')}
-</div></div></div>
+${['LAVADO','REFRIGERACIÓN','COCINAS'].map(c=>{
+  const r=D.p8[c];
+  return `<div class="cat-label">${c}</div>
+  <table><thead><tr><th>Período</th><th>Share Electrolux GRP.</th></tr></thead><tbody>
+  ${r.rows.map(x=>`<tr><td>${x.period}</td><td>${x.share}%</td></tr>`).join('')}
+  </tbody></table>`;
+}).join('')}
+</div></div>
 
 <!-- P9 -->
 <div class="q-block"><div class="q-hdr"><span class="q-num">P9</span><div class="q-text">¿Cuál es el market share por SKU dentro de cada categoría?</div></div>
@@ -528,11 +551,11 @@ ${['COCINAS','LAVADO','REFRIGERACIÓN'].map(c=>`<tr><td>${c}</td><td><strong>${D
 
 <!-- P12 -->
 <div class="q-block"><div class="q-hdr"><span class="q-num">P12</span><div class="q-text">¿Cuál es el share por rango de precio (premium vs mainstream vs entry)?</div></div>
-<div class="unavail"><div class="warn">⚠️ No disponible. Se necesita lista de precios interna para clasificar cada SKU por segmento.</div></div></div>
+<div class="unavail"><div class="warn">⚠️ No es posible responder esta pregunta con el dataset disponible.</div></div></div>
 
 <!-- P13 -->
 <div class="q-block"><div class="q-hdr"><span class="q-num">P13</span><div class="q-text">¿Cómo está el share por región?</div></div>
-<div class="unavail"><div class="warn">⚠️ No disponible. GfK T3 es agregado nacional. Se necesita GfK T4 o T6 con desglose regional.</div></div></div>
+<div class="unavail"><div class="warn">⚠️ No es posible responder esta pregunta con el dataset disponible.</div></div></div>
 
 <!-- P14 -->
 <div class="q-block"><div class="q-hdr"><span class="q-num">P14</span><div class="q-text">¿Cuál es el ranking de competidores por categoría?</div></div>
@@ -546,11 +569,11 @@ ${D.p14[c].map((r,i)=>`<tr class="${r.co==='ELECTROLUX GRP.'?'elux':''}"><td>${i
 
 <!-- P15 -->
 <div class="q-block"><div class="q-hdr"><span class="q-num">P15</span><div class="q-text">¿Cuál es la correlación entre precio promedio y market share?</div></div>
-<div class="unavail"><div class="warn">⚠️ No disponible sin datos de precio.</div></div></div>
+<div class="unavail"><div class="warn">⚠️ No es posible responder esta pregunta con el dataset disponible.</div></div></div>
 
 <!-- P16 -->
 <div class="q-block"><div class="q-hdr"><span class="q-num">P16</span><div class="q-text">¿Cuál es el impacto de volumen vs precio en la variación de share?</div></div>
-<div class="unavail"><div class="warn">⚠️ No disponible sin datos de precio. Con Sell In + precios internos se calcula la descomposición exacta.</div></div></div>
+<div class="unavail"><div class="warn">⚠️ No es posible responder esta pregunta con el dataset disponible. Con Sell In + precios internos se calcula la descomposición exacta.</div></div></div>
 
 <!-- P17 -->
 <div class="q-block"><div class="q-hdr"><span class="q-num">P17</span><div class="q-text">¿Estamos ganando o perdiendo market share?</div></div>
@@ -559,7 +582,7 @@ ${['LAVADO','REFRIGERACIÓN','COCINAS'].map(c=>{
   const pts=D.p17[c];
   const first=parseFloat(pts[0]?.sh||0),last=parseFloat(pts[pts.length-1]?.sh||0);
   const trend=last>first;
-  return `<div class="cat-label">${c} — <span class="${trend?'up':'dn'}">${trend?'↑ GANANDO':'↓ PERDIENDO'}</span></div>
+  return `<div class="cat-label">${c}</div>
   <table><thead><tr>${pts.map(p=>`<th>${p.y}</th>`).join('')}</tr></thead><tbody>
   <tr>${pts.map(p=>`<td>${p.sh}%</td>`).join('')}</tr></tbody></table>`;
 }).join('')}
@@ -567,23 +590,20 @@ ${['LAVADO','REFRIGERACIÓN','COCINAS'].map(c=>{
 
 <!-- P18 -->
 <div class="q-block"><div class="q-hdr"><span class="q-num">P18</span><div class="q-text">¿Cuál es el principal driver de la variación de share en el último mes?</div></div>
-<div class="unavail"><div class="warn">Calculable con datos mensuales más granulares. Con Sell In semanal se identifica exactamente qué SKU movió el share.</div></div></div>
+<div class="unavail"><div class="warn">No es posible responder esta pregunta con el dataset disponible.</div></div></div>
 
 <!-- P19 -->
 <div class="q-block"><div class="q-hdr"><span class="q-num">P19</span><div class="q-text">¿En qué categorías somos más fuertes y en cuáles estamos perdiendo relevancia?</div></div>
-<div class="q-body"><table><thead><tr><th>Categoría</th><th>Share</th><th>Posición</th><th>Estado</th></tr></thead><tbody>
+<div class="q-body"><table><thead><tr><th>Categoría</th><th>Share</th><th>Posición</th><th>Posición</th></tr></thead><tbody>
 ${['COCINAS','LAVADO','REFRIGERACIÓN'].map(c=>{
-  const s=parseFloat(D.p19[c].sh);
-  const prev=parseFloat(D.p17[c]?.[0]?.sh||s);
-  const ok=s>prev;
-  return `<tr><td>${c}</td><td><strong>${D.p19[c].sh}%</strong></td><td>#${D.p19[c].rank}</td><td class="${ok?'up':'dn'}">${ok?'Fortaleza':'Vigilar'}</td></tr>`;
+  return `<tr><td>${c}</td><td><strong>${D.p19[c].sh}%</strong></td><td>#${D.p19[c].rank}</td></tr>`;
 }).join('')}
 </tbody></table></div></div>
 
 <!-- P20 -->
 <div class="q-block"><div class="q-hdr"><span class="q-num">P20</span><div class="q-text">¿Quiénes son los principales ganadores y perdedores del mercado?</div></div>
 <div class="q-body"><table><thead><tr><th>Categoría</th><th>Mayor perdedor</th><th>∆ Share</th><th>Mayor ganador</th><th>∆ Share</th></tr></thead><tbody>
-${['LAVADO','REFRIGERACIÓN','COCINAS'].map(c=>`<tr><td>${c}</td><td class="dn">${D.p20[c].loser?.co||'—'}</td><td class="dn">${D.p20[c].loser?.d.toFixed(1)||'—'}pp</td><td class="up">${D.p20[c].winner?.co||'—'}</td><td class="up">+${D.p20[c].winner?.d.toFixed(1)||'—'}pp</td></tr>`).join('')}
+${['LAVADO','REFRIGERACIÓN','COCINAS'].map(c=>`<tr><td>${c}</td><td>${D.p20[c].loser?.co||'—'}</td><td class="dn">${D.p20[c].loser?.d.toFixed(1)||'—'}pp</td><td>${D.p20[c].winner?.co||'—'}</td><td class="up">+${D.p20[c].winner?.d.toFixed(1)||'—'}pp</td></tr>`).join('')}
 </tbody></table></div></div>
 
 <!-- P21 -->
@@ -594,29 +614,29 @@ ${['COCINAS','LAVADO','REFRIGERACIÓN'].map(c=>{
   return `<tr><td>${c}</td><td><strong>${D.p21[c].elux}%</strong></td><td>${D.p21[c].lider}</td><td>${D.p21[c].liderSh}%</td><td class="${n(brecha)}">${fmt(brecha)}pp</td></tr>`;
 }).join('')}
 </tbody></table>
-<div class="note">Excluye OTHERS (grupo residual no clasificado individualmente).</div>
+
 </div></div>
 
 <!-- P22 -->
 <div class="q-block"><div class="q-hdr"><span class="q-num">P22</span><div class="q-text">¿Dónde tenemos mayor oportunidad de ganancia de share en el corto plazo?</div></div>
-<div class="q-body"><table><thead><tr><th>Categoría</th><th>Share actual</th><th>Trend 3 años</th><th>Lectura</th></tr></thead><tbody>
+<div class="q-body"><table><thead><tr><th>Categoría</th><th>Share actual</th><th>Trend 3 años</th></tr></thead><tbody>
 ${['REFRIGERACIÓN','COCINAS','LAVADO'].map(c=>{
   const t=parseFloat(D.p22[c].trend);
-  return `<tr><td>${c}</td><td><strong>${D.p22[c].sh}%</strong></td><td class="${n(t)}">${fmt(D.p22[c].trend)}pp</td><td>${t<-3?'🔴 Urgente recuperar':t>0?'✅ Seguir empujando':'→ Defender posición'}</td></tr>`;
+  return `<tr><td>${c}</td><td><strong>${D.p22[c].sh}%</strong></td><td class="${n(t)}">${fmt(D.p22[c].trend)}pp</td></tr>`;
 }).join('')}
 </tbody></table></div></div>
 
 <!-- P23 -->
 <div class="q-block"><div class="q-hdr"><span class="q-num">P23</span><div class="q-text">¿Qué categoría impactó más nuestro resultado de share recientemente?</div></div>
-<div class="q-body"><table><thead><tr><th>#</th><th>Categoría</th><th>∆ Share YoY</th><th>Impacto</th></tr></thead><tbody>
-${D.p23.map((r,i)=>`<tr><td>${i+1}</td><td><strong>${r.cat}</strong></td><td class="${n(r.delta)}">${fmt(r.delta)}pp</td><td>${i===0?(parseFloat(r.delta)>0?'🚀 Motor de crecimiento':'⚠️ Principal lastre'):'Secundario'}</td></tr>`).join('')}
+<div class="q-body"><table><thead><tr><th>#</th><th>Categoría</th><th>∆ Share YoY</th></tr></thead><tbody>
+${D.p23.map((r,i)=>`<tr><td>${i+1}</td><td><strong>${r.cat}</strong></td><td class="${n(r.delta)}">${fmt(r.delta)}pp</td></tr>`).join('')}
 </tbody></table></div></div>
 
 <!-- P24 -->
 <div class="q-block"><div class="q-hdr"><span class="q-num">P24</span><div class="q-text">¿Cómo está nuestro share en el segmento premium vs mass?</div></div>
-<div class="unavail"><div class="warn">⚠️ No disponible sin lista de precios. Con precios internos de Electrolux se calcula en un paso.</div></div></div>
+<div class="unavail"><div class="warn">⚠️ No es posible responder esta pregunta con el dataset disponible.</div></div></div>
 
-<div class="note" style="margin-top:20px"><strong>Resumen:</strong> 18 de 24 preguntas respondidas con GfK T3. Las 6 restantes (P6, P12, P13, P15, P16, P24) requieren lista de precios interna o GfK con desglose regional.</div>
+
 `;
 
   document.getElementById('qa-container').innerHTML=html;
