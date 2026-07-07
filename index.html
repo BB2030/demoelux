@@ -99,6 +99,7 @@ tr.elux td{background:#EBF5FC11}
 <div id="tab-upload" class="panel active">
 <div class="upload-wrap">
 
+  <div id="upload-screen">
   <div class="drop-zone" id="dropZone">
     <span class="dz-icon">📂</span>
     <div class="dz-title">Arrastra tu archivo aquí</div>
@@ -109,18 +110,12 @@ tr.elux td{background:#EBF5FC11}
   </div>
   <input type="file" id="fi" accept=".csv,.txt" style="display:none">
 
-  <div class="sec-note">
-    <span style="font-size:18px;flex-shrink:0">🔒</span>
-    <div><strong>Privacidad total verificable por TI:</strong>
-      <ul>
-        <li>El archivo se lee con FileReader, API nativa del browser, sin red</li>
-        <li>El parsing corre 100% en tu máquina con PapaParse</li>
-        <li>No existe ninguna llamada de red al cargar el CSV</li>
-        <li>TI puede verificarlo abriendo DevTools → Network mientras sube el archivo</li>
-        <li>Ningún byte de tu data sale de este computador</li>
-      </ul>
-    </div>
+  <div class="sec-note" style="margin-top:12px;justify-content:center;text-align:center;flex-direction:column;gap:6px">
+    <div style="font-size:32px">🔒</div>
+    <div style="font-size:16px;font-weight:800;color:#0D2145">Tu data no sale de tu computador</div>
+    <div style="font-size:13px;color:#1A6B3A;margin-top:4px">Procesamiento 100% local · Sin servidores · Sin red · Sin base de datos</div>
   </div>
+  </div><!-- /upload-screen -->
 
   <div class="prog-wrap" id="progWrap" style="display:none">
     <div class="prog-title">🧹 BB · Limpiando tu data</div>
@@ -211,6 +206,7 @@ function step(n, pct) {
 
 function handleFile(file) {
   if (!file) return;
+  document.getElementById('upload-screen').style.display='none';
   document.getElementById('progWrap').style.display='block';
   document.getElementById('progFile').textContent=file.name+' · '+(file.size/1024).toFixed(0)+' KB';
   step(1,10);
@@ -268,7 +264,15 @@ function buildData(rows) {
   var years=[]; var ymap={};
   rows.forEach(function(r){if(!ymap[r._y]){ymap[r._y]=1;years.push(r._y);}});
   years.sort(function(a,b){return a-b;});
-  var lastDt = rows.reduce(function(a,b){return (!a||b._y>a._y||(b._y===a._y&&b._m>a._m))?b:a;},{});
+  var lastDt = rows.reduce(function(a,b){
+    if (!a) return b;
+    if (b._y > a._y) return b;
+    if (b._y === a._y && b._m > a._m) return b;
+    return a;
+  }, null);
+  if (!lastDt || !lastDt._y || !lastDt._m) {
+    throw new Error('No se pudo determinar el último período del dataset.');
+  }
   var ytdYear = lastDt._y;
   var lastMonth = lastDt._m;
   var lastY = ytdYear - 1;
@@ -516,6 +520,7 @@ function resetAll() {
   document.getElementById('tab-resp').classList.remove('active');
   document.getElementById('tab-upload').classList.add('active');
   document.getElementById('progWrap').style.display = 'none';
+  document.getElementById('upload-screen').style.display = 'flex';
   document.getElementById('fi').value = '';
   document.getElementById('qa-container').innerHTML = '';
   PRICES = null;
