@@ -41,11 +41,8 @@ input[type=file]{display:none}
 .prog-step .sico svg{opacity:.2}
 .prog-step.done .sico svg,.prog-step.cur .sico svg{opacity:1}
 .prog-step.cur .sico svg{filter:drop-shadow(0 0 6px #0082C8)}
-from{transform:rotate(0deg)}
-to{transform:rotate(360deg)}
-0%{transform:scale(.5);opacity:0}
-70%{transform:scale(1.2)}
-100%{transform:scale(1);opacity:1}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes pop{0%{transform:scale(.5);opacity:0}70%{transform:scale(1.2)}100%{transform:scale(1);opacity:1}}
 .prog-step.cur .spin{animation:spin 1.2s linear infinite;transform-origin:14px 14px}
 .prog-step.done .check{animation:pop .4s ease forwards}
 .step-lbl{font-size:15px;color:#9BABBE}
@@ -96,7 +93,7 @@ tr.elux td{background:#EBF5FC11}
 .req-body{padding:12px 14px}
 .req-item{display:flex;align-items:center;gap:8px;font-size:12px;color:#0D2145;margin-bottom:6px}
 .req-item:last-child{margin-bottom:0}
-.req-item input[type=checkbox]{accent-color:#0082C8;width:14px;height:14px;pointer-events:none;flex-shrink:0}
+.req-item::before{content:'📄';font-size:13px;flex-shrink:0}
 .req-or{font-size:10px;color:#9BABBE;padding:2px 0 4px 22px;font-style:italic}
 .req-other{margin-top:10px;padding-top:10px;border-top:1px solid #F0F2F5}
 .req-other-lbl{font-size:10px;color:#9BABBE;margin-bottom:4px}
@@ -128,6 +125,13 @@ tr.elux td{background:#EBF5FC11}
 .inline-q select{width:100%;padding:8px 10px;border:1px solid #DDE3EC;border-radius:5px;font-size:12px;color:#0D2145;background:#fff;margin-bottom:8px}
 .inline-q textarea{width:100%;padding:8px 10px;border:1px solid #DDE3EC;border-radius:5px;font-size:12px;color:#0D2145;background:#fff;resize:vertical;min-height:60px;font-family:inherit}
 .inline-q select:focus,.inline-q textarea:focus{outline:none;border-color:#0082C8}
+
+.dev-bar{padding:6px 40px;background:#FFFBEB;border-bottom:1px solid #F5D99A;display:flex;align-items:center;gap:10px;font-size:11px;color:#92400E}
+.dev-bar label{display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none}
+.dev-bar input[type=checkbox]{accent-color:#F59E0B;width:13px;height:13px}
+.dev-note{display:none;margin-top:10px;background:#FFFBEB;border-left:3px solid #F59E0B;padding:9px 13px;border-radius:0 4px 4px 0;font-size:11px;color:#92400E;line-height:1.5}
+.dev-note strong{color:#78350F}
+.dev-mode .dev-note{display:block}
 </style>
 </head>
 <body>
@@ -135,6 +139,13 @@ tr.elux td{background:#EBF5FC11}
   <div class="logo">ELECTROLUX<span>.</span>CL · GfK T3 Chile</div>
   <span class="tag">🔒 100% Local · Sin servidores</span>
 </header>
+<div class="dev-bar" id="devBar" style="display:none">
+  <label>
+    <input type="checkbox" id="devToggle" onchange="toggleDev(this.checked)">
+    Mostrar notas de desarrollo
+  </label>
+  <span style="color:#D97706;font-weight:600">— Solo uso interno —</span>
+</div>
 
 <!-- UPLOAD -->
 <div id="tab-upload" class="panel active">
@@ -519,7 +530,7 @@ function buildData(rows) {
 function fmt(v){return parseFloat(v)>=0?'+'+v:''+v;}
 function ncl(v){return parseFloat(v)>=0?'up':'dn';}
 
-const na6  = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'><input type='checkbox'> Lista de precios Electrolux</div><div class='req-item'><input type='checkbox'> Precios de mercado / Retail</div></div></div><div class='inline-upload' id='upload-prices' onclick='document.getElementById(\'fi-prices\').click()'>
+const na6  = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'>Lista de precios Electrolux</div><div class='req-item'>Precios de mercado / Retail</div></div></div><div class='inline-upload' id='upload-prices' onclick='document.getElementById(\'fi-prices\').click()'>
         <span class='iu-icon'>📎</span>
         <div class='iu-text'>
           <div class='iu-title'>Lista de precios por SKU (Excel)</div>
@@ -528,8 +539,8 @@ const na6  = `<div class='unavail'><div class='warn'>⚠️ No es posible respon
         <button class='iu-btn' id='btn-prices'>Subir archivo</button>
         <input type='file' id='fi-prices' accept='.xlsx,.xls,.csv' style='display:none' onchange='loadExtra(\'prices\', this.files[0])'>
       </div></div>`;
-const na7  = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'><input type='checkbox'> Atributos técnicos por SKU</div><div class='req-item'><input type='checkbox'> Reglas de sustitución entre SKUs</div><div class='req-item'><input type='checkbox'> Posicionamiento comercial</div></div></div></div>`;
-const na12 = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'><input type='checkbox'> Clasificación Premium / Mainstream / Entry</div><div class='req-or'>o</div><div class='req-item'><input type='checkbox'> Lista de precios por SKU</div></div></div><div class='inline-upload' id='upload-seg12' onclick='document.getElementById(\'fi-seg12\').click()'>
+const na7  = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'>Atributos técnicos por SKU</div><div class='req-item'>Reglas de sustitución entre SKUs</div><div class='req-item'>Posicionamiento comercial</div></div></div></div>`;
+const na12 = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'>Clasificación Premium / Mainstream / Entry</div><div class='req-or'>o</div><div class='req-item'>Lista de precios por SKU</div></div></div><div class='inline-upload' id='upload-seg12' onclick='document.getElementById(\'fi-seg12\').click()'>
         <span class='iu-icon'>📎</span>
         <div class='iu-text'>
           <div class='iu-title'>Clasificación de segmentos o lista de precios (Excel)</div>
@@ -538,8 +549,8 @@ const na12 = `<div class='unavail'><div class='warn'>⚠️ No es posible respon
         <button class='iu-btn' id='btn-seg12'>Subir archivo</button>
         <input type='file' id='fi-seg12' accept='.xlsx,.xls,.csv' style='display:none' onchange='loadExtra(\'seg12\', this.files[0])'>
       </div></div>`;
-const na13 = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'><input type='checkbox'> GfK con desglose regional</div></div></div><div class='inline-upload' id='upload-gfk_reg'><span class='iu-icon'>📎</span><div class='iu-text'><div class='iu-title'>GfK con desglose regional (CSV)</div><div class='iu-sub' id='sub-gfk_reg'>Arrastra aquí o haz clic para seleccionar</div></div><button class='iu-btn' id='btn-gfk_reg'>Subir archivo</button><input type='file' id='fi-gfk_reg' accept='.csv,.xlsx' style='display:none'></div></div>`;
-const na15 = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'><input type='checkbox'> Precio promedio por SKU</div></div></div><div class='inline-upload' id='upload-prices15' onclick='document.getElementById(\'fi-prices15\').click()'>
+const na13 = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'>GfK con desglose regional</div></div></div><div class='inline-upload' id='upload-gfk_reg'><span class='iu-icon'>📎</span><div class='iu-text'><div class='iu-title'>GfK con desglose regional (CSV)</div><div class='iu-sub' id='sub-gfk_reg'>Arrastra aquí o haz clic para seleccionar</div></div><button class='iu-btn' id='btn-gfk_reg'>Subir archivo</button><input type='file' id='fi-gfk_reg' accept='.csv,.xlsx' style='display:none'></div></div>`;
+const na15 = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'>Precio promedio por SKU</div></div></div><div class='inline-upload' id='upload-prices15' onclick='document.getElementById(\'fi-prices15\').click()'>
         <span class='iu-icon'>📎</span>
         <div class='iu-text'>
           <div class='iu-title'>Lista de precios por SKU (Excel)</div>
@@ -548,7 +559,7 @@ const na15 = `<div class='unavail'><div class='warn'>⚠️ No es posible respon
         <button class='iu-btn' id='btn-prices15'>Subir archivo</button>
         <input type='file' id='fi-prices15' accept='.xlsx,.xls,.csv' style='display:none' onchange='loadExtra(\'prices15\', this.files[0])'>
       </div></div>`;
-const na16 = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'><input type='checkbox'> Precio por SKU</div></div></div><div class='inline-upload' id='upload-prices16' onclick='document.getElementById(\'fi-prices16\').click()'>
+const na16 = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'>Precio por SKU</div></div></div><div class='inline-upload' id='upload-prices16' onclick='document.getElementById(\'fi-prices16\').click()'>
         <span class='iu-icon'>📎</span>
         <div class='iu-text'>
           <div class='iu-title'>Lista de precios por SKU (Excel)</div>
@@ -557,7 +568,7 @@ const na16 = `<div class='unavail'><div class='warn'>⚠️ No es posible respon
         <button class='iu-btn' id='btn-prices16'>Subir archivo</button>
         <input type='file' id='fi-prices16' accept='.xlsx,.xls,.csv' style='display:none' onchange='loadExtra(\'prices16\', this.files[0])'>
       </div></div>`;
-const na24 = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'><input type='checkbox'> Clasificación Premium / Mass</div><div class='req-or'>o</div><div class='req-item'><input type='checkbox'> Lista de precios por SKU</div></div></div><div class='inline-upload' id='upload-seg24' onclick='document.getElementById(\'fi-seg24\').click()'>
+const na24 = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'>Clasificación Premium / Mass</div><div class='req-or'>o</div><div class='req-item'>Lista de precios por SKU</div></div></div><div class='inline-upload' id='upload-seg24' onclick='document.getElementById(\'fi-seg24\').click()'>
         <span class='iu-icon'>📎</span>
         <div class='iu-text'>
           <div class='iu-title'>Clasificación de segmentos o lista de precios (Excel)</div>
@@ -566,7 +577,7 @@ const na24 = `<div class='unavail'><div class='warn'>⚠️ No es posible respon
         <button class='iu-btn' id='btn-seg24'>Subir archivo</button>
         <input type='file' id='fi-seg24' accept='.xlsx,.xls,.csv' style='display:none' onchange='loadExtra(\'seg24\', this.files[0])'>
       </div></div>`;
-const na18 = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'><input type='checkbox'> Sell In (despachos por SKU)</div><div class='req-item'><input type='checkbox'> Inventario retail (DOH por SKU/canal)</div><div class='req-item'><input type='checkbox'> Historial de promociones</div></div></div></div>`;
+const na18 = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'>Sell In (despachos por SKU)</div><div class='req-item'>Inventario retail (DOH por SKU/canal)</div><div class='req-item'>Historial de promociones</div></div></div></div>`;
 
 
 // ─── Carga de archivos adicionales ──────────────────────────────────────────
@@ -674,8 +685,6 @@ function showAnswers(D, fname, nrows) {
   document.getElementById('intro-meta').innerHTML =
     '📄 <strong>' + fname + '</strong> &nbsp;·&nbsp; ' + nrows.toLocaleString('es-CL') + ' filas';
 
-  const CATS = ['LAVADO','REFRIGERACIÓN','COCINAS'];
-  const ELUX = 'ELECTROLUX GRP.';
   const na   = `<div class='unavail'><div class='warn'>No es posible responder esta pregunta con el dataset disponible.</div></div>`;
 
   const html = `
@@ -735,7 +744,7 @@ ${['LAVADO','REFRIGERACIÓN','COCINAS'].map(c=>`<tr><td>${c}</td><td>${D.p10[c].
 <div class='q-block'><div class='q-hdr'><span class='q-num'>P11</span><div class='q-text'>¿Cuál es la variación de share MoM y YTD por categoría?</div></div>
 <div class='q-body'><table><thead><tr><th>Categoría</th><th>Share YTD ${D.ytdYear}</th><th>MoM último mes</th></tr></thead><tbody>
 ${['COCINAS','LAVADO','REFRIGERACIÓN'].map(c=>`<tr><td>${c}</td><td><strong>${D.p11[c].ytd}%</strong></td><td class="${ncl(D.p11[c].mom)}">${fmt(D.p11[c].mom)}pp</td></tr>`).join('')}
-</tbody></table></div></div>
+</tbody></table><div class='dev-note'><strong>🟡 Nota de desarrollo</strong><br>YTD calculado como share acumulado del año en curso hasta el último mes disponible. MoM = diferencia entre el último mes y el penúltimo. Confirmar con Martín si esta es la definición esperada.</div></div></div>
 
 <div class='q-block' data-p='P12'><div class='q-hdr'><span class='q-num'>P12</span><div class='q-text'>¿Cuál es el share por rango de precio (premium vs mainstream vs entry)?</div></div>${na12}</div>
 
@@ -786,12 +795,12 @@ ${['COCINAS','LAVADO','REFRIGERACIÓN'].map(c=>{const b=(parseFloat(D.p21[c].elu
 <div class='q-block'><div class='q-hdr'><span class='q-num'>P22</span><div class='q-text'>¿Dónde tenemos mayor oportunidad de ganancia de share en el corto plazo?</div></div>
 <div class='q-body'><table><thead><tr><th>Categoría</th><th>Share actual</th><th>Trend 3 años</th></tr></thead><tbody>
 ${['COCINAS','REFRIGERACIÓN','LAVADO'].map(c=>`<tr><td>${c}</td><td><strong>${D.p22[c].sh}%</strong></td><td class="${ncl(D.p22[c].trend)}">${fmt(D.p22[c].trend)}pp</td></tr>`).join('')}
-</tbody></table></div></div>
+</tbody></table><div class='dev-note'><strong>🟡 Nota de desarrollo</strong><br>La implementación actual define "oportunidad" como variación de market share en los últimos 3 años. Validar este criterio con el usuario antes de considerar definitiva esta respuesta.</div></div></div>
 
 <div class='q-block'><div class='q-hdr'><span class='q-num'>P23</span><div class='q-text'>¿Qué categoría impactó más nuestro resultado de share recientemente?</div></div>
 <div class='q-body'><table><thead><tr><th>#</th><th>Categoría</th><th>∆ Share YoY</th></tr></thead><tbody>
 ${D.p23.map((r,i)=>`<tr><td>${i+1}</td><td><strong>${r.cat}</strong></td><td class="${ncl(r.delta)}">${fmt(r.delta)}pp</td></tr>`).join('')}
-</tbody></table></div></div>
+</tbody></table><div class='dev-note'><strong>🟡 Nota de desarrollo</strong><br>"Impactó más" se calcula como variación de share YoY (no como impacto absoluto en volumen). Confirmar que este criterio es el esperado por Martín.</div></div></div>
 
 <div class='q-block' data-p='P24'><div class='q-hdr'><span class='q-num'>P24</span><div class='q-text'>¿Cómo está nuestro share en el segmento premium vs mass?</div></div>${na24}</div>
 `;
@@ -827,6 +836,16 @@ function resetAll() {
   document.getElementById('qa-container').innerHTML = '';
   window._QA_DATA = null;
   window._QA_HTML = null;
+  PRICES = null;
+}
+
+// ─── Modo desarrollo ────────────────────────────────────────
+function toggleDev(on) {
+  document.getElementById('tab-resp').classList.toggle('dev-mode', on);
+}
+// Activar dev bar con: ?dev en la URL
+if (location.search.includes('dev')) {
+  document.getElementById('devBar').style.display = 'flex';
 }
 
 </script>
