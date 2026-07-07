@@ -21,6 +21,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .dz-icon{font-size:56px;margin-bottom:16px;display:block}
 .dz-title{font-size:20px;font-weight:800;color:#0D2145;margin-bottom:8px}
 .dz-sub{font-size:13px;color:#6A7D99;line-height:1.7}
+.dz-or{font-size:15px;font-weight:700;color:#9BABBE;margin:14px 0;letter-spacing:.05em}
 .dz-or{font-size:11px;color:#9BABBE;margin:14px 0 4px}
 .dz-btn{background:#0D2145;color:#fff;border:none;padding:13px 32px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;margin-top:4px}
 .dz-btn:hover{background:#132D5A}
@@ -127,18 +128,15 @@ tr.elux td{background:#EBF5FC11}
 <!-- UPLOAD -->
 <div id="tab-upload" class="panel active">
 <div class="upload-wrap">
-  <div class="drop-zone" id="dropZone"
-    onclick="document.getElementById('fi').click()"
-    ondragover="event.preventDefault();this.classList.add('drag')"
-    ondragleave="this.classList.remove('drag')"
-    ondrop="event.preventDefault();this.classList.remove('drag');handleFile(event.dataTransfer.files[0])">
+  <div class="drop-zone" id="dropZone">
     <span class="dz-icon">📂</span>
-    <div class="dz-title">Sube tu data RAW tal como la recibes</div>
-    <div class="dz-sub">El mismo archivo que te llega de GfK, sin modificar nada.<br>Separador <strong>;</strong> o <strong>,</strong> se detecta automático.</div>
-    <div class="dz-or">o</div>
-    <button class="dz-btn" onclick="event.stopPropagation();document.getElementById('fi').click()">📎 Seleccionar archivo</button>
+    <div class="dz-title">Arrastra tu archivo aquí</div>
+    <div class="dz-sub">El mismo archivo que te llega de GfK, sin modificar nada.<br>Separador <strong>;</strong> o <strong>,</strong> detectado automático.</div>
+    <div class="dz-or">O</div>
+    <button class="dz-btn" id="dz-btn">📎 Seleccionar archivo</button>
     <div class="dz-hint">GfK T3 · CSV · El archivo NUNCA sale de tu computador</div>
-    <input type="file" id="fi" accept=".csv,.txt" onchange="handleFile(this.files[0])">
+  </div>
+  <input type="file" id="fi" accept=".csv,.txt" style="display:none" onchange="handleFile(this.files[0])"> id="fi" accept=".csv,.txt" style="display:none" onchange="handleFile(this.files[0])">
   </div>
   <div class="sec-note">
     <span style="font-size:18px;flex-shrink:0">🔒</span>
@@ -517,5 +515,3 @@ const na24 = `<div class='unavail'><div class='warn'>⚠️ No es posible respon
 const na18 = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'>Sell In (despachos por SKU)</div><div class='req-item'>Inventario retail (DOH por SKU/canal)</div><div class='req-item'>Historial de promociones</div></div></div></div>`;
 
 
-
-  
