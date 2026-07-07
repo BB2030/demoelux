@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>GfK T3 · Electrolux Chile</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -98,40 +97,25 @@ tr.elux td{background:#EBF5FC11}
 .req-other{margin-top:10px;padding-top:10px;border-top:1px solid #F0F2F5}
 .req-other-lbl{font-size:10px;color:#9BABBE;margin-bottom:4px}
 .req-other input[type=text]{width:100%;padding:7px 10px;border:1px solid #DDE3EC;border-radius:4px;font-size:12px;color:#9BABBE;background:#FAFBFC;pointer-events:none}
-.prices-banner{background:#fff;border:1px solid #DDE3EC;border-radius:8px;padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:16px}
-.prices-banner.loaded{border-color:#A8D5B8;background:#E8F5EE}
-.prices-left{display:flex;align-items:center;gap:12px}
-.prices-icon{font-size:24px;flex-shrink:0}
-.prices-title{font-size:13px;font-weight:700;color:#0D2145}
-.prices-sub{font-size:11px;color:#6A7D99;margin-top:2px}
-.prices-sub.ok{color:#1A6B3A}
-.prices-btn{background:#0D2145;color:#fff;border:none;padding:8px 18px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0}
-.prices-btn:hover{background:#132D5A}
-.prices-btn.iu-btn-loaded{background:#1A6B3A}
-.inline-upload{margin-top:12px;border:1.5px dashed #BDD9EE;border-radius:8px;padding:14px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .2s;background:#FAFCFF}
-.inline-upload:hover{border-color:#0082C8;background:#EBF5FC}
-.inline-upload.loaded{border-color:#A8D5B8;background:#E8F5EE;border-style:solid;cursor:default}
-.iu-icon{font-size:22px;flex-shrink:0}
-.iu-text{flex:1}
-.iu-title{font-size:12px;font-weight:700;color:#0D2145}
-.iu-sub{font-size:11px;color:#6A7D99;margin-top:2px}
-.iu-sub.ok{color:#1A6B3A}
-.iu-btn{background:#0D2145;color:#fff;border:none;padding:7px 14px;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0;white-space:nowrap}
-.iu-btn:hover{background:#132D5A}
-.iu-btn.iu-btn-ok{background:#1A6B3A;cursor:default}
-.inline-q{margin-top:12px;border:1px solid #DDE3EC;border-radius:8px;padding:14px 16px;background:#FAFCFF}
-.inline-q-title{font-size:11px;font-weight:700;color:#6A7D99;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px}
-.inline-q-label{font-size:12px;color:#0D2145;margin-bottom:8px;font-weight:500}
-.inline-q select{width:100%;padding:8px 10px;border:1px solid #DDE3EC;border-radius:5px;font-size:12px;color:#0D2145;background:#fff;margin-bottom:8px}
-.inline-q textarea{width:100%;padding:8px 10px;border:1px solid #DDE3EC;border-radius:5px;font-size:12px;color:#0D2145;background:#fff;resize:vertical;min-height:60px;font-family:inherit}
-.inline-q select:focus,.inline-q textarea:focus{outline:none;border-color:#0082C8}
 
-.dev-bar{padding:6px 40px;background:#FFFBEB;border-bottom:1px solid #F5D99A;display:flex;align-items:center;gap:10px;font-size:11px;color:#92400E}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .dev-bar label{display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none}
 .dev-bar input[type=checkbox]{accent-color:#F59E0B;width:13px;height:13px}
-.dev-note{display:none;margin-top:10px;background:#FFFBEB;border-left:3px solid #F59E0B;padding:9px 13px;border-radius:0 4px 4px 0;font-size:11px;color:#92400E;line-height:1.5}
 .dev-note strong{color:#78350F}
-.dev-mode .dev-note{display:block}
 </style>
 </head>
 <body>
@@ -139,13 +123,6 @@ tr.elux td{background:#EBF5FC11}
   <div class="logo">ELECTROLUX<span>.</span>CL · GfK T3 Chile</div>
   <span class="tag">🔒 100% Local · Sin servidores</span>
 </header>
-<div class="dev-bar" id="devBar" style="display:none">
-  <label>
-    <input type="checkbox" id="devToggle" onchange="toggleDev(this.checked)">
-    Mostrar notas de desarrollo
-  </label>
-  <span style="color:#D97706;font-weight:600">— Solo uso interno —</span>
-</div>
 
 <!-- UPLOAD -->
 <div id="tab-upload" class="panel active">
@@ -530,324 +507,13 @@ function buildData(rows) {
 function fmt(v){return parseFloat(v)>=0?'+'+v:''+v;}
 function ncl(v){return parseFloat(v)>=0?'up':'dn';}
 
-const na6  = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'>Lista de precios Electrolux</div><div class='req-item'>Precios de mercado / Retail</div></div></div><div class='inline-upload' id='upload-prices' onclick='document.getElementById(\'fi-prices\').click()'>
-        <span class='iu-icon'>📎</span>
-        <div class='iu-text'>
-          <div class='iu-title'>Lista de precios por SKU (Excel)</div>
-          <div class='iu-sub' id='sub-prices'>Arrastra aquí o haz clic para seleccionar</div>
-        </div>
-        <button class='iu-btn' id='btn-prices'>Subir archivo</button>
-        <input type='file' id='fi-prices' accept='.xlsx,.xls,.csv' style='display:none' onchange='loadExtra(\'prices\', this.files[0])'>
-      </div></div>`;
+const na6  = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'>Lista de precios Electrolux</div><div class='req-item'>Precios de mercado / Retail</div></div></div>`;
 const na7  = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'>Atributos técnicos por SKU</div><div class='req-item'>Reglas de sustitución entre SKUs</div><div class='req-item'>Posicionamiento comercial</div></div></div></div>`;
-const na12 = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'>Clasificación Premium / Mainstream / Entry</div><div class='req-or'>o</div><div class='req-item'>Lista de precios por SKU</div></div></div><div class='inline-upload' id='upload-seg12' onclick='document.getElementById(\'fi-seg12\').click()'>
-        <span class='iu-icon'>📎</span>
-        <div class='iu-text'>
-          <div class='iu-title'>Clasificación de segmentos o lista de precios (Excel)</div>
-          <div class='iu-sub' id='sub-seg12'>Arrastra aquí o haz clic para seleccionar</div>
-        </div>
-        <button class='iu-btn' id='btn-seg12'>Subir archivo</button>
-        <input type='file' id='fi-seg12' accept='.xlsx,.xls,.csv' style='display:none' onchange='loadExtra(\'seg12\', this.files[0])'>
-      </div></div>`;
-const na13 = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'>GfK con desglose regional</div></div></div><div class='inline-upload' id='upload-gfk_reg'><span class='iu-icon'>📎</span><div class='iu-text'><div class='iu-title'>GfK con desglose regional (CSV)</div><div class='iu-sub' id='sub-gfk_reg'>Arrastra aquí o haz clic para seleccionar</div></div><button class='iu-btn' id='btn-gfk_reg'>Subir archivo</button><input type='file' id='fi-gfk_reg' accept='.csv,.xlsx' style='display:none'></div></div>`;
-const na15 = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'>Precio promedio por SKU</div></div></div><div class='inline-upload' id='upload-prices15' onclick='document.getElementById(\'fi-prices15\').click()'>
-        <span class='iu-icon'>📎</span>
-        <div class='iu-text'>
-          <div class='iu-title'>Lista de precios por SKU (Excel)</div>
-          <div class='iu-sub' id='sub-prices15'>Arrastra aquí o haz clic para seleccionar</div>
-        </div>
-        <button class='iu-btn' id='btn-prices15'>Subir archivo</button>
-        <input type='file' id='fi-prices15' accept='.xlsx,.xls,.csv' style='display:none' onchange='loadExtra(\'prices15\', this.files[0])'>
-      </div></div>`;
-const na16 = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'>Precio por SKU</div></div></div><div class='inline-upload' id='upload-prices16' onclick='document.getElementById(\'fi-prices16\').click()'>
-        <span class='iu-icon'>📎</span>
-        <div class='iu-text'>
-          <div class='iu-title'>Lista de precios por SKU (Excel)</div>
-          <div class='iu-sub' id='sub-prices16'>Arrastra aquí o haz clic para seleccionar</div>
-        </div>
-        <button class='iu-btn' id='btn-prices16'>Subir archivo</button>
-        <input type='file' id='fi-prices16' accept='.xlsx,.xls,.csv' style='display:none' onchange='loadExtra(\'prices16\', this.files[0])'>
-      </div></div>`;
-const na24 = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'>Clasificación Premium / Mass</div><div class='req-or'>o</div><div class='req-item'>Lista de precios por SKU</div></div></div><div class='inline-upload' id='upload-seg24' onclick='document.getElementById(\'fi-seg24\').click()'>
-        <span class='iu-icon'>📎</span>
-        <div class='iu-text'>
-          <div class='iu-title'>Clasificación de segmentos o lista de precios (Excel)</div>
-          <div class='iu-sub' id='sub-seg24'>Arrastra aquí o haz clic para seleccionar</div>
-        </div>
-        <button class='iu-btn' id='btn-seg24'>Subir archivo</button>
-        <input type='file' id='fi-seg24' accept='.xlsx,.xls,.csv' style='display:none' onchange='loadExtra(\'seg24\', this.files[0])'>
-      </div></div>`;
+const na12 = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'>Clasificación Premium / Mainstream / Entry</div><div class='req-or'>o</div><div class='req-item'>Lista de precios por SKU</div></div></div>`;
+const na13 = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'>GfK con desglose regional</div></div></div>`;
+const na15 = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'>Precio promedio por SKU</div></div></div>`;
+const na16 = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'>Precio por SKU</div></div></div>`;
+const na24 = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'>Clasificación Premium / Mass</div><div class='req-or'>o</div><div class='req-item'>Lista de precios por SKU</div></div></div>`;
 const na18 = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'>Sell In (despachos por SKU)</div><div class='req-item'>Inventario retail (DOH por SKU/canal)</div><div class='req-item'>Historial de promociones</div></div></div></div>`;
 
 
-// ─── Carga de archivos adicionales ──────────────────────────────────────────
-let PRICES = null;
-
-async function loadExtra(fileId, file) {
-  if (!file) return;
-
-  // Marcar UI como cargado
-  const uploadEl = document.getElementById('upload-' + fileId);
-  const subEl    = document.getElementById('sub-'    + fileId);
-  const btnEl    = document.getElementById('btn-'    + fileId);
-  if (uploadEl) { uploadEl.classList.add('loaded'); uploadEl.onclick = null; }
-  if (subEl)    { subEl.textContent = file.name + ' cargado'; subEl.classList.add('iu-btn-ok'); }
-  if (btnEl)    { btnEl.textContent = '✅ Cargado'; btnEl.classList.add('iu-btn-ok'); }
-
-  // Si es archivo de precios (prices, prices15, prices16, seg12, seg24) procesar igual
-  const isPrices = ['prices','prices15','prices16','seg12','seg24'].includes(fileId);
-  if (!isPrices) return; // gfk_reg y attrs: solo visual por ahora
-
-  const buf = await file.arrayBuffer();
-  const wb  = XLSX.read(buf, {type:'array'});
-  const out = {};
-
-  wb.SheetNames.forEach(shName => {
-    const ws   = wb.Sheets[shName];
-    const rows = XLSX.utils.sheet_to_json(ws, {defval:''});
-    rows.forEach(r => {
-      const sku = String(r['SKU']||r['Item']||r['item']||r['sku']||Object.values(r)[0]||'').trim();
-      if (!sku || sku.length < 2) return;
-      const pElux = parseFloat(String(r['Precio Electrolux (CLP)']||r['Precio Electrolux']||r['precio_elux']||0).replace(/[^0-9.]/g,''))||0;
-      const pComp = parseFloat(String(r['Precio Competidor (CLP)']||r['Precio Competidor']||r['precio_comp']||0).replace(/[^0-9.]/g,''))||0;
-      const seg   = String(r['Segmento']||r['segmento']||r['Segment']||'').trim();
-      if (pElux > 0) out[sku] = {pElux, pComp, seg, sheet:shName};
-    });
-  });
-
-  // Merge con PRICES existente
-  PRICES = Object.assign(PRICES||{}, out);
-
-  // Actualizar todas las preguntas de precios
-  updatePriceQuestions();
-}
-
-function updatePriceQuestions() {
-  if (!PRICES || !window._QA_DATA) return;
-  const D = window._QA_DATA;
-
-  // P6
-  const p6rows = Object.entries(PRICES).filter(([,p])=>p.pElux>0&&p.pComp>0&&p.pElux>p.pComp).sort((a,b)=>(b[1].pElux-b[1].pComp)-(a[1].pElux-a[1].pComp));
-  const p6el = document.querySelector('[data-p="P6"] .unavail');
-  if (p6el && p6rows.length>0) {
-    p6el.innerHTML = tbl(['SKU','Precio Electrolux','Precio Competidor','Brecha'],
-      p6rows.map(([sku,p])=>[sku, p.pElux.toLocaleString('es-CL'), p.pComp.toLocaleString('es-CL'), `<span class="dn">+${(p.pElux-p.pComp).toLocaleString('es-CL')}</span>`]));
-  }
-
-  // P12 + P24 — segmento
-  const segU = {};
-  ['LAVADO','REFRIGERACIÓN','COCINAS'].forEach(cat=>{
-    D.p9[cat].skus.forEach(s=>{
-      const pr=PRICES[s.it]; const seg=pr?.seg||null;
-      if (seg){if(!segU[seg])segU[seg]=0; segU[seg]+=s.u;}
-    });
-  });
-  const totSeg=Object.values(segU).reduce((a,b)=>a+b,0);
-  if (totSeg>0){
-    const segRows=Object.entries(segU).sort((a,b)=>b[1]-a[1]).map(([seg,u])=>[seg,u.toLocaleString('es-CL'),(u/totSeg*100).toFixed(1)+'%']);
-    const p12el=document.querySelector('[data-p="P12"] .unavail');
-    const p24el=document.querySelector('[data-p="P24"] .unavail');
-    const segHtml=tbl(['Segmento','Unidades Electrolux','Mix'],segRows);
-    if(p12el) p12el.innerHTML=segHtml;
-    if(p24el) p24el.innerHTML=segHtml;
-  }
-
-  // P15
-  const p15rows=Object.entries(PRICES).filter(([,p])=>p.pElux>0).sort((a,b)=>a[1].pElux-b[1].pElux);
-  const p15el=document.querySelector('[data-p="P15"] .unavail');
-  if(p15el && p15rows.length>0){
-    p15el.innerHTML=tbl(['SKU','Precio Electrolux','Precio Competidor','Segmento'],
-      p15rows.map(([sku,p])=>[sku,p.pElux.toLocaleString('es-CL'),p.pComp>0?p.pComp.toLocaleString('es-CL'):'—',p.seg||'—']));
-  }
-
-  // P16
-  const brechas=Object.entries(PRICES).filter(([,p])=>p.pElux>0&&p.pComp>0);
-  const arriba=brechas.filter(([,p])=>p.pElux>p.pComp);
-  const abajo =brechas.filter(([,p])=>p.pElux<p.pComp);
-  const p16el=document.querySelector('[data-p="P16"] .unavail');
-  if(p16el && brechas.length>0){
-    p16el.innerHTML=tbl(['Métrica','SKUs'],[
-      ['SKUs Electrolux por encima del competidor',`<span class="dn">${arriba.length}</span>`],
-      ['SKUs Electrolux por debajo del competidor',`<span class="up">${abajo.length}</span>`],
-      ['Total SKUs con precio disponible',brechas.length],
-    ]);
-  }
-}
-
-
-function tbl(headers, rows) {
-  const th=headers.map(h=>`<th style="text-align:left;padding:6px 10px;font-size:10px;font-weight:700;text-transform:uppercase;color:#6A7D99;border-bottom:2px solid #0D2145">${h}</th>`).join('');
-  const tr=rows.map(r=>`<tr>${r.map(c=>`<td style="padding:6px 10px;border-bottom:1px solid #DDE3EC">${c}</td>`).join('')}</tr>`).join('');
-  return `<table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table>`;
-}
-
-function showAnswers(D, fname, nrows) {
-  document.getElementById('intro-meta').innerHTML =
-    '📄 <strong>' + fname + '</strong> &nbsp;·&nbsp; ' + nrows.toLocaleString('es-CL') + ' filas';
-
-  const na   = `<div class='unavail'><div class='warn'>No es posible responder esta pregunta con el dataset disponible.</div></div>`;
-
-  const html = `
-<div class='q-block'><div class='q-hdr'><span class='q-num'>P1</span><div class='q-text'>¿Cuál es el volumen de refrigeración / lavadoras / cocinas en el período Q3 2019?</div></div>
-<div class='q-body'><table><thead><tr><th>Categoría</th><th>Unidades Q3 2019</th></tr></thead><tbody>
-<tr><td>Refrigeración</td><td><strong>${Math.round(D.p1['REFRIGERACIÓN']).toLocaleString('es-CL')}</strong></td></tr>
-<tr><td>Cocinas</td><td><strong>${Math.round(D.p1['COCINAS']).toLocaleString('es-CL')}</strong></td></tr>
-<tr><td>Lavado</td><td><strong>${Math.round(D.p1['LAVADO']).toLocaleString('es-CL')}</strong></td></tr>
-</tbody></table></div></div>
-
-<div class='q-block'><div class='q-hdr'><span class='q-num'>P2</span><div class='q-text'>¿Cuál es la variación YoY de Q3 2019 vs Q3 2018?</div></div>
-<div class='q-body'><table><thead><tr><th>Categoría</th><th>Variación YoY</th></tr></thead><tbody>
-${['COCINAS','REFRIGERACIÓN','LAVADO'].map(c=>`<tr><td>${c}</td><td class="${ncl(D.p2[c])}">${fmt(D.p2[c])}%</td></tr>`).join('')}
-</tbody></table></div></div>
-
-<div class='q-block'><div class='q-hdr'><span class='q-num'>P3</span><div class='q-text'>¿Cuál es el market share de Electrolux en el último período?</div></div>
-<div class='q-body'>
-<div class='kpi-row'>${['COCINAS','LAVADO','REFRIGERACIÓN'].map(c=>`<div class='kpi'><div class='kpi-l'>${c}</div><div class='kpi-v'>${D.p3[c]}%</div></div>`).join('')}</div>
-<div class='note'>Período: ${D.p3._period} (último mes con datos en el dataset)</div>
-</div></div>
-
-<div class='q-block'><div class='q-hdr'><span class='q-num'>P4</span><div class='q-text'>¿Cuál es el principal ítem de Electrolux por categoría en Q3 2019?</div></div>
-<div class='q-body'><table><thead><tr><th>Categoría</th><th>Item</th><th>Unidades</th></tr></thead><tbody>
-${['REFRIGERACIÓN','LAVADO','COCINAS'].map(c=>`<tr><td>${c}</td><td><strong>${D.p4[c].item}</strong></td><td>${D.p4[c].units.toLocaleString('es-CL')}</td></tr>`).join('')}
-</tbody></table></div></div>
-
-<div class='q-block'><div class='q-hdr'><span class='q-num'>P5</span><div class='q-text'>¿Cuál es la principal amenaza para Electrolux por categoría?</div></div>
-<div class='q-body'><table><thead><tr><th>Categoría</th><th>Amenaza principal</th><th>Share</th></tr></thead><tbody>
-${['LAVADO','REFRIGERACIÓN','COCINAS'].map(c=>`<tr><td>${c}</td><td class='dn'><strong>${D.p5[c].co}</strong></td><td class='dn'>${D.p5[c].share}%</td></tr>`).join('')}
-</tbody></table></div></div>
-
-<div class='q-block' data-p='P6'><div class='q-hdr'><span class='q-num'>P6</span><div class='q-text'>¿Qué ítems de Electrolux están con precio por encima del principal competidor?</div></div>${na6}</div>
-
-<div class='q-block' data-p='P7'><div class='q-hdr'><span class='q-num'>P7</span><div class='q-text'>¿Qué ítem de Electrolux es el mejor para competir con el principal ítem de la competencia?</div></div>${na7}</div>
-
-<div class='q-block'><div class='q-hdr'><span class='q-num'>P8</span><div class='q-text'>¿Cuál es el market share por categoría y mes en los últimos 12 meses?</div></div>
-<div class='q-body'>
-${['LAVADO','REFRIGERACIÓN','COCINAS'].map(c=>`<div class='cat-label'>${c}</div>
-<table><thead><tr><th>Período</th><th>Share Electrolux GRP.</th></tr></thead><tbody>
-${D.p8[c].map(x=>`<tr><td>${x.period}</td><td>${x.share}%</td></tr>`).join('')}
-</tbody></table>`).join('')}
-</div></div>
-
-<div class='q-block'><div class='q-hdr'><span class='q-num'>P9</span><div class='q-text'>¿Cuál es el market share por SKU dentro de cada categoría?</div></div>
-<div class='q-body'>
-${['LAVADO','REFRIGERACIÓN','COCINAS'].map(c=>`<div class='cat-label'>${c} (mercado total: ${D.p9[c].total.toLocaleString('es-CL')} u)</div>
-<table><thead><tr><th>#</th><th>Item</th><th>Unidades</th><th>Share cat.</th></tr></thead><tbody>
-${D.p9[c].skus.map((s,i)=>`<tr><td>${i+1}</td><td><strong>${s.it}</strong></td><td>${s.u.toLocaleString('es-CL')}</td><td><strong>${s.sh}%</strong></td></tr>`).join('')}
-</tbody></table>`).join('')}
-</div></div>
-
-<div class='q-block'><div class='q-hdr'><span class='q-num'>P10</span><div class='q-text'>¿Qué SKUs contribuyeron más a la ganancia / pérdida de share?</div></div>
-<div class='q-body'><table><thead><tr><th>Categoría</th><th>📉 Perdedor</th><th>∆pp</th><th>📈 Ganador</th><th>∆pp</th></tr></thead><tbody>
-${['LAVADO','REFRIGERACIÓN','COCINAS'].map(c=>`<tr><td>${c}</td><td>${D.p10[c].loser?.it||'—'}</td><td class='dn'>${D.p10[c].loser?.d}pp</td><td>${D.p10[c].winner?.it||'—'}</td><td class='up'>+${D.p10[c].winner?.d}pp</td></tr>`).join('')}
-</tbody></table></div></div>
-
-<div class='q-block'><div class='q-hdr'><span class='q-num'>P11</span><div class='q-text'>¿Cuál es la variación de share MoM y YTD por categoría?</div></div>
-<div class='q-body'><table><thead><tr><th>Categoría</th><th>Share YTD ${D.ytdYear}</th><th>MoM último mes</th></tr></thead><tbody>
-${['COCINAS','LAVADO','REFRIGERACIÓN'].map(c=>`<tr><td>${c}</td><td><strong>${D.p11[c].ytd}%</strong></td><td class="${ncl(D.p11[c].mom)}">${fmt(D.p11[c].mom)}pp</td></tr>`).join('')}
-</tbody></table><div class='dev-note'><strong>🟡 Nota de desarrollo</strong><br>YTD calculado como share acumulado del año en curso hasta el último mes disponible. MoM = diferencia entre el último mes y el penúltimo. Confirmar con Martín si esta es la definición esperada.</div></div></div>
-
-<div class='q-block' data-p='P12'><div class='q-hdr'><span class='q-num'>P12</span><div class='q-text'>¿Cuál es el share por rango de precio (premium vs mainstream vs entry)?</div></div>${na12}</div>
-
-<div class='q-block' data-p='P13'><div class='q-hdr'><span class='q-num'>P13</span><div class='q-text'>¿Cómo está el share por región?</div></div>${na13}</div>
-
-<div class='q-block'><div class='q-hdr'><span class='q-num'>P14</span><div class='q-text'>¿Cuál es el ranking de competidores por categoría?</div></div>
-<div class='q-body'>
-${['LAVADO','REFRIGERACIÓN','COCINAS'].map(c=>`<div class='cat-label'>${c}</div>
-<table><thead><tr><th>#</th><th>Compañía</th><th>Unidades</th><th>Share</th></tr></thead><tbody>
-${D.p14[c].map((r,i)=>`<tr class="${r.co==='ELECTROLUX GRP.'?'elux':''}"><td>${i+1}</td><td>${r.co}</td><td>${r.u.toLocaleString('es-CL')}</td><td><strong>${r.sh}%</strong></td></tr>`).join('')}
-</tbody></table>`).join('')}
-</div></div>
-
-<div class='q-block' data-p='P15'><div class='q-hdr'><span class='q-num'>P15</span><div class='q-text'>¿Cuál es la correlación entre precio promedio y market share?</div></div>${na15}</div>
-
-<div class='q-block' data-p='P16'><div class='q-hdr'><span class='q-num'>P16</span><div class='q-text'>¿Cuál es el impacto de volumen vs precio en la variación de share?</div></div>${na16}</div>
-
-<div class='q-block'><div class='q-hdr'><span class='q-num'>P17</span><div class='q-text'>¿Estamos ganando o perdiendo market share?</div></div>
-<div class='q-body'>
-${['LAVADO','REFRIGERACIÓN','COCINAS'].map(c=>`<div class='cat-label'>${c}</div>
-<table><thead><tr>${D.p17[c].map(p=>`<th>${p.y}</th>`).join('')}</tr></thead><tbody>
-<tr>${D.p17[c].map(p=>`<td>${p.sh}%</td>`).join('')}</tr></tbody></table>`).join('')}
-</div></div>
-
-<div class='q-block' data-p='P18'><div class='q-hdr'><span class='q-num'>P18</span><div class='q-text'>¿Cuál es el principal driver de la variación de share en el último mes?</div></div>${na18}</div>
-
-<div class='q-block'><div class='q-hdr'><span class='q-num'>P19</span><div class='q-text'>¿En qué categorías somos más fuertes y en cuáles estamos perdiendo relevancia?</div></div>
-<div class='q-body'><table><thead><tr><th>Categoría</th><th>Share ${D.lastY}</th><th>Posición en mercado</th><th>Variación 3 años</th></tr></thead><tbody>
-${['COCINAS','LAVADO','REFRIGERACIÓN'].map(c=>`<tr><td>${c}</td><td><strong>${D.p19[c].sh}%</strong></td><td>#${D.p19[c].rank}</td><td class="${ncl(D.p19[c].trend)}">${fmt(D.p19[c].trend)}pp</td></tr>`).join('')}
-</tbody></table>
-<div class='note'>Variación 3 años = diferencia de share entre ${D.lastY} y ${D.lastY-3}.</div>
-</div></div>
-
-<div class='q-block'><div class='q-hdr'><span class='q-num'>P20</span><div class='q-text'>¿Quiénes son los principales ganadores y perdedores del mercado actualmente?</div></div>
-<div class='q-body'><table><thead><tr><th>Categoría</th><th>Mayor perdedor</th><th>∆ Share</th><th>Mayor ganador</th><th>∆ Share</th></tr></thead><tbody>
-${['LAVADO','REFRIGERACIÓN','COCINAS'].map(c=>`<tr><td>${c}</td><td>${D.p20[c].loser?.co||'—'}</td><td class='dn'>${D.p20[c].loser?.d}pp</td><td>${D.p20[c].winner?.co||'—'}</td><td class='up'>+${D.p20[c].winner?.d}pp</td></tr>`).join('')}
-</tbody></table>
-<div style='font-size:11px;color:#6A7D99;margin-top:8px;font-style:italic'>Nota: OTHERS es un agregado residual de múltiples marcas no clasificadas individualmente.</div>
-</div></div>
-
-<div class='q-block'><div class='q-hdr'><span class='q-num'>P21</span><div class='q-text'>¿Cuál es la brecha de market share respecto al líder?</div></div>
-<div class='q-body'><table><thead><tr><th>Categoría</th><th>Share Electrolux</th><th>Principal competidor</th><th>Share competidor</th><th>Brecha</th></tr></thead><tbody>
-${['COCINAS','LAVADO','REFRIGERACIÓN'].map(c=>{const b=(parseFloat(D.p21[c].elux)-parseFloat(D.p21[c].liderSh)).toFixed(1);return `<tr><td>${c}</td><td><strong>${D.p21[c].elux}%</strong></td><td>${D.p21[c].lider}</td><td>${D.p21[c].liderSh}%</td><td class="${ncl(b)}">${fmt(b)}pp</td></tr>`;}).join('')}
-</tbody></table>
-<div style='font-size:11px;color:#6A7D99;margin-top:8px;font-style:italic'>Nota: OTHERS excluido por ser agregado residual. Principal competidor = compañía con mayor participación individual distinta a Electrolux.</div>
-</div></div>
-
-<div class='q-block'><div class='q-hdr'><span class='q-num'>P22</span><div class='q-text'>¿Dónde tenemos mayor oportunidad de ganancia de share en el corto plazo?</div></div>
-<div class='q-body'><table><thead><tr><th>Categoría</th><th>Share actual</th><th>Trend 3 años</th></tr></thead><tbody>
-${['COCINAS','REFRIGERACIÓN','LAVADO'].map(c=>`<tr><td>${c}</td><td><strong>${D.p22[c].sh}%</strong></td><td class="${ncl(D.p22[c].trend)}">${fmt(D.p22[c].trend)}pp</td></tr>`).join('')}
-</tbody></table><div class='dev-note'><strong>🟡 Nota de desarrollo</strong><br>La implementación actual define "oportunidad" como variación de market share en los últimos 3 años. Validar este criterio con el usuario antes de considerar definitiva esta respuesta.</div></div></div>
-
-<div class='q-block'><div class='q-hdr'><span class='q-num'>P23</span><div class='q-text'>¿Qué categoría impactó más nuestro resultado de share recientemente?</div></div>
-<div class='q-body'><table><thead><tr><th>#</th><th>Categoría</th><th>∆ Share YoY</th></tr></thead><tbody>
-${D.p23.map((r,i)=>`<tr><td>${i+1}</td><td><strong>${r.cat}</strong></td><td class="${ncl(r.delta)}">${fmt(r.delta)}pp</td></tr>`).join('')}
-</tbody></table><div class='dev-note'><strong>🟡 Nota de desarrollo</strong><br>"Impactó más" se calcula como variación de share YoY (no como impacto absoluto en volumen). Confirmar que este criterio es el esperado por Martín.</div></div></div>
-
-<div class='q-block' data-p='P24'><div class='q-hdr'><span class='q-num'>P24</span><div class='q-text'>¿Cómo está nuestro share en el segmento premium vs mass?</div></div>${na24}</div>
-`;
-
-  document.getElementById('qa-container').innerHTML = html;
-
-  // Activar event listeners para mini-uploaders (onclick en innerHTML no funciona)
-  document.querySelectorAll('.inline-upload').forEach(el => {
-    const inputId = el.id.replace('upload-', 'fi-');
-    const input   = document.getElementById(inputId);
-    if (!input) return;
-    el.addEventListener('click', () => input.click());
-    el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('drag'); });
-    el.addEventListener('dragleave', () => el.classList.remove('drag'));
-    el.addEventListener('drop', e => {
-      e.preventDefault(); el.classList.remove('drag');
-      const fileId = el.id.replace('upload-', '');
-      loadExtra(fileId, e.dataTransfer.files[0]);
-    });
-  });
-
-  window._QA_DATA = D;
-  document.getElementById('tab-upload').classList.remove('active');
-  document.getElementById('tab-resp').classList.add('active');
-}
-
-function resetAll() {
-  document.getElementById('tab-resp').classList.remove('active');
-  document.getElementById('tab-upload').classList.add('active');
-  document.getElementById('progWrap').style.display = 'none';
-  document.getElementById('dropZone').style.display = 'block';
-  document.getElementById('fi').value = '';
-  document.getElementById('qa-container').innerHTML = '';
-  window._QA_DATA = null;
-  window._QA_HTML = null;
-  PRICES = null;
-}
-
-// ─── Modo desarrollo ────────────────────────────────────────
-function toggleDev(on) {
-  document.getElementById('tab-resp').classList.toggle('dev-mode', on);
-}
-// Activar dev bar con: ?dev en la URL
-if (location.search.includes('dev')) {
-  document.getElementById('devBar').style.display = 'flex';
-}
-
-</script>
-</body>
-</html>
