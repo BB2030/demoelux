@@ -198,7 +198,7 @@ tr.elux td{background:#EBF5FC11}
 <div class="body">
   <div class="intro">
     <div>
-      <h1>Respuestas al set de preguntas</h1>
+      <h1>Respuestas al set de preguntas GfK T3</h1>
       <p id="intro-meta"></p>
       <div class="meta">
         <span class="pill pill-ok">24 preguntas evaluadas</span>
@@ -528,22 +528,7 @@ const na6  = `<div class='unavail'><div class='warn'>⚠️ No es posible respon
         <button class='iu-btn' id='btn-prices'>Subir archivo</button>
         <input type='file' id='fi-prices' accept='.xlsx,.xls,.csv' style='display:none' onchange='loadExtra(\'prices\', this.files[0])'>
       </div></div>`;
-const na7  = `<div class='unavail'>
-  <div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div>
-  <div class='inline-q'>
-    <div class='inline-q-title'>Información requerida</div>
-    <div class='inline-q-label'>¿Qué criterio define que un ítem de Electrolux "compite mejor" con el ítem líder del mercado?</div>
-    <select onchange="this.nextElementSibling.style.display=this.value==='otro'?'block':'none'">
-      <option value=''>— Selecciona un criterio —</option>
-      <option value='precio'>Precio más cercano al competidor</option>
-      <option value='vol'>Mayor volumen de ventas en la misma categoría</option>
-      <option value='seg'>Mismo segmento de precio (Premium / Mainstream / Entry)</option>
-      <option value='attr'>Atributos técnicos equivalentes (capacidad, tecnología)</option>
-      <option value='otro'>Otro</option>
-    </select>
-    <textarea placeholder='Describe el criterio...' style='display:none'></textarea>
-  </div>
-</div>`;
+const na7  = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'><input type='checkbox'> Atributos técnicos por SKU</div><div class='req-item'><input type='checkbox'> Reglas de sustitución entre SKUs</div><div class='req-item'><input type='checkbox'> Posicionamiento comercial</div></div></div></div>`;
 const na12 = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'><input type='checkbox'> Clasificación Premium / Mainstream / Entry</div><div class='req-or'>o</div><div class='req-item'><input type='checkbox'> Lista de precios por SKU</div></div></div><div class='inline-upload' id='upload-seg12' onclick='document.getElementById(\'fi-seg12\').click()'>
         <span class='iu-icon'>📎</span>
         <div class='iu-text'>
@@ -553,16 +538,7 @@ const na12 = `<div class='unavail'><div class='warn'>⚠️ No es posible respon
         <button class='iu-btn' id='btn-seg12'>Subir archivo</button>
         <input type='file' id='fi-seg12' accept='.xlsx,.xls,.csv' style='display:none' onchange='loadExtra(\'seg12\', this.files[0])'>
       </div></div>`;
-const na13 = `<div class='unavail'>
-  <div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div>
-  <div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div>
-  <div class='req-body'><div class='req-item'><input type='checkbox'> GfK con desglose regional</div></div></div>
-  <div class='inline-q'>
-    <div class='inline-q-title'>Mientras tanto</div>
-    <div class='inline-q-label'>¿Qué regiones son prioritarias para el análisis?</div>
-    <textarea placeholder='Ej: RM, Valparaíso, Biobío...'></textarea>
-  </div>
-</div>`;
+const na13 = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'><input type='checkbox'> GfK con desglose regional</div></div></div><div class='inline-upload' id='upload-gfk_reg'><span class='iu-icon'>📎</span><div class='iu-text'><div class='iu-title'>GfK con desglose regional (CSV)</div><div class='iu-sub' id='sub-gfk_reg'>Arrastra aquí o haz clic para seleccionar</div></div><button class='iu-btn' id='btn-gfk_reg'>Subir archivo</button><input type='file' id='fi-gfk_reg' accept='.csv,.xlsx' style='display:none'></div></div>`;
 const na15 = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'><input type='checkbox'> Precio promedio por SKU</div></div></div><div class='inline-upload' id='upload-prices15' onclick='document.getElementById(\'fi-prices15\').click()'>
         <span class='iu-icon'>📎</span>
         <div class='iu-text'>
@@ -590,23 +566,7 @@ const na24 = `<div class='unavail'><div class='warn'>⚠️ No es posible respon
         <button class='iu-btn' id='btn-seg24'>Subir archivo</button>
         <input type='file' id='fi-seg24' accept='.xlsx,.xls,.csv' style='display:none' onchange='loadExtra(\'seg24\', this.files[0])'>
       </div></div>`;
-const na18 = `<div class='unavail'>
-  <div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div>
-  <div class='inline-q'>
-    <div class='inline-q-title'>Información requerida</div>
-    <div class='inline-q-label'>¿Qué factores considera el principal driver de variación de share en su mercado?</div>
-    <select onchange="this.nextElementSibling.style.display=this.value==='otro'?'block':'none'">
-      <option value=''>— Selecciona una opción —</option>
-      <option value='sku'>Entrada o salida de un SKU clave</option>
-      <option value='promo'>Actividad promocional o precio</option>
-      <option value='dist'>Cambio en distribución por canal</option>
-      <option value='comp'>Movimiento de un competidor específico</option>
-      <option value='stock'>Quiebre de stock</option>
-      <option value='otro'>Otro</option>
-    </select>
-    <textarea placeholder='Describe el driver...' style='display:none'></textarea>
-  </div>
-</div>`;
+const na18 = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'><input type='checkbox'> Sell In (despachos por SKU)</div><div class='req-item'><input type='checkbox'> Inventario retail (DOH por SKU/canal)</div><div class='req-item'><input type='checkbox'> Historial de promociones</div></div></div></div>`;
 
 
 // ─── Carga de archivos adicionales ──────────────────────────────────────────
@@ -711,8 +671,8 @@ function tbl(headers, rows) {
 }
 
 function showAnswers(D, fname, nrows) {
-  document.getElementById('intro-meta').textContent =
-    'Fuente: ' + fname + ' · ' + nrows.toLocaleString('es-CL') + ' filas · Dataset GfK T3 Chile';
+  document.getElementById('intro-meta').innerHTML =
+    '📄 <strong>' + fname + '</strong> &nbsp;·&nbsp; ' + nrows.toLocaleString('es-CL') + ' filas';
 
   const CATS = ['LAVADO','REFRIGERACIÓN','COCINAS'];
   const ELUX = 'ELECTROLUX GRP.';
@@ -733,7 +693,7 @@ ${['COCINAS','REFRIGERACIÓN','LAVADO'].map(c=>`<tr><td>${c}</td><td class="${nc
 
 <div class='q-block'><div class='q-hdr'><span class='q-num'>P3</span><div class='q-text'>¿Cuál es el market share de Electrolux en el último período?</div></div>
 <div class='q-body'>
-<div class='kpi-row'>${['COCINAS','LAVADO','REFRIGERACIÓN'].map(c=>`<div class='kpi'><div class='kpi-v'>${D.p3[c]}%</div><div class='kpi-l'>${c}</div></div>`).join('')}</div>
+<div class='kpi-row'>${['COCINAS','LAVADO','REFRIGERACIÓN'].map(c=>`<div class='kpi'><div class='kpi-l'>${c}</div><div class='kpi-v'>${D.p3[c]}%</div></div>`).join('')}</div>
 <div class='note'>Período: ${D.p3._period} (último mes con datos en el dataset)</div>
 </div></div>
 
@@ -817,10 +777,10 @@ ${['LAVADO','REFRIGERACIÓN','COCINAS'].map(c=>`<tr><td>${c}</td><td>${D.p20[c].
 </div></div>
 
 <div class='q-block'><div class='q-hdr'><span class='q-num'>P21</span><div class='q-text'>¿Cuál es la brecha de market share respecto al líder?</div></div>
-<div class='q-body'><table><thead><tr><th>Categoría</th><th>Share Electrolux</th><th>Líder</th><th>Share líder</th><th>Brecha</th></tr></thead><tbody>
+<div class='q-body'><table><thead><tr><th>Categoría</th><th>Share Electrolux</th><th>Principal competidor</th><th>Share competidor</th><th>Brecha</th></tr></thead><tbody>
 ${['COCINAS','LAVADO','REFRIGERACIÓN'].map(c=>{const b=(parseFloat(D.p21[c].elux)-parseFloat(D.p21[c].liderSh)).toFixed(1);return `<tr><td>${c}</td><td><strong>${D.p21[c].elux}%</strong></td><td>${D.p21[c].lider}</td><td>${D.p21[c].liderSh}%</td><td class="${ncl(b)}">${fmt(b)}pp</td></tr>`;}).join('')}
 </tbody></table>
-<div style='font-size:11px;color:#6A7D99;margin-top:8px;font-style:italic'>Nota: OTHERS excluido por ser agregado residual. Líder = compañía con mayor participación individual.</div>
+<div style='font-size:11px;color:#6A7D99;margin-top:8px;font-style:italic'>Nota: OTHERS excluido por ser agregado residual. Principal competidor = compañía con mayor participación individual distinta a Electrolux.</div>
 </div></div>
 
 <div class='q-block'><div class='q-hdr'><span class='q-num'>P22</span><div class='q-text'>¿Dónde tenemos mayor oportunidad de ganancia de share en el corto plazo?</div></div>
