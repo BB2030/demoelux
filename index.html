@@ -1,3 +1,31 @@
+<!--
+============================================================
+GfK T3 Analyzer
+Electrolux Chile
+
+Objetivo del desarrollo
+Este prototipo responde exclusivamente el set de preguntas
+definido por Electrolux para evaluar la factibilidad tecnica
+de analisis sobre datasets GfK T3.
+
+Principios de diseno
+- Procesamiento 100% local
+- Ninguna informacion abandona el navegador
+- No se realizan llamadas a servidores
+- No se realizan inferencias cuando el dataset no lo permite
+- Todas las metricas se calculan desde el archivo cargado
+- Las respuestas inferidas incluyen notas metodologicas
+
+Niveles de confianza
+🟢 Respuesta directa   Calculada directamente desde datos GfK
+🟡 Respuesta inferida  Calculada mediante criterios analiticos sobre datos GfK
+🔴 No respondible      Requiere informacion no disponible en el dataset
+
+Principio fundamental
+La herramienta responde unicamente aquello que puede
+demostrarse con el dataset cargado por el usuario.
+============================================================
+-->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -13,8 +41,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .logo span{color:#4AB8F0}
 .tag{background:rgba(74,184,240,.2);border:1px solid rgba(74,184,240,.4);color:#4AB8F0;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.1em;text-transform:uppercase}
 .panel{display:none}.panel.active{display:block}
-
-/* UPLOAD */
 .upload-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 60px);gap:20px;padding:24px}
 .drop-zone{background:#fff;border:2px dashed #BDD9EE;border-radius:16px;padding:56px 64px;text-align:center;max-width:580px;width:100%;cursor:pointer;transition:all .2s}
 .drop-zone.drag{border-color:#0082C8;background:#EBF5FC;border-style:solid}
@@ -26,9 +52,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .dz-btn:hover{background:#132D5A}
 .dz-hint{font-size:11px;color:#9BABBE;margin-top:16px;padding-top:14px;border-top:1px solid #F0F2F5}
 .sec-note{display:flex;align-items:flex-start;gap:10px;font-size:12px;color:#1A6B3A;background:#E8F5EE;border:1px solid #A8D5B8;border-radius:8px;padding:12px 16px;max-width:580px;width:100%}
-.sec-note ul{margin-top:4px;padding-left:16px;line-height:1.8}
-
-/* PROGRESS */
 .prog-wrap{background:#fff;border:2px solid #0D2145;border-radius:12px;padding:32px 36px;max-width:580px;width:100%}
 .prog-title{font-size:15px;font-weight:800;color:#0D2145;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em}
 .prog-file{font-size:12px;color:#6A7D99;margin-bottom:24px;font-family:monospace}
@@ -47,8 +70,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .bar-wrap{background:#F0F2F5;border-radius:6px;height:8px;margin-top:20px;overflow:hidden}
 .bar-fill{background:linear-gradient(90deg,#0D2145,#0082C8);height:8px;border-radius:6px;transition:width 1s ease;width:0%}
 .bar-lbl{font-size:11px;color:#0082C8;font-weight:700;margin-top:6px;text-align:right}
-
-/* RESPUESTAS */
 .body{max-width:880px;margin:0 auto;padding:32px 24px}
 .intro{background:#fff;border:1px solid #DDE3EC;border-radius:8px;padding:20px 24px;margin-bottom:24px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .intro h1{font-size:16px;font-weight:800;color:#0D2145;margin-bottom:4px}
@@ -62,7 +83,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .q-block{background:#fff;border:1px solid #DDE3EC;border-radius:8px;margin-bottom:10px;overflow:hidden}
 .q-hdr{padding:12px 18px;display:flex;align-items:flex-start;gap:12px;background:#F8FAFF;border-bottom:1px solid #DDE3EC}
 .q-num{font-size:10px;font-weight:800;color:#0082C8;background:#EBF5FC;border:1px solid #BDD9EE;padding:2px 7px;border-radius:4px;white-space:nowrap;margin-top:2px;flex-shrink:0}
-.q-text{font-size:13px;font-weight:600;color:#0D2145;line-height:1.4}
+.q-text{font-size:13px;font-weight:600;color:#0D2145;line-height:1.4;flex:1}
 .q-body{padding:14px 18px}
 .unavail{padding:14px 18px}
 table{width:100%;border-collapse:collapse;font-size:12.5px}
@@ -86,25 +107,27 @@ tr.elux td{background:#EBF5FC11}
 .req-item:last-child{margin-bottom:0}
 .req-item::before{content:'📄';font-size:13px;flex-shrink:0}
 .req-or{font-size:10px;color:#9BABBE;padding:2px 0 4px 22px;font-style:italic}
-
-.conf{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;margin-left:8px;vertical-align:middle;flex-shrink:0}
+.conf{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 9px;border-radius:10px;margin-left:10px;vertical-align:middle;white-space:nowrap;flex-shrink:0}
 .conf-g{background:#E8F5EE;color:#1A6B3A;border:1px solid #A8D5B8}
 .conf-y{background:#FFFBEB;color:#92400E;border:1px solid #F5D99A}
 .conf-r{background:#FEF2F2;color:#991B1B;border:1px solid #FECACA}
-.conf-note{font-size:10px;color:#9BABBE;margin-top:6px;font-style:italic;padding-left:2px}
+.conf-box{margin:0 18px 12px;padding:9px 13px;border-radius:6px;font-size:11px;line-height:1.6}
+.conf-box-g{background:#E8F5EE;border-left:3px solid #1A6B3A;color:#1A6B3A}
+.conf-box-y{background:#FFFBEB;border-left:3px solid #F59E0B;color:#92400E}
+.conf-box-r{background:#FEF2F2;border-left:3px solid #C0392B;color:#991B1B}
+.conf-box b{display:block;margin-bottom:3px}
+.met{margin-top:5px;font-size:10px;color:#6A7D99;padding:5px 8px;background:rgba(255,255,255,.6);border-radius:4px}
+.met strong{color:#0D2145}
 </style>
 </head>
 <body>
-
 <header class="hdr">
   <div class="logo">ELECTROLUX<span>.</span>CL · GfK T3 Chile</div>
   <span class="tag">🔒 100% Local · Sin servidores</span>
 </header>
 
-<!-- UPLOAD -->
 <div id="tab-upload" class="panel active">
 <div class="upload-wrap">
-
   <div id="upload-screen">
   <div class="drop-zone" id="dropZone">
     <span class="dz-icon">📂</span>
@@ -115,45 +138,27 @@ tr.elux td{background:#EBF5FC11}
     <div class="dz-hint">GfK T3 · CSV · El archivo NUNCA sale de tu computador</div>
   </div>
   <input type="file" id="fi" accept=".csv,.txt" style="display:none">
-
   <div class="sec-note" style="margin-top:12px;justify-content:center;text-align:center;flex-direction:column;gap:6px">
     <div style="font-size:32px">🔒</div>
     <div style="font-size:16px;font-weight:800;color:#0D2145">Tu data no sale de tu computador</div>
     <div style="font-size:13px;color:#1A6B3A;margin-top:4px">Procesamiento 100% local · Sin servidores · Sin red · Sin base de datos</div>
   </div>
-  </div><!-- /upload-screen -->
+  </div>
 
   <div class="prog-wrap" id="progWrap" style="display:none">
     <div class="prog-title">🧹 BB · Limpiando tu data</div>
     <div class="prog-file" id="progFile"></div>
-    <div class="prog-step" id="ps1">
-      <div class="step-row"><span class="sico">⏳</span><span class="step-lbl">Leyendo archivo y detectando separador</span></div>
-      <div class="step-tx"><span class="tx-b">period_from_file;product_group;...</span><span class="tx-arr">→</span><span class="tx-a">7 columnas detectadas</span></div>
-    </div>
-    <div class="prog-step" id="ps2">
-      <div class="step-row"><span class="sico">⏳</span><span class="step-lbl">Corrigiendo fechas — "Sept-16" no es un mes válido en ningún estándar</span></div>
-      <div class="step-tx"><span class="tx-b">Sept-16 / 01-05-2021</span><span class="tx-arr">→</span><span class="tx-a">2016-09-01 / 2021-05-01</span></div>
-    </div>
-    <div class="prog-step" id="ps3">
-      <div class="step-row"><span class="sico">⏳</span><span class="step-lbl">Corrigiendo unidades — "4.827" no es 4,827 sino 4827</span></div>
-      <div class="step-tx"><span class="tx-b">4.827 / " - "</span><span class="tx-arr">→</span><span class="tx-a">4827 / 0</span></div>
-    </div>
-    <div class="prog-step" id="ps4">
-      <div class="step-row"><span class="sico">⏳</span><span class="step-lbl">Traduciendo categorías — FA TOP / WASHING MACHINES → español</span></div>
-      <div class="step-tx"><span class="tx-b">FA TOP / WASHING MACHINES</span><span class="tx-arr">→</span><span class="tx-a">Lav. Carga Superior / LAVADO</span></div>
-    </div>
-    <div class="prog-step" id="ps5">
-      <div class="step-row"><span class="sico">⏳</span><span class="step-lbl">Calculando market share, YoY y top SKUs — generando 24 respuestas</span></div>
-      <div class="step-tx"><span class="tx-b">107.761 filas raw</span><span class="tx-arr">→</span><span class="tx-a">24 respuestas listas</span></div>
-    </div>
+    <div class="prog-step" id="ps1"><div class="step-row"><span class="sico">⏳</span><span class="step-lbl">Leyendo archivo y detectando separador</span></div><div class="step-tx"><span class="tx-b">period_from_file;product_group;...</span><span class="tx-arr">→</span><span class="tx-a">7 columnas detectadas</span></div></div>
+    <div class="prog-step" id="ps2"><div class="step-row"><span class="sico">⏳</span><span class="step-lbl">Corrigiendo fechas</span></div><div class="step-tx"><span class="tx-b">Sept-16 / 01-05-2021</span><span class="tx-arr">→</span><span class="tx-a">2016-09-01 / 2021-05-01</span></div></div>
+    <div class="prog-step" id="ps3"><div class="step-row"><span class="sico">⏳</span><span class="step-lbl">Corrigiendo unidades</span></div><div class="step-tx"><span class="tx-b">4.827 / " - "</span><span class="tx-arr">→</span><span class="tx-a">4827 / 0</span></div></div>
+    <div class="prog-step" id="ps4"><div class="step-row"><span class="sico">⏳</span><span class="step-lbl">Traduciendo categorías</span></div><div class="step-tx"><span class="tx-b">FA TOP / WASHING MACHINES</span><span class="tx-arr">→</span><span class="tx-a">Lav. Carga Superior / LAVADO</span></div></div>
+    <div class="prog-step" id="ps5"><div class="step-row"><span class="sico">⏳</span><span class="step-lbl">Calculando market share, YoY y top SKUs</span></div><div class="step-tx"><span class="tx-b">107.761 filas raw</span><span class="tx-arr">→</span><span class="tx-a">24 respuestas listas</span></div></div>
     <div class="bar-wrap"><div class="bar-fill" id="barFill"></div></div>
     <div class="bar-lbl" id="barLbl">0%</div>
   </div>
-
 </div>
 </div>
 
-<!-- RESPUESTAS -->
 <div id="tab-resp" class="panel">
 <div class="body">
   <div class="intro">
@@ -216,13 +221,11 @@ function handleFile(file) {
   document.getElementById('progWrap').style.display='block';
   document.getElementById('progFile').textContent=file.name+' · '+(file.size/1024).toFixed(0)+' KB';
   step(1,10);
-
   var reader = new FileReader();
   reader.onload = function(e) {
     var text = e.target.result;
     var line0 = text.split('\n')[0];
     var sep = (line0.match(/;/g)||[]).length >= (line0.match(/,/g)||[]).length ? ';' : ',';
-
     setTimeout(function(){
       Papa.parse(text, {
         header:true, delimiter:sep, skipEmptyLines:true,
@@ -239,14 +242,7 @@ function handleFile(file) {
                 if(!dt||dt.getFullYear()<2000||dt.getFullYear()>2030) continue;
                 var pg=(r.product_group||'').trim();
                 var uv=r['sales_units fake']||r.units||r.sales_units||Object.values(r).slice(-1)[0];
-                rows.push({
-                  _y:dt.getFullYear(), _m:dt.getMonth()+1,
-                  _q:Math.ceil((dt.getMonth()+1)/3),
-                  _pg:CAT_MAP[pg]||pg,
-                  _co:(r.company||'').trim(),
-                  _it:(r.item||'').trim(),
-                  _u:parseUnits(uv)
-                });
+                rows.push({_y:dt.getFullYear(),_m:dt.getMonth()+1,_q:Math.ceil((dt.getMonth()+1)/3),_pg:CAT_MAP[pg]||pg,_co:(r.company||'').trim(),_it:(r.item||'').trim(),_u:parseUnits(uv)});
               }
               step(3,55);
               setTimeout(function(){
@@ -270,254 +266,101 @@ function buildData(rows) {
   var years=[]; var ymap={};
   rows.forEach(function(r){if(!ymap[r._y]){ymap[r._y]=1;years.push(r._y);}});
   years.sort(function(a,b){return a-b;});
-  var lastDt = rows.reduce(function(a,b){
-    if (!a) return b;
-    if (b._y > a._y) return b;
-    if (b._y === a._y && b._m > a._m) return b;
-    return a;
-  }, null);
-  if (!lastDt || !lastDt._y || !lastDt._m) {
-    throw new Error('No se pudo determinar el último período del dataset.');
-  }
-  var ytdYear = lastDt._y;
-  var lastMonth = lastDt._m;
-  var lastY = ytdYear - 1;
-
+  var lastDt = rows.reduce(function(a,b){if(!a)return b;if(b._y>a._y)return b;if(b._y===a._y&&b._m>a._m)return b;return a;},null);
+  if(!lastDt||!lastDt._y||!lastDt._m){throw new Error('No se pudo determinar el ultimo periodo.');}
+  var ytdYear=lastDt._y, lastMonth=lastDt._m, lastY=ytdYear-1;
   function sumU(fn){return rows.filter(fn).reduce(function(a,b){return a+b._u;},0);}
-
-  var p1={};
-  CATS.forEach(function(c){p1[c]=Math.round(sumU(function(r){return r._y===2019&&r._q===3&&r._pg===c;}));});
-
-  var p2={};
-  CATS.forEach(function(c){
-    var v19=sumU(function(r){return r._y===2019&&r._q===3&&r._pg===c;});
-    var v18=sumU(function(r){return r._y===2018&&r._q===3&&r._pg===c;});
-    p2[c]=v18>0?+((v19-v18)/v18*100).toFixed(1):null;
-  });
-
-  var p3={_period:ytdYear+'-'+(lastMonth<10?'0':'')+lastMonth};
-  CATS.forEach(function(c){
-    var tot=sumU(function(r){return r._y===ytdYear&&r._m===lastMonth&&r._pg===c;});
-    var el=sumU(function(r){return r._y===ytdYear&&r._m===lastMonth&&r._pg===c&&r._co===ELUX;});
-    p3[c]=tot>0?+(el/tot*100).toFixed(1):0;
-  });
-
-  var p4={};
-  CATS.forEach(function(c){
-    var agg={};
-    rows.filter(function(r){return r._y===2019&&r._q===3&&r._pg===c&&r._co===ELUX;}).forEach(function(r){agg[r._it]=(agg[r._it]||0)+r._u;});
-    var top=Object.entries(agg).sort(function(a,b){return b[1]-a[1];})[0];
-    p4[c]=top?{item:top[0],units:Math.round(top[1])}:{item:'N/A',units:0};
-  });
-
-  var p5={};
-  CATS.forEach(function(c){
-    var tot=sumU(function(r){return r._y===lastY&&r._pg===c;});
-    var agg={};
-    rows.filter(function(r){return r._y===lastY&&r._pg===c&&r._co!==ELUX&&r._co!=='OTHERS';}).forEach(function(r){agg[r._co]=(agg[r._co]||0)+r._u;});
-    var top=Object.entries(agg).sort(function(a,b){return b[1]-a[1];})[0];
-    p5[c]=top?{co:top[0],share:+(top[1]/tot*100).toFixed(1)}:{co:'N/A',share:0};
-  });
-
-  var p8={};
-  CATS.forEach(function(c){
-    var all=rows.filter(function(r){return r._pg===c;});
-    var ymSet={};
-    all.forEach(function(r){ymSet[r._y*100+r._m]=1;});
-    var yms=Object.keys(ymSet).map(Number).sort().slice(-12);
-    p8[c]=yms.map(function(ym){
-      var y=Math.floor(ym/100),m=ym%100;
-      var tot=all.filter(function(r){return r._y===y&&r._m===m;}).reduce(function(a,b){return a+b._u;},0);
-      var el=all.filter(function(r){return r._y===y&&r._m===m&&r._co===ELUX;}).reduce(function(a,b){return a+b._u;},0);
-      return {period:MN[m]+' '+y,share:tot>0?+(el/tot*100).toFixed(1):0};
-    });
-  });
-
-  var p9={};
-  CATS.forEach(function(c){
-    var tot=sumU(function(r){return r._y===lastY&&r._pg===c;});
-    var agg={};
-    rows.filter(function(r){return r._y===lastY&&r._pg===c&&r._co===ELUX;}).forEach(function(r){agg[r._it]=(agg[r._it]||0)+r._u;});
-    var skus=Object.entries(agg).sort(function(a,b){return b[1]-a[1];}).slice(0,5).map(function(e){return {it:e[0],u:Math.round(e[1]),sh:+(e[1]/tot*100).toFixed(1)};});
-    p9[c]={total:Math.round(tot),skus:skus};
-  });
-
-  var p10={};
-  CATS.forEach(function(c){
-    var tot1=sumU(function(r){return r._y===lastY-1&&r._pg===c;});
-    var tot2=sumU(function(r){return r._y===lastY&&r._pg===c;});
-    var s1={},s2={};
-    rows.filter(function(r){return r._y===lastY-1&&r._pg===c&&r._co===ELUX;}).forEach(function(r){s1[r._it]=(s1[r._it]||0)+r._u;});
-    rows.filter(function(r){return r._y===lastY&&r._pg===c&&r._co===ELUX;}).forEach(function(r){s2[r._it]=(s2[r._it]||0)+r._u;});
-    var allIt={};
-    Object.keys(s1).concat(Object.keys(s2)).forEach(function(k){allIt[k]=1;});
-    var diffs=Object.keys(allIt).map(function(it){return {it:it,d:+(((s2[it]||0)/tot2-(s1[it]||0)/tot1)*100).toFixed(2)};}).sort(function(a,b){return a.d-b.d;});
-    p10[c]={loser:diffs[0],winner:diffs[diffs.length-1]};
-  });
-
-  var p11={};
-  CATS.forEach(function(c){
-    var d=rows.filter(function(r){return r._y===ytdYear&&r._pg===c;});
-    var tot=d.reduce(function(a,b){return a+b._u;},0);
-    var el=d.filter(function(r){return r._co===ELUX;}).reduce(function(a,b){return a+b._u;},0);
-    var ytd=tot>0?+(el/tot*100).toFixed(1):0;
-    var ms=[]; var mset={};
-    d.forEach(function(r){mset[r._m]=1;});
-    ms=Object.keys(mset).map(Number).sort();
-    var ml=ms[ms.length-1],mp=ms.length>1?ms[ms.length-2]:ml;
-    function getM(m){var dm=d.filter(function(r){return r._m===m;});var t=dm.reduce(function(a,b){return a+b._u;},0);var e=dm.filter(function(r){return r._co===ELUX;}).reduce(function(a,b){return a+b._u;},0);return t>0?e/t*100:0;}
-    p11[c]={ytd:ytd,mom:+(getM(ml)-getM(mp)).toFixed(1)};
-  });
-
-  var p14={};
-  CATS.forEach(function(c){
-    var tot=sumU(function(r){return r._y===lastY&&r._pg===c;});
-    var agg={};
-    rows.filter(function(r){return r._y===lastY&&r._pg===c;}).forEach(function(r){agg[r._co]=(agg[r._co]||0)+r._u;});
-    p14[c]=Object.entries(agg).sort(function(a,b){return b[1]-a[1];}).map(function(e){return {co:e[0],u:Math.round(e[1]),sh:+(e[1]/tot*100).toFixed(1)};});
-  });
-
-  var p17={};
-  CATS.forEach(function(c){
-    var yrs=[lastY-3,lastY-2,lastY-1,lastY].filter(function(y){return years.indexOf(y)>=0;});
-    p17[c]=yrs.map(function(y){
-      var tot=sumU(function(r){return r._y===y&&r._pg===c;});
-      var el=sumU(function(r){return r._y===y&&r._pg===c&&r._co===ELUX;});
-      return {y:y,sh:tot>0?+(el/tot*100).toFixed(1):0};
-    });
-  });
-
-  var p19={};
-  CATS.forEach(function(c){
-    var tot=sumU(function(r){return r._y===lastY&&r._pg===c;});
-    var el=sumU(function(r){return r._y===lastY&&r._pg===c&&r._co===ELUX;});
-    var sh=tot>0?+(el/tot*100).toFixed(1):0;
-    var agg={};
-    rows.filter(function(r){return r._y===lastY&&r._pg===c;}).forEach(function(r){agg[r._co]=(agg[r._co]||0)+r._u;});
-    var rank=Object.keys(agg).sort(function(a,b){return agg[b]-agg[a];}).indexOf(ELUX)+1;
-    var tot3=sumU(function(r){return r._y===lastY-3&&r._pg===c;});
-    var el3=sumU(function(r){return r._y===lastY-3&&r._pg===c&&r._co===ELUX;});
-    var sh3=tot3>0?el3/tot3*100:0;
-    p19[c]={sh:sh,rank:rank,trend:+(sh-sh3).toFixed(1)};
-  });
-
-  var p20={};
-  CATS.forEach(function(c){
-    var tot1=sumU(function(r){return r._y===lastY-1&&r._pg===c;});
-    var tot2=sumU(function(r){return r._y===lastY&&r._pg===c;});
-    var a1={},a2={};
-    rows.filter(function(r){return r._y===lastY-1&&r._pg===c;}).forEach(function(r){a1[r._co]=(a1[r._co]||0)+r._u;});
-    rows.filter(function(r){return r._y===lastY&&r._pg===c;}).forEach(function(r){a2[r._co]=(a2[r._co]||0)+r._u;});
-    var cos={};
-    Object.keys(a1).concat(Object.keys(a2)).forEach(function(k){cos[k]=1;});
-    var diffs=Object.keys(cos).map(function(co){return {co:co,d:+(((a2[co]||0)/tot2-(a1[co]||0)/tot1)*100).toFixed(1)};}).sort(function(a,b){return a.d-b.d;});
-    p20[c]={loser:diffs[0],winner:diffs[diffs.length-1]};
-  });
-
-  var p21={};
-  CATS.forEach(function(c){
-    var tot=sumU(function(r){return r._y===lastY&&r._pg===c;});
-    var el=sumU(function(r){return r._y===lastY&&r._pg===c&&r._co===ELUX;});
-    var elSh=+(el/tot*100).toFixed(1);
-    var agg={};
-    rows.filter(function(r){return r._y===lastY&&r._pg===c&&r._co!==ELUX&&r._co!=='OTHERS';}).forEach(function(r){agg[r._co]=(agg[r._co]||0)+r._u;});
-    var top=Object.entries(agg).sort(function(a,b){return b[1]-a[1];})[0]||['N/A',0];
-    p21[c]={elux:elSh,lider:top[0],liderSh:+(top[1]/tot*100).toFixed(1)};
-  });
-
-  var p22={};
-  CATS.forEach(function(c){
-    var tot=sumU(function(r){return r._y===lastY&&r._pg===c;});
-    var el=sumU(function(r){return r._y===lastY&&r._pg===c&&r._co===ELUX;});
-    var sn=+(el/tot*100).toFixed(1);
-    var tot3=sumU(function(r){return r._y===lastY-3&&r._pg===c;});
-    var el3=sumU(function(r){return r._y===lastY-3&&r._pg===c&&r._co===ELUX;});
-    var s3=+(el3/tot3*100).toFixed(1);
-    p22[c]={sh:sn,trend:+(sn-s3).toFixed(1)};
-  });
-
-  var p23=CATS.map(function(c){
-    var tot1=sumU(function(r){return r._y===lastY-1&&r._pg===c;});
-    var el1=sumU(function(r){return r._y===lastY-1&&r._pg===c&&r._co===ELUX;});
-    var tot2=sumU(function(r){return r._y===lastY&&r._pg===c;});
-    var el2=sumU(function(r){return r._y===lastY&&r._pg===c&&r._co===ELUX;});
-    var s1=tot1>0?el1/tot1*100:0, s2=tot2>0?el2/tot2*100:0;
-    return {cat:c,delta:+(s2-s1).toFixed(1)};
-  }).sort(function(a,b){return Math.abs(b.delta)-Math.abs(a.delta);});
-
-  return {p1:p1,p2:p2,p3:p3,p4:p4,p5:p5,p8:p8,p9:p9,p10:p10,p11:p11,p14:p14,p17:p17,p19:p19,p20:p20,p21:p21,p22:p22,p23:p23,lastY:lastY,ytdYear:ytdYear};
+  var p1={};CATS.forEach(function(c){p1[c]=Math.round(sumU(function(r){return r._y===2019&&r._q===3&&r._pg===c;}));});
+  var p2={};CATS.forEach(function(c){var v19=sumU(function(r){return r._y===2019&&r._q===3&&r._pg===c;});var v18=sumU(function(r){return r._y===2018&&r._q===3&&r._pg===c;});p2[c]=v18>0?+((v19-v18)/v18*100).toFixed(1):null;});
+  var p3={_period:ytdYear+'-'+(lastMonth<10?'0':'')+lastMonth};CATS.forEach(function(c){var tot=sumU(function(r){return r._y===ytdYear&&r._m===lastMonth&&r._pg===c;});var el=sumU(function(r){return r._y===ytdYear&&r._m===lastMonth&&r._pg===c&&r._co===ELUX;});p3[c]=tot>0?+(el/tot*100).toFixed(1):0;});
+  var p4={};CATS.forEach(function(c){var agg={};rows.filter(function(r){return r._y===2019&&r._q===3&&r._pg===c&&r._co===ELUX;}).forEach(function(r){agg[r._it]=(agg[r._it]||0)+r._u;});var top=Object.entries(agg).sort(function(a,b){return b[1]-a[1];})[0];p4[c]=top?{item:top[0],units:Math.round(top[1])}:{item:'N/A',units:0};});
+  var p5={};CATS.forEach(function(c){var tot=sumU(function(r){return r._y===lastY&&r._pg===c;});var agg={};rows.filter(function(r){return r._y===lastY&&r._pg===c&&r._co!==ELUX&&r._co!=='OTHERS';}).forEach(function(r){agg[r._co]=(agg[r._co]||0)+r._u;});var top=Object.entries(agg).sort(function(a,b){return b[1]-a[1];})[0];p5[c]=top?{co:top[0],share:+(top[1]/tot*100).toFixed(1)}:{co:'N/A',share:0};});
+  var p8={};CATS.forEach(function(c){var all=rows.filter(function(r){return r._pg===c;});var ymSet={};all.forEach(function(r){ymSet[r._y*100+r._m]=1;});var yms=Object.keys(ymSet).map(Number).sort().slice(-12);p8[c]=yms.map(function(ym){var y=Math.floor(ym/100),m=ym%100;var tot=all.filter(function(r){return r._y===y&&r._m===m;}).reduce(function(a,b){return a+b._u;},0);var el=all.filter(function(r){return r._y===y&&r._m===m&&r._co===ELUX;}).reduce(function(a,b){return a+b._u;},0);return{period:MN[m]+' '+y,share:tot>0?+(el/tot*100).toFixed(1):0};});});
+  var p9={};CATS.forEach(function(c){var tot=sumU(function(r){return r._y===lastY&&r._pg===c;});var agg={};rows.filter(function(r){return r._y===lastY&&r._pg===c&&r._co===ELUX;}).forEach(function(r){agg[r._it]=(agg[r._it]||0)+r._u;});var skus=Object.entries(agg).sort(function(a,b){return b[1]-a[1];}).slice(0,5).map(function(e){return{it:e[0],u:Math.round(e[1]),sh:+(e[1]/tot*100).toFixed(1)};});p9[c]={total:Math.round(tot),skus:skus};});
+  var p10={};CATS.forEach(function(c){var tot1=sumU(function(r){return r._y===lastY-1&&r._pg===c;});var tot2=sumU(function(r){return r._y===lastY&&r._pg===c;});var s1={},s2={};rows.filter(function(r){return r._y===lastY-1&&r._pg===c&&r._co===ELUX;}).forEach(function(r){s1[r._it]=(s1[r._it]||0)+r._u;});rows.filter(function(r){return r._y===lastY&&r._pg===c&&r._co===ELUX;}).forEach(function(r){s2[r._it]=(s2[r._it]||0)+r._u;});var allIt={};Object.keys(s1).concat(Object.keys(s2)).forEach(function(k){allIt[k]=1;});var diffs=Object.keys(allIt).map(function(it){return{it:it,d:+(((s2[it]||0)/tot2-(s1[it]||0)/tot1)*100).toFixed(2)};}).sort(function(a,b){return a.d-b.d;});p10[c]={loser:diffs[0],winner:diffs[diffs.length-1]};});
+  var p11={};CATS.forEach(function(c){var d=rows.filter(function(r){return r._y===ytdYear&&r._pg===c;});var tot=d.reduce(function(a,b){return a+b._u;},0);var el=d.filter(function(r){return r._co===ELUX;}).reduce(function(a,b){return a+b._u;},0);var ytd=tot>0?+(el/tot*100).toFixed(1):0;var ms=[],mset={};d.forEach(function(r){mset[r._m]=1;});ms=Object.keys(mset).map(Number).sort();var ml=ms[ms.length-1],mp=ms.length>1?ms[ms.length-2]:ml;function getM(m){var dm=d.filter(function(r){return r._m===m;});var t=dm.reduce(function(a,b){return a+b._u;},0);var e=dm.filter(function(r){return r._co===ELUX;}).reduce(function(a,b){return a+b._u;},0);return t>0?e/t*100:0;}p11[c]={ytd:ytd,mom:+(getM(ml)-getM(mp)).toFixed(1)};});
+  var p14={};CATS.forEach(function(c){var tot=sumU(function(r){return r._y===lastY&&r._pg===c;});var agg={};rows.filter(function(r){return r._y===lastY&&r._pg===c;}).forEach(function(r){agg[r._co]=(agg[r._co]||0)+r._u;});p14[c]=Object.entries(agg).sort(function(a,b){return b[1]-a[1];}).map(function(e){return{co:e[0],u:Math.round(e[1]),sh:+(e[1]/tot*100).toFixed(1)};});});
+  var p17={};CATS.forEach(function(c){var yrs=[lastY-3,lastY-2,lastY-1,lastY].filter(function(y){return years.indexOf(y)>=0;});p17[c]=yrs.map(function(y){var tot=sumU(function(r){return r._y===y&&r._pg===c;});var el=sumU(function(r){return r._y===y&&r._pg===c&&r._co===ELUX;});return{y:y,sh:tot>0?+(el/tot*100).toFixed(1):0};});});
+  var p19={};CATS.forEach(function(c){var tot=sumU(function(r){return r._y===lastY&&r._pg===c;});var el=sumU(function(r){return r._y===lastY&&r._pg===c&&r._co===ELUX;});var sh=tot>0?+(el/tot*100).toFixed(1):0;var agg={};rows.filter(function(r){return r._y===lastY&&r._pg===c;}).forEach(function(r){agg[r._co]=(agg[r._co]||0)+r._u;});var rank=Object.keys(agg).sort(function(a,b){return agg[b]-agg[a];}).indexOf(ELUX)+1;var tot3=sumU(function(r){return r._y===lastY-3&&r._pg===c;});var el3=sumU(function(r){return r._y===lastY-3&&r._pg===c&&r._co===ELUX;});var sh3=tot3>0?el3/tot3*100:0;p19[c]={sh:sh,rank:rank,trend:+(sh-sh3).toFixed(1)};});
+  var p20={};CATS.forEach(function(c){var tot1=sumU(function(r){return r._y===lastY-1&&r._pg===c;});var tot2=sumU(function(r){return r._y===lastY&&r._pg===c;});var a1={},a2={};rows.filter(function(r){return r._y===lastY-1&&r._pg===c;}).forEach(function(r){a1[r._co]=(a1[r._co]||0)+r._u;});rows.filter(function(r){return r._y===lastY&&r._pg===c;}).forEach(function(r){a2[r._co]=(a2[r._co]||0)+r._u;});var cos={};Object.keys(a1).concat(Object.keys(a2)).forEach(function(k){cos[k]=1;});var diffs=Object.keys(cos).map(function(co){return{co:co,d:+(((a2[co]||0)/tot2-(a1[co]||0)/tot1)*100).toFixed(1)};}).sort(function(a,b){return a.d-b.d;});p20[c]={loser:diffs[0],winner:diffs[diffs.length-1]};});
+  var p21={};CATS.forEach(function(c){var tot=sumU(function(r){return r._y===lastY&&r._pg===c;});var el=sumU(function(r){return r._y===lastY&&r._pg===c&&r._co===ELUX;});var elSh=+(el/tot*100).toFixed(1);var agg={};rows.filter(function(r){return r._y===lastY&&r._pg===c&&r._co!==ELUX&&r._co!=='OTHERS';}).forEach(function(r){agg[r._co]=(agg[r._co]||0)+r._u;});var top=Object.entries(agg).sort(function(a,b){return b[1]-a[1];})[0]||['N/A',0];p21[c]={elux:elSh,lider:top[0],liderSh:+(top[1]/tot*100).toFixed(1)};});
+  var p22={};CATS.forEach(function(c){var tot=sumU(function(r){return r._y===lastY&&r._pg===c;});var el=sumU(function(r){return r._y===lastY&&r._pg===c&&r._co===ELUX;});var sn=+(el/tot*100).toFixed(1);var tot3=sumU(function(r){return r._y===lastY-3&&r._pg===c;});var el3=sumU(function(r){return r._y===lastY-3&&r._pg===c&&r._co===ELUX;});var s3=+(el3/tot3*100).toFixed(1);p22[c]={sh:sn,trend:+(sn-s3).toFixed(1)};});
+  var p23=CATS.map(function(c){var tot1=sumU(function(r){return r._y===lastY-1&&r._pg===c;});var el1=sumU(function(r){return r._y===lastY-1&&r._pg===c&&r._co===ELUX;});var tot2=sumU(function(r){return r._y===lastY&&r._pg===c;});var el2=sumU(function(r){return r._y===lastY&&r._pg===c&&r._co===ELUX;});var s1=tot1>0?el1/tot1*100:0,s2=tot2>0?el2/tot2*100:0;return{cat:c,delta:+(s2-s1).toFixed(1)};}).sort(function(a,b){return Math.abs(b.delta)-Math.abs(a.delta);});
+  return{p1:p1,p2:p2,p3:p3,p4:p4,p5:p5,p8:p8,p9:p9,p10:p10,p11:p11,p14:p14,p17:p17,p19:p19,p20:p20,p21:p21,p22:p22,p23:p23,lastY:lastY,ytdYear:ytdYear};
 }
 
 function fmt(v){return parseFloat(v)>=0?'+'+v:''+v;}
 function ncl(v){return parseFloat(v)>=0?'up':'dn';}
 
+function cG(met){return "<div class='conf-box conf-box-g'><b>🟢 Respuesta directa</b>Calculada directamente desde el dataset GfK.<div class='met'><strong>Metodologia:</strong> "+met+"</div></div>";}
+function cY(met){return "<div class='conf-box conf-box-y'><b>🟡 Respuesta inferida</b>Resultado obtenido mediante criterios analiticos basados en el dataset.<div class='met'><strong>Metodologia:</strong> "+met+"</div></div>";}
+function cR(){return "<div class='conf-box conf-box-r'><b>🔴 No respondible</b>El dataset no contiene informacion suficiente para responder esta pregunta con evidencia adecuada.</div>";}
+
 function showAnswers(D, fname, nrows) {
   document.getElementById('intro-meta').innerHTML = '📄 <strong>'+fname+'</strong> &nbsp;·&nbsp; '+nrows.toLocaleString('es-CL')+' filas';
 
-  var na = "<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div></div>";
-
   function naReq(items) {
-    var rows = items.map(function(it){ return it==='OR' ? "<div class='req-or'>o</div>" : "<div class='req-item'>"+it+"</div>"; }).join('');
-    return "<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'>"+rows+"</div></div></div>";
+    var r = items.map(function(it){ return it==='OR' ? "<div class='req-or'>o</div>" : "<div class='req-item'>"+it+"</div>"; }).join('');
+    return "<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Informacion adicional requerida</div><div class='req-body'>"+r+"</div></div></div>"+cR();
   }
 
   var na6  = naReq(['Lista de precios Electrolux','Precios de mercado / Retail']);
-  var na7  = naReq(['Atributos técnicos por SKU','Reglas de sustitución entre SKUs','Posicionamiento comercial']);
-  var na12 = naReq(['Clasificación Premium / Mainstream / Entry','OR','Lista de precios por SKU']);
+  var na7  = naReq(['Atributos tecnicos por SKU','Reglas de sustitucion entre SKUs','Posicionamiento comercial']);
+  var na12 = naReq(['Clasificacion Premium / Mainstream / Entry','OR','Lista de precios por SKU']);
   var na13 = naReq(['GfK con desglose regional']);
   var na15 = naReq(['Precio promedio por SKU']);
   var na16 = naReq(['Precio por SKU']);
   var na18 = naReq(['Sell In (despachos por SKU)','Inventario retail (DOH por SKU/canal)','Historial de promociones']);
-  var na24 = naReq(['Clasificación Premium / Mass','OR','Lista de precios por SKU']);
+  var na24 = naReq(['Clasificacion Premium / Mass','OR','Lista de precios por SKU']);
 
-  var html = '';
+  var h = '';
 
-  html += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P1</span><div class='q-text'>¿Cuál es el volumen de refrigeración / lavadoras / cocinas en el período Q3 2019?<span class='conf conf-g'>🟢 Respuesta directa</span></div></div><div class='q-body'><table><thead><tr><th>Categoría</th><th>Unidades Q3 2019</th></tr></thead><tbody><tr><td>Refrigeración</td><td><strong>"+Math.round(D.p1['REFRIGERACIÓN']).toLocaleString('es-CL')+"</strong></td></tr><tr><td>Cocinas</td><td><strong>"+Math.round(D.p1['COCINAS']).toLocaleString('es-CL')+"</strong></td></tr><tr><td>Lavado</td><td><strong>"+Math.round(D.p1['LAVADO']).toLocaleString('es-CL')+"</strong></td></tr></tbody></table></div></div>";
+  h += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P1</span><div class='q-text'>¿Cual es el volumen de refrigeracion / lavadoras / cocinas en el periodo Q3 2019? <span class='conf conf-g'>🟢 Directa</span></div></div><div class='q-body'><table><thead><tr><th>Categoria</th><th>Unidades Q3 2019</th></tr></thead><tbody><tr><td>Refrigeracion</td><td><strong>"+Math.round(D.p1['REFRIGERACIÓN']).toLocaleString('es-CL')+"</strong></td></tr><tr><td>Cocinas</td><td><strong>"+Math.round(D.p1['COCINAS']).toLocaleString('es-CL')+"</strong></td></tr><tr><td>Lavado</td><td><strong>"+Math.round(D.p1['LAVADO']).toLocaleString('es-CL')+"</strong></td></tr></tbody></table></div>"+cG('Fuente: GfK - Variables: unidades vendidas Q3 2019 por categoria')+"</div>";
 
-  html += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P2</span><div class='q-text'>¿Cuál es la variación YoY de Q3 2019 vs Q3 2018?<span class='conf conf-g'>🟢 Respuesta directa</span></div></div><div class='q-body'><table><thead><tr><th>Categoría</th><th>Variación YoY</th></tr></thead><tbody>"+['COCINAS','REFRIGERACIÓN','LAVADO'].map(function(c){return "<tr><td>"+c+"</td><td class='"+ncl(D.p2[c])+"'>"+fmt(D.p2[c])+"%</td></tr>";}).join('')+"</tbody></table></div></div>";
+  h += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P2</span><div class='q-text'>¿Cual es la variacion YoY de Q3 2019 vs Q3 2018? <span class='conf conf-g'>🟢 Directa</span></div></div><div class='q-body'><table><thead><tr><th>Categoria</th><th>Variacion YoY</th></tr></thead><tbody>"+['COCINAS','REFRIGERACIÓN','LAVADO'].map(function(c){return "<tr><td>"+c+"</td><td class='"+ncl(D.p2[c])+"'>"+fmt(D.p2[c])+"%</td></tr>";}).join('')+"</tbody></table></div>"+cG('Fuente: GfK - Formula: (vol Q3 2019 - vol Q3 2018) / vol Q3 2018')+"</div>";
 
-  html += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P3</span><div class='q-text'>¿Cuál es el market share de Electrolux en el último período?<span class='conf conf-g'>🟢 Respuesta directa</span></div></div><div class='q-body'><div class='kpi-row'>"+['COCINAS','LAVADO','REFRIGERACIÓN'].map(function(c){return "<div class='kpi'><div class='kpi-l'>"+c+"</div><div class='kpi-v'>"+D.p3[c]+"%</div></div>";}).join('')+"</div><div class='note'>Período: "+D.p3._period+" (último mes con datos en el dataset)</div></div></div>";
+  h += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P3</span><div class='q-text'>¿Cual es el market share de Electrolux en el ultimo periodo? <span class='conf conf-g'>🟢 Directa</span></div></div><div class='q-body'><div class='kpi-row'>"+['COCINAS','LAVADO','REFRIGERACIÓN'].map(function(c){return "<div class='kpi'><div class='kpi-l'>"+c+"</div><div class='kpi-v'>"+D.p3[c]+"%</div></div>";}).join('')+"</div><div class='note'>Periodo: "+D.p3._period+" (ultimo mes con datos en el dataset)</div></div>"+cG('Fuente: GfK - Formula: unidades Electrolux / total mercado, ultimo mes disponible')+"</div>";
 
-  html += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P4</span><div class='q-text'>¿Cuál es el principal ítem de Electrolux por categoría en Q3 2019?<span class='conf conf-g'>🟢 Respuesta directa</span></div></div><div class='q-body'><table><thead><tr><th>Categoría</th><th>Item</th><th>Unidades</th></tr></thead><tbody>"+['REFRIGERACIÓN','LAVADO','COCINAS'].map(function(c){return "<tr><td>"+c+"</td><td><strong>"+D.p4[c].item+"</strong></td><td>"+D.p4[c].units.toLocaleString('es-CL')+"</td></tr>";}).join('')+"</tbody></table></div></div>";
+  h += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P4</span><div class='q-text'>¿Cual es el principal item de Electrolux por categoria en Q3 2019? <span class='conf conf-g'>🟢 Directa</span></div></div><div class='q-body'><table><thead><tr><th>Categoria</th><th>Item</th><th>Unidades</th></tr></thead><tbody>"+['REFRIGERACIÓN','LAVADO','COCINAS'].map(function(c){return "<tr><td>"+c+"</td><td><strong>"+D.p4[c].item+"</strong></td><td>"+D.p4[c].units.toLocaleString('es-CL')+"</td></tr>";}).join('')+"</tbody></table></div>"+cG('Fuente: GfK - Variables: ventas Q3 2019 por SKU Electrolux - Criterio: mayor volumen unitario')+"</div>";
 
-  html += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P5</span><div class='q-text'>¿Cuál es la principal amenaza para Electrolux por categoría?<span class='conf conf-g'>🟢 Respuesta directa</span></div></div><div class='q-body'><table><thead><tr><th>Categoría</th><th>Amenaza principal</th><th>Share</th></tr></thead><tbody>"+CATS.map(function(c){return "<tr><td>"+c+"</td><td class='dn'><strong>"+D.p5[c].co+"</strong></td><td class='dn'>"+D.p5[c].share+"%</td></tr>";}).join('')+"</tbody></table></div></div>";
+  h += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P5</span><div class='q-text'>¿Cual es la principal amenaza para Electrolux por categoria? <span class='conf conf-g'>🟢 Directa</span></div></div><div class='q-body'><table><thead><tr><th>Categoria</th><th>Amenaza principal</th><th>Share</th></tr></thead><tbody>"+CATS.map(function(c){return "<tr><td>"+c+"</td><td class='dn'><strong>"+D.p5[c].co+"</strong></td><td class='dn'>"+D.p5[c].share+"%</td></tr>";}).join('')+"</tbody></table></div>"+cG('Fuente: GfK - Variables: ventas ano reciente excl. Electrolux y OTHERS - Criterio: mayor share individual')+"</div>";
 
-  html += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P6</span><div class='q-text'>¿Qué ítems de Electrolux están con precio por encima del principal competidor?<span class='conf conf-r'>🔴 No respondible</span></div></div>"+na6+"</div>";
-  html += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P7</span><div class='q-text'>¿Qué ítem de Electrolux es el mejor para competir con el principal ítem de la competencia?<span class='conf conf-r'>🔴 No respondible</span></div></div>"+na7+"</div>";
+  h += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P6</span><div class='q-text'>¿Que items de Electrolux estan con precio por encima del principal competidor? <span class='conf conf-r'>🔴 No respondible</span></div></div>"+na6+"</div>";
+  h += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P7</span><div class='q-text'>¿Que item de Electrolux es el mejor para competir con el principal item de la competencia? <span class='conf conf-r'>🔴 No respondible</span></div></div>"+na7+"</div>";
 
-  html += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P8</span><div class='q-text'>¿Cuál es el market share por categoría y mes en los últimos 12 meses?<span class='conf conf-g'>🟢 Respuesta directa</span></div></div><div class='q-body'>"+CATS.map(function(c){return "<div class='cat-label'>"+c+"</div><table><thead><tr><th>Período</th><th>Share Electrolux GRP.</th></tr></thead><tbody>"+D.p8[c].map(function(x){return "<tr><td>"+x.period+"</td><td>"+x.share+"%</td></tr>";}).join('')+"</tbody></table>";}).join('')+"</div></div>";
+  h += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P8</span><div class='q-text'>¿Cual es el market share por categoria y mes en los ultimos 12 meses? <span class='conf conf-g'>🟢 Directa</span></div></div><div class='q-body'>"+CATS.map(function(c){return "<div class='cat-label'>"+c+"</div><table><thead><tr><th>Periodo</th><th>Share Electrolux GRP.</th></tr></thead><tbody>"+D.p8[c].map(function(x){return "<tr><td>"+x.period+"</td><td>"+x.share+"%</td></tr>";}).join('')+"</tbody></table>";}).join('')+"</div>"+cG('Fuente: GfK - Formula: unidades Electrolux / total mercado por mes, ultimos 12 meses')+"</div>";
 
-  html += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P9</span><div class='q-text'>¿Cuál es el market share por SKU dentro de cada categoría?<span class='conf conf-g'>🟢 Respuesta directa</span></div></div><div class='q-body'>"+CATS.map(function(c){return "<div class='cat-label'>"+c+" (mercado total: "+D.p9[c].total.toLocaleString('es-CL')+" u)</div><table><thead><tr><th>#</th><th>Item</th><th>Unidades</th><th>Share cat.</th></tr></thead><tbody>"+D.p9[c].skus.map(function(s,i){return "<tr><td>"+(i+1)+"</td><td><strong>"+s.it+"</strong></td><td>"+s.u.toLocaleString('es-CL')+"</td><td><strong>"+s.sh+"%</strong></td></tr>";}).join('')+"</tbody></table>";}).join('')+"</div></div>";
+  h += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P9</span><div class='q-text'>¿Cual es el market share por SKU dentro de cada categoria? <span class='conf conf-g'>🟢 Directa</span></div></div><div class='q-body'>"+CATS.map(function(c){return "<div class='cat-label'>"+c+" (mercado total: "+D.p9[c].total.toLocaleString('es-CL')+" u)</div><table><thead><tr><th>#</th><th>Item</th><th>Unidades</th><th>Share cat.</th></tr></thead><tbody>"+D.p9[c].skus.map(function(s,i){return "<tr><td>"+(i+1)+"</td><td><strong>"+s.it+"</strong></td><td>"+s.u.toLocaleString('es-CL')+"</td><td><strong>"+s.sh+"%</strong></td></tr>";}).join('')+"</tbody></table>";}).join('')+"</div>"+cG('Fuente: GfK - Formula: unidades por SKU / total mercado categoria, ano mas reciente')+"</div>";
 
-  html += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P10</span><div class='q-text'>¿Qué SKUs contribuyeron más a la ganancia / pérdida de share?<span class='conf conf-y'>🟡 Inferida</span></div></div><div class='q-body'><table><thead><tr><th>Categoría</th><th>📉 Perdedor</th><th>∆pp</th><th>📈 Ganador</th><th>∆pp</th></tr></thead><tbody>"+CATS.map(function(c){return "<tr><td>"+c+"</td><td>"+(D.p10[c].loser?D.p10[c].loser.it:'—')+"</td><td class='dn'>"+(D.p10[c].loser?D.p10[c].loser.d:'—')+"pp</td><td>"+(D.p10[c].winner?D.p10[c].winner.it:'—')+"</td><td class='up'>+"+(D.p10[c].winner?D.p10[c].winner.d:'—')+"pp</td></tr>";}).join('')+"</tbody></table></div></div>";
+  h += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P10</span><div class='q-text'>¿Que SKUs contribuyeron mas a la ganancia / perdida de share? <span class='conf conf-y'>🟡 Inferida</span></div></div><div class='q-body'><table><thead><tr><th>Categoria</th><th>📉 Perdedor</th><th>∆pp</th><th>📈 Ganador</th><th>∆pp</th></tr></thead><tbody>"+CATS.map(function(c){return "<tr><td>"+c+"</td><td>"+(D.p10[c].loser?D.p10[c].loser.it:'—')+"</td><td class='dn'>"+(D.p10[c].loser?D.p10[c].loser.d:'—')+"pp</td><td>"+(D.p10[c].winner?D.p10[c].winner.it:'—')+"</td><td class='up'>+"+(D.p10[c].winner?D.p10[c].winner.d:'—')+"pp</td></tr>";}).join('')+"</tbody></table></div>"+cY('Criterio: variacion de share SKU Electrolux entre ano actual y anterior - No incluye efecto precio ni distribucion')+"</div>";
 
-  html += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P11</span><div class='q-text'>¿Cuál es la variación de share MoM y YTD por categoría?<span class='conf conf-y'>🟡 Inferida</span></div></div><div class='q-body'><table><thead><tr><th>Categoría</th><th>Share YTD "+D.ytdYear+"</th><th>MoM último mes</th></tr></thead><tbody>"+CATS.map(function(c){return "<tr><td>"+c+"</td><td><strong>"+D.p11[c].ytd+"%</strong></td><td class='"+ncl(D.p11[c].mom)+"'>"+fmt(D.p11[c].mom)+"pp</td></tr>";}).join('')+"</tbody></table></div></div>";
+  h += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P11</span><div class='q-text'>¿Cual es la variacion de share MoM y YTD por categoria? <span class='conf conf-y'>🟡 Inferida</span></div></div><div class='q-body'><table><thead><tr><th>Categoria</th><th>Share YTD "+D.ytdYear+"</th><th>MoM ultimo mes</th></tr></thead><tbody>"+CATS.map(function(c){return "<tr><td>"+c+"</td><td><strong>"+D.p11[c].ytd+"%</strong></td><td class='"+ncl(D.p11[c].mom)+"'>"+fmt(D.p11[c].mom)+"pp</td></tr>";}).join('')+"</tbody></table></div>"+cY('Criterio: share acumulado YTD desde unidades - MoM = diferencia entre ultimo y penultimo mes disponible')+"</div>";
 
-  html += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P12</span><div class='q-text'>¿Cuál es el share por rango de precio (premium vs mainstream vs entry)?<span class='conf conf-r'>🔴 No respondible</span></div></div>"+na12+"</div>";
-  html += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P13</span><div class='q-text'>¿Cómo está el share por región?<span class='conf conf-r'>🔴 No respondible</span></div></div>"+na13+"</div>";
+  h += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P12</span><div class='q-text'>¿Cual es el share por rango de precio? <span class='conf conf-r'>🔴 No respondible</span></div></div>"+na12+"</div>";
+  h += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P13</span><div class='q-text'>¿Como esta el share por region? <span class='conf conf-r'>🔴 No respondible</span></div></div>"+na13+"</div>";
 
-  html += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P14</span><div class='q-text'>¿Cuál es el ranking de competidores por categoría?<span class='conf conf-g'>🟢 Respuesta directa</span></div></div><div class='q-body'>"+CATS.map(function(c){return "<div class='cat-label'>"+c+"</div><table><thead><tr><th>#</th><th>Compañía</th><th>Unidades</th><th>Share</th></tr></thead><tbody>"+D.p14[c].map(function(r,i){return "<tr class='"+(r.co===ELUX?'elux':'')+"'><td>"+(i+1)+"</td><td>"+r.co+"</td><td>"+r.u.toLocaleString('es-CL')+"</td><td><strong>"+r.sh+"%</strong></td></tr>";}).join('')+"</tbody></table>";}).join('')+"</div></div>";
+  h += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P14</span><div class='q-text'>¿Cual es el ranking de competidores por categoria? <span class='conf conf-g'>🟢 Directa</span></div></div><div class='q-body'>"+CATS.map(function(c){return "<div class='cat-label'>"+c+"</div><table><thead><tr><th>#</th><th>Compania</th><th>Unidades</th><th>Share</th></tr></thead><tbody>"+D.p14[c].map(function(r,i){return "<tr class='"+(r.co===ELUX?'elux':'')+"'><td>"+(i+1)+"</td><td>"+r.co+"</td><td>"+r.u.toLocaleString('es-CL')+"</td><td><strong>"+r.sh+"%</strong></td></tr>";}).join('')+"</tbody></table>";}).join('')+"</div>"+cG('Fuente: GfK - Variables: ventas anuales por compania - Criterio: ranking descendente por share')+"</div>";
 
-  html += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P15</span><div class='q-text'>¿Cuál es la correlación entre precio promedio y market share?<span class='conf conf-r'>🔴 No respondible</span></div></div>"+na15+"</div>";
-  html += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P16</span><div class='q-text'>¿Cuál es el impacto de volumen vs precio en la variación de share?<span class='conf conf-r'>🔴 No respondible</span></div></div>"+na16+"</div>";
+  h += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P15</span><div class='q-text'>¿Cual es la correlacion entre precio promedio y market share? <span class='conf conf-r'>🔴 No respondible</span></div></div>"+na15+"</div>";
+  h += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P16</span><div class='q-text'>¿Cual es el impacto de volumen vs precio en la variacion de share? <span class='conf conf-r'>🔴 No respondible</span></div></div>"+na16+"</div>";
 
-  html += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P17</span><div class='q-text'>¿Estamos ganando o perdiendo market share?<span class='conf conf-g'>🟢 Respuesta directa</span></div></div><div class='q-body'>"+CATS.map(function(c){return "<div class='cat-label'>"+c+"</div><table><thead><tr>"+D.p17[c].map(function(p){return "<th>"+p.y+"</th>";}).join('')+"</tr></thead><tbody><tr>"+D.p17[c].map(function(p){return "<td>"+p.sh+"%</td>";}).join('')+"</tr></tbody></table>";}).join('')+"</div></div>";
+  h += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P17</span><div class='q-text'>¿Estamos ganando o perdiendo market share? <span class='conf conf-g'>🟢 Directa</span></div></div><div class='q-body'>"+CATS.map(function(c){return "<div class='cat-label'>"+c+"</div><table><thead><tr>"+D.p17[c].map(function(p){return "<th>"+p.y+"</th>";}).join('')+"</tr></thead><tbody><tr>"+D.p17[c].map(function(p){return "<td>"+p.sh+"%</td>";}).join('')+"</tr></tbody></table>";}).join('')+"</div>"+cG('Fuente: GfK - Variables: share Electrolux calculado ano a ano sobre total mercado categoria')+"</div>";
 
-  html += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P18</span><div class='q-text'>¿Cuál es el principal driver de la variación de share en el último mes?<span class='conf conf-r'>🔴 No respondible</span></div></div>"+na18+"</div>";
+  h += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P18</span><div class='q-text'>¿Cual es el principal driver de la variacion de share en el ultimo mes? <span class='conf conf-r'>🔴 No respondible</span></div></div>"+na18+"</div>";
 
-  html += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P19</span><div class='q-text'>¿En qué categorías somos más fuertes y en cuáles estamos perdiendo relevancia?<span class='conf conf-y'>🟡 Inferida</span></div></div><div class='q-body'><table><thead><tr><th>Categoría</th><th>Share "+D.lastY+"</th><th>Posición en mercado</th><th>Variación 3 años</th></tr></thead><tbody>"+['COCINAS','LAVADO','REFRIGERACIÓN'].map(function(c){return "<tr><td>"+c+"</td><td><strong>"+D.p19[c].sh+"%</strong></td><td>#"+D.p19[c].rank+"</td><td class='"+ncl(D.p19[c].trend)+"'>"+fmt(D.p19[c].trend)+"pp</td></tr>";}).join('')+"</tbody></table><div class='note'>Variación 3 años: diferencia de share entre "+D.lastY+" y "+(D.lastY-3)+".</div></div></div>";
+  h += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P19</span><div class='q-text'>¿En que categorias somos mas fuertes y en cuales estamos perdiendo relevancia? <span class='conf conf-y'>🟡 Inferida</span></div></div><div class='q-body'><table><thead><tr><th>Categoria</th><th>Share "+D.lastY+"</th><th>Posicion en mercado</th><th>Variacion 3 anos</th></tr></thead><tbody>"+['COCINAS','LAVADO','REFRIGERACIÓN'].map(function(c){return "<tr><td>"+c+"</td><td><strong>"+D.p19[c].sh+"%</strong></td><td>#"+D.p19[c].rank+"</td><td class='"+ncl(D.p19[c].trend)+"'>"+fmt(D.p19[c].trend)+"pp</td></tr>";}).join('')+"</tbody></table><div class='note'>Variacion 3 anos: diferencia de share entre "+D.lastY+" y "+(D.lastY-3)+".</div></div>"+cY('Criterio: share actual vs share hace 3 anos - Posicion = ranking volumen ano reciente - No considera tendencia intermedia')+"</div>";
 
-  html += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P20</span><div class='q-text'>¿Quiénes son los principales ganadores y perdedores del mercado actualmente?<span class='conf conf-g'>🟢 Respuesta directa</span></div></div><div class='q-body'><table><thead><tr><th>Categoría</th><th>Mayor perdedor</th><th>∆ Share</th><th>Mayor ganador</th><th>∆ Share</th></tr></thead><tbody>"+CATS.map(function(c){return "<tr><td>"+c+"</td><td>"+(D.p20[c].loser?D.p20[c].loser.co:'—')+"</td><td class='dn'>"+(D.p20[c].loser?D.p20[c].loser.d:'—')+"pp</td><td>"+(D.p20[c].winner?D.p20[c].winner.co:'—')+"</td><td class='up'>+"+(D.p20[c].winner?D.p20[c].winner.d:'—')+"pp</td></tr>";}).join('')+"</tbody></table><div class='note'>OTHERS es un agregado residual de múltiples marcas no clasificadas individualmente.</div></div></div>";
+  h += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P20</span><div class='q-text'>¿Quienes son los principales ganadores y perdedores del mercado actualmente? <span class='conf conf-g'>🟢 Directa</span></div></div><div class='q-body'><table><thead><tr><th>Categoria</th><th>Mayor perdedor</th><th>∆ Share</th><th>Mayor ganador</th><th>∆ Share</th></tr></thead><tbody>"+CATS.map(function(c){return "<tr><td>"+c+"</td><td>"+(D.p20[c].loser?D.p20[c].loser.co:'—')+"</td><td class='dn'>"+(D.p20[c].loser?D.p20[c].loser.d:'—')+"pp</td><td>"+(D.p20[c].winner?D.p20[c].winner.co:'—')+"</td><td class='up'>+"+(D.p20[c].winner?D.p20[c].winner.d:'—')+"pp</td></tr>";}).join('')+"</tbody></table><div class='note'>OTHERS es un agregado residual de multiples marcas no clasificadas individualmente.</div></div>"+cG('Fuente: GfK - Formula: delta share anual por compania ano actual vs anterior')+"</div>";
 
-  html += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P21</span><div class='q-text'>¿Cuál es la brecha de market share respecto al líder?<span class='conf conf-y'>🟡 Inferida</span></div></div><div class='q-body'><table><thead><tr><th>Categoría</th><th>Share Electrolux</th><th>Principal competidor</th><th>Share competidor</th><th>Brecha</th></tr></thead><tbody>"+['COCINAS','LAVADO','REFRIGERACIÓN'].map(function(c){var b=(parseFloat(D.p21[c].elux)-parseFloat(D.p21[c].liderSh)).toFixed(1);return "<tr><td>"+c+"</td><td><strong>"+D.p21[c].elux+"%</strong></td><td>"+D.p21[c].lider+"</td><td>"+D.p21[c].liderSh+"%</td><td class='"+ncl(b)+"'>"+fmt(b)+"pp</td></tr>";}).join('')+"</tbody></table><div class='note'>OTHERS excluido. Principal competidor = compañía con mayor participación individual distinta a Electrolux.</div></div></div>";
+  h += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P21</span><div class='q-text'>¿Cual es la brecha de market share respecto al lider? <span class='conf conf-y'>🟡 Inferida</span></div></div><div class='q-body'><table><thead><tr><th>Categoria</th><th>Share Electrolux</th><th>Principal competidor</th><th>Share competidor</th><th>Brecha</th></tr></thead><tbody>"+['COCINAS','LAVADO','REFRIGERACIÓN'].map(function(c){var b=(parseFloat(D.p21[c].elux)-parseFloat(D.p21[c].liderSh)).toFixed(1);return "<tr><td>"+c+"</td><td><strong>"+D.p21[c].elux+"%</strong></td><td>"+D.p21[c].lider+"</td><td>"+D.p21[c].liderSh+"%</td><td class='"+ncl(b)+"'>"+fmt(b)+"pp</td></tr>";}).join('')+"</tbody></table><div class='note'>OTHERS excluido. Principal competidor = compania con mayor participacion individual distinta a Electrolux.</div></div>"+cY('Criterio: principal competidor = mayor share individual excl. Electrolux y OTHERS - Brecha puede ser positiva o negativa')+"</div>";
 
-  html += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P22</span><div class='q-text'>¿Dónde tenemos mayor oportunidad de ganancia de share en el corto plazo?<span class='conf conf-y'>🟡 Inferida</span></div></div><div class='q-body'><table><thead><tr><th>Categoría</th><th>Share actual</th><th>Trend 3 años</th></tr></thead><tbody>"+['COCINAS','REFRIGERACIÓN','LAVADO'].map(function(c){return "<tr><td>"+c+"</td><td><strong>"+D.p22[c].sh+"%</strong></td><td class='"+ncl(D.p22[c].trend)+"'>"+fmt(D.p22[c].trend)+"pp</td></tr>";}).join('')+"</tbody></table></div></div>";
+  h += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P22</span><div class='q-text'>¿Donde tenemos mayor oportunidad de ganancia de share en el corto plazo? <span class='conf conf-y'>🟡 Inferida</span></div></div><div class='q-body'><table><thead><tr><th>Categoria</th><th>Share actual</th><th>Trend 3 anos</th></tr></thead><tbody>"+['COCINAS','REFRIGERACIÓN','LAVADO'].map(function(c){return "<tr><td>"+c+"</td><td><strong>"+D.p22[c].sh+"%</strong></td><td class='"+ncl(D.p22[c].trend)+"'>"+fmt(D.p22[c].trend)+"pp</td></tr>";}).join('')+"</tbody></table></div>"+cY('Criterio: variacion de share en 3 anos como proxy de oportunidad - No considera rentabilidad ni capacidad operativa')+"</div>";
 
-  html += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P23</span><div class='q-text'>¿Qué categoría impactó más nuestro resultado de share recientemente?<span class='conf conf-y'>🟡 Inferida</span></div></div><div class='q-body'><table><thead><tr><th>#</th><th>Categoría</th><th>∆ Share YoY</th></tr></thead><tbody>"+D.p23.map(function(r,i){return "<tr><td>"+(i+1)+"</td><td><strong>"+r.cat+"</strong></td><td class='"+ncl(r.delta)+"'>"+fmt(r.delta)+"pp</td></tr>";}).join('')+"</tbody></table></div></div>";
+  h += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P23</span><div class='q-text'>¿Que categoria tuvo mayor variacion de share recientemente? <span class='conf conf-y'>🟡 Inferida</span></div></div><div class='q-body'><table><thead><tr><th>#</th><th>Categoria</th><th>∆ Share YoY</th></tr></thead><tbody>"+D.p23.map(function(r,i){return "<tr><td>"+(i+1)+"</td><td><strong>"+r.cat+"</strong></td><td class='"+ncl(r.delta)+"'>"+fmt(r.delta)+"pp</td></tr>";}).join('')+"</tbody></table></div>"+cY('Criterio: variacion de market share YoY - Proxy de impacto, no impacto financiero real')+"</div>";
 
-  html += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P24</span><div class='q-text'>¿Cómo está nuestro share en el segmento premium vs mass?<span class='conf conf-r'>🔴 No respondible</span></div></div>"+na24+"</div>";
+  h += "<div class='q-block'><div class='q-hdr'><span class='q-num'>P24</span><div class='q-text'>¿Como esta nuestro share en el segmento premium vs mass? <span class='conf conf-r'>🔴 No respondible</span></div></div>"+na24+"</div>";
 
-  document.getElementById('qa-container').innerHTML = html;
+  document.getElementById('qa-container').innerHTML = h;
   document.getElementById('tab-upload').classList.remove('active');
   document.getElementById('tab-resp').classList.add('active');
 }
@@ -532,24 +375,14 @@ function resetAll() {
   PRICES = null;
 }
 
-// Drop zone
-var dz  = document.getElementById('dropZone');
-var fi  = document.getElementById('fi');
-var btn = document.getElementById('dz-btn');
-
-btn.addEventListener('click', function(e){ e.stopPropagation(); fi.click(); });
-dz.addEventListener('click', function(){ fi.click(); });
-dz.addEventListener('dragenter', function(e){ e.preventDefault(); e.stopPropagation(); dz.classList.add('drag'); });
-dz.addEventListener('dragover',  function(e){ e.preventDefault(); e.stopPropagation(); dz.classList.add('drag'); });
-dz.addEventListener('dragleave', function(e){ e.preventDefault(); e.stopPropagation(); dz.classList.remove('drag'); });
-dz.addEventListener('drop', function(e){
-  e.preventDefault(); e.stopPropagation();
-  dz.classList.remove('drag');
-  var files = e.dataTransfer.files;
-  if (files && files.length > 0) handleFile(files[0]);
-});
-fi.addEventListener('change', function(){ if(fi.files[0]) handleFile(fi.files[0]); });
-
+var dz=document.getElementById('dropZone'),fi=document.getElementById('fi'),btn=document.getElementById('dz-btn');
+btn.addEventListener('click',function(e){e.stopPropagation();fi.click();});
+dz.addEventListener('click',function(){fi.click();});
+dz.addEventListener('dragenter',function(e){e.preventDefault();e.stopPropagation();dz.classList.add('drag');});
+dz.addEventListener('dragover',function(e){e.preventDefault();e.stopPropagation();dz.classList.add('drag');});
+dz.addEventListener('dragleave',function(e){e.preventDefault();e.stopPropagation();dz.classList.remove('drag');});
+dz.addEventListener('drop',function(e){e.preventDefault();e.stopPropagation();dz.classList.remove('drag');var files=e.dataTransfer.files;if(files&&files.length>0)handleFile(files[0]);});
+fi.addEventListener('change',function(){if(fi.files[0])handleFile(fi.files[0]);});
 </script>
 </body>
 </html>
