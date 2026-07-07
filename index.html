@@ -226,6 +226,7 @@ tr.elux td{background:#EBF5FC11}
 </div>
 
 <script>
+
 // ─── SVGs animados ───────────────────────────────────────────
 const SVGS = {
   1:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect class="spin" x="4" y="4" width="20" height="20" rx="3" stroke="#0082C8" stroke-width="2" stroke-dasharray="4 2"/><path d="M9 14h10M9 10h6M9 18h8" stroke="#0082C8" stroke-width="1.5" stroke-linecap="round"/></svg>`,
@@ -530,11 +531,6 @@ function buildData(rows) {
 function fmt(v){return parseFloat(v)>=0?'+'+v:''+v;}
 function ncl(v){return parseFloat(v)>=0?'up':'dn';}
 
-function showAnswers(D, fname, nrows) {
-  document.getElementById('intro-meta').textContent =
-    `Fuente: ${fname} · ${nrows.toLocaleString('es-CL')} filas · Dataset GfK T3 Chile`;
-
-  const na = `<div class='unavail'><div class='warn'>No es posible responder esta pregunta con el dataset disponible.</div></div>`;
 const na6  = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'><input type='checkbox'> Lista de precios Electrolux</div><div class='req-item'><input type='checkbox'> Precios de mercado / Retail</div></div></div><div class='inline-upload' id='upload-prices' onclick='document.getElementById(\'fi-prices\').click()'>
         <span class='iu-icon'>📎</span>
         <div class='iu-text'>
@@ -606,6 +602,24 @@ const na24 = `<div class='unavail'><div class='warn'>⚠️ No es posible respon
         <button class='iu-btn' id='btn-seg24'>Subir archivo</button>
         <input type='file' id='fi-seg24' accept='.xlsx,.xls,.csv' style='display:none' onchange='loadExtra(\'seg24\', this.files[0])'>
       </div></div>`;
+const na18 = `<div class='unavail'>
+  <div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div>
+  <div class='inline-q'>
+    <div class='inline-q-title'>Información requerida</div>
+    <div class='inline-q-label'>¿Qué factores considera el principal driver de variación de share en su mercado?</div>
+    <select onchange="this.nextElementSibling.style.display=this.value==='otro'?'block':'none'">
+      <option value=''>— Selecciona una opción —</option>
+      <option value='sku'>Entrada o salida de un SKU clave</option>
+      <option value='promo'>Actividad promocional o precio</option>
+      <option value='dist'>Cambio en distribución por canal</option>
+      <option value='comp'>Movimiento de un competidor específico</option>
+      <option value='stock'>Quiebre de stock</option>
+      <option value='otro'>Otro</option>
+    </select>
+    <textarea placeholder='Describe el driver...' style='display:none'></textarea>
+  </div>
+</div>`;
+
 
 // ─── Carga de archivos adicionales ──────────────────────────────────────────
 let PRICES = null;
@@ -701,7 +715,6 @@ function updatePriceQuestions() {
   }
 }
 
-}
 
 function tbl(headers, rows) {
   const th=headers.map(h=>`<th style="text-align:left;padding:6px 10px;font-size:10px;font-weight:700;text-transform:uppercase;color:#6A7D99;border-bottom:2px solid #0D2145">${h}</th>`).join('');
@@ -709,32 +722,27 @@ function tbl(headers, rows) {
   return `<table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table>`;
 }
 
-</script>
-</body
-const na18 = `<div class='unavail'>
-  <div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div>
-  <div class='inline-q'>
-    <div class='inline-q-title'>Información requerida</div>
-    <div class='inline-q-label'>¿Qué factores considera el principal driver de variación de share en su mercado?</div>
-    <select onchange="this.nextElementSibling.style.display=this.value==='otro'?'block':'none'">
-      <option value=''>— Selecciona una opción —</option>
-      <option value='sku'>Entrada o salida de un SKU clave</option>
-      <option value='promo'>Actividad promocional o precio</option>
-      <option value='dist'>Cambio en distribución por canal</option>
-      <option value='comp'>Movimiento de un competidor específico</option>
-      <option value='stock'>Quiebre de stock</option>
-      <option value='otro'>Otro</option>
-    </select>
-    <textarea placeholder='Describe el driver...' style='display:none'></textarea>
-  </div>
-</div>`;
+function showAnswers(D, fname, nrows) {
+  document.getElementById('intro-meta').textContent =
+    'Fuente: ' + fname + ' · ' + nrows.toLocaleString('es-CL') + ' filas · Dataset GfK T3 Chile';
 
+  const container = document.getElementById('qa-container');
+  container.innerHTML = window._QA_HTML || '';
+  window._QA_DATA = D;
+
+  document.getElementById('tab-upload').classList.remove('active');
+  document.getElementById('tab-resp').classList.add('active');
 }
 
-function tbl(headers, rows) {
-  const th=headers.map(h=>`<th style="text-align:left;padding:6px 10px;font-size:10px;font-weight:700;text-transform:uppercase;color:#6A7D99;border-bottom:2px solid #0D2145">${h}</th>`).join('');
-  const tr=rows.map(r=>`<tr>${r.map(c=>`<td style="padding:6px 10px;border-bottom:1px solid #DDE3EC">${c}</td>`).join('')}</tr>`).join('');
-  return `<table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table>`;
+function resetAll() {
+  document.getElementById('tab-resp').classList.remove('active');
+  document.getElementById('tab-upload').classList.add('active');
+  document.getElementById('progWrap').style.display = 'none';
+  document.getElementById('dropZone').style.display = 'block';
+  document.getElementById('fi').value = '';
+  document.getElementById('qa-container').innerHTML = '';
+  window._QA_DATA = null;
+  window._QA_HTML = null;
 }
 
 </script>
