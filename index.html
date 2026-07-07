@@ -124,26 +124,26 @@ tr.elux td{background:#EBF5FC11}
   </div>
 
   <div class="prog-wrap" id="progWrap" style="display:none">
-    <div class="prog-title">⚙️ Procesando data RAW</div>
+    <div class="prog-title">🧹 BB · Limpiando tu data</div>
     <div class="prog-file" id="progFile"></div>
     <div class="prog-step" id="ps1">
-      <div class="step-row"><span class="sico">⏳</span><span class="step-lbl">Leyendo CSV y detectando separador</span></div>
+      <div class="step-row"><span class="sico">⏳</span><span class="step-lbl">Leyendo archivo — detectando separador ; vs ,</span></div>
       <div class="step-tx"><span class="tx-b">period_from_file;product_group;...</span><span class="tx-arr">→</span><span class="tx-a">7 columnas detectadas</span></div>
     </div>
     <div class="prog-step" id="ps2">
-      <div class="step-row"><span class="sico">⏳</span><span class="step-lbl">Parseando fechas — fix formatos mixtos</span></div>
+      <div class="step-row"><span class="sico">⏳</span><span class="step-lbl">Corrigiendo fechas — "Sept-16" no es un mes válido en ningún estándar</span></div>
       <div class="step-tx"><span class="tx-b">Sept-16 / 01-05-2021</span><span class="tx-arr">→</span><span class="tx-a">2016-09-01 / 2021-05-01</span></div>
     </div>
     <div class="prog-step" id="ps3">
-      <div class="step-row"><span class="sico">⏳</span><span class="step-lbl">Homologando categorías a español</span></div>
+      <div class="step-row"><span class="sico">⏳</span><span class="step-lbl">Traduciendo categorías — FA TOP / WASHING MACHINES → español</span></div>
       <div class="step-tx"><span class="tx-b">FA TOP / WASHING MACHINES</span><span class="tx-arr">→</span><span class="tx-a">Lav. Carga Superior / LAVADO</span></div>
     </div>
     <div class="prog-step" id="ps4">
-      <div class="step-row"><span class="sico">⏳</span><span class="step-lbl">Calculando market share y KPIs</span></div>
+      <div class="step-row"><span class="sico">⏳</span><span class="step-lbl">Calculando share, YoY, ranking y top SKUs por categoría</span></div>
       <div class="step-tx"><span class="tx-b">107.761 filas raw</span><span class="tx-arr">→</span><span class="tx-a">Share × mes × categoría × compañía</span></div>
     </div>
     <div class="prog-step" id="ps5">
-      <div class="step-row"><span class="sico">⏳</span><span class="step-lbl">Generando respuestas a las 24 preguntas</span></div>
+      <div class="step-row"><span class="sico">⏳</span><span class="step-lbl">Generando las 24 respuestas desde tus datos reales</span></div>
       <div class="step-tx"><span class="tx-b">Datos crudos</span><span class="tx-arr">→</span><span class="tx-a">24 respuestas listas</span></div>
     </div>
     <div class="bar-wrap"><div class="bar-fill" id="barFill"></div></div>
@@ -257,7 +257,7 @@ function handleFile(file){
                   },2000);
                 },2000);
               },200);
-            },2000);
+            },3000);
           },200);
         }
       });
@@ -511,9 +511,7 @@ ${['LAVADO','REFRIGERACIÓN','COCINAS'].map(c=>`<tr><td>${c}</td><td class="dn">
 
 <!-- P7 -->
 <div class="q-block"><div class="q-hdr"><span class="q-num">P7</span><div class="q-text">¿Qué ítem de Electrolux es el mejor para competir con el principal ítem de la competencia?</div></div>
-<div class="q-body"><table><thead><tr><th>Categoría</th><th>Competidor líder</th><th>Mejor respuesta Electrolux</th><th>Unidades</th></tr></thead><tbody>
-${['LAVADO','REFRIGERACIÓN','COCINAS'].map(c=>`<tr><td>${c}</td><td>${D.p7[c].lider}</td><td><strong>${D.p7[c].eluxTop.item}</strong></td><td>${D.p7[c].eluxTop.units.toLocaleString('es-CL')}</td></tr>`).join('')}
-</tbody></table></div></div>
+<div class="unavail"><div class="warn">No es posible responder esta pregunta con el dataset disponible.</div></div></div>
 
 <!-- P8 -->
 <div class="q-block"><div class="q-hdr"><span class="q-num">P8</span><div class="q-text">¿Cuál es el market share por categoría y mes en los últimos 12 meses?</div></div>
@@ -545,8 +543,8 @@ ${['LAVADO','REFRIGERACIÓN','COCINAS'].map(c=>`<tr><td>${c}</td><td>${D.p10[c].
 
 <!-- P11 -->
 <div class="q-block"><div class="q-hdr"><span class="q-num">P11</span><div class="q-text">¿Cuál es la variación de share MoM y YTD por categoría?</div></div>
-<div class="q-body"><table><thead><tr><th>Categoría</th><th>Share YTD ${D.lastY}</th><th>MoM último mes</th><th>Mejor mes</th><th>Peor mes</th></tr></thead><tbody>
-${['COCINAS','LAVADO','REFRIGERACIÓN'].map(c=>`<tr><td>${c}</td><td><strong>${D.p11[c].ytd}%</strong></td><td class="${n(D.p11[c].mom)}">${fmt(D.p11[c].mom)}pp</td><td>${D.p11[c].best?.sh}% (${D.p11[c].best?.mn})</td><td>${D.p11[c].worst?.sh}% (${D.p11[c].worst?.mn})</td></tr>`).join('')}
+<div class="q-body"><table><thead><tr><th>Categoría</th><th>Share YTD ${D.lastY}</th><th>MoM último mes</th></tr></thead><tbody>
+${['COCINAS','LAVADO','REFRIGERACIÓN'].map(c=>`<tr><td>${c}</td><td><strong>${D.p11[c].ytd}%</strong></td><td class="${n(D.p11[c].mom)}">${fmt(D.p11[c].mom)}pp</td></tr>`).join('')}
 </tbody></table></div></div>
 
 <!-- P12 -->
@@ -573,7 +571,7 @@ ${D.p14[c].map((r,i)=>`<tr class="${r.co==='ELECTROLUX GRP.'?'elux':''}"><td>${i
 
 <!-- P16 -->
 <div class="q-block"><div class="q-hdr"><span class="q-num">P16</span><div class="q-text">¿Cuál es el impacto de volumen vs precio en la variación de share?</div></div>
-<div class="unavail"><div class="warn">⚠️ No es posible responder esta pregunta con el dataset disponible. Con Sell In + precios internos se calcula la descomposición exacta.</div></div></div>
+<div class="unavail"><div class="warn">⚠️ No es posible responder esta pregunta con el dataset disponible. </div></div></div>
 
 <!-- P17 -->
 <div class="q-block"><div class="q-hdr"><span class="q-num">P17</span><div class="q-text">¿Estamos ganando o perdiendo market share?</div></div>
@@ -594,9 +592,11 @@ ${['LAVADO','REFRIGERACIÓN','COCINAS'].map(c=>{
 
 <!-- P19 -->
 <div class="q-block"><div class="q-hdr"><span class="q-num">P19</span><div class="q-text">¿En qué categorías somos más fuertes y en cuáles estamos perdiendo relevancia?</div></div>
-<div class="q-body"><table><thead><tr><th>Categoría</th><th>Share</th><th>Posición</th><th>Posición</th></tr></thead><tbody>
+<div class="q-body"><table><thead><tr><th>Categoría</th><th>Share ${D.lastY}</th><th>Posición en mercado</th><th>Variación 3 años</th></tr></thead><tbody>
 ${['COCINAS','LAVADO','REFRIGERACIÓN'].map(c=>{
-  return `<tr><td>${c}</td><td><strong>${D.p19[c].sh}%</strong></td><td>#${D.p19[c].rank}</td></tr>`;
+  const sh_now=parseFloat(D.p19[c].sh);
+  const sh_3y=parseFloat(D.p22[c].trend);
+  return `<tr><td>${c}</td><td><strong>${D.p19[c].sh}%</strong></td><td>#${D.p19[c].rank}</td><td class="${sh_3y>=0?'up':'dn'}">${sh_3y>=0?'+':''}${D.p22[c].trend}pp (3 años)</td></tr>`;
 }).join('')}
 </tbody></table></div></div>
 
@@ -608,13 +608,14 @@ ${['LAVADO','REFRIGERACIÓN','COCINAS'].map(c=>`<tr><td>${c}</td><td>${D.p20[c].
 
 <!-- P21 -->
 <div class="q-block"><div class="q-hdr"><span class="q-num">P21</span><div class="q-text">¿Cuál es la brecha de market share respecto al líder?</div></div>
-<div class="q-body"><table><thead><tr><th>Categoría</th><th>Share Electrolux</th><th>Competidor #1 real</th><th>Share líder</th><th>Brecha</th></tr></thead><tbody>
+<div class="q-body"><table><thead><tr><th>Categoría</th><th>Share Electrolux</th><th>Líder</th><th>Share líder</th><th>Brecha</th></tr></thead><tbody>
 ${['COCINAS','LAVADO','REFRIGERACIÓN'].map(c=>{
   const brecha=(parseFloat(D.p21[c].elux)-parseFloat(D.p21[c].liderSh)).toFixed(1);
   return `<tr><td>${c}</td><td><strong>${D.p21[c].elux}%</strong></td><td>${D.p21[c].lider}</td><td>${D.p21[c].liderSh}%</td><td class="${n(brecha)}">${fmt(brecha)}pp</td></tr>`;
 }).join('')}
 </tbody></table>
 
+<div style="font-size:11px;color:#6A7D99;margin-top:8px;font-style:italic">Nota: "OTHERS" corresponde a un agregado residual y no a una empresa individual. El líder considerado es la compañía con mayor participación individual.</div>
 </div></div>
 
 <!-- P22 -->
