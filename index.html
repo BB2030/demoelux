@@ -133,18 +133,18 @@ tr.elux td{background:#EBF5FC11}
     ondragleave="this.classList.remove('drag')"
     ondrop="event.preventDefault();this.classList.remove('drag');handleFile(event.dataTransfer.files[0])">
     <span class="dz-icon">📂</span>
-    <div class="dz-title">Sube tu data RAW — tal como la recibes</div>
-    <div class="dz-sub">El mismo archivo que te llega de GfK, sin modificar nada.<br>Separador <strong>;</strong> o <strong>,</strong> — se detecta automático.</div>
-    <div class="dz-or">— o —</div>
+    <div class="dz-title">Sube tu data RAW tal como la recibes</div>
+    <div class="dz-sub">El mismo archivo que te llega de GfK, sin modificar nada.<br>Separador <strong>;</strong> o <strong>,</strong> se detecta automático.</div>
+    <div class="dz-or">o</div>
     <button class="dz-btn" onclick="event.stopPropagation();document.getElementById('fi').click()">📎 Seleccionar archivo</button>
     <div class="dz-hint">GfK T3 · CSV · El archivo NUNCA sale de tu computador</div>
     <input type="file" id="fi" accept=".csv,.txt" onchange="handleFile(this.files[0])">
   </div>
   <div class="sec-note">
     <span style="font-size:18px;flex-shrink:0">🔒</span>
-    <div><strong>Privacidad total — verificable por TI:</strong>
+    <div><strong>Privacidad total verificable por TI:</strong>
       <ul>
-        <li>El archivo se lee con FileReader — API nativa del browser, sin red</li>
+        <li>El archivo se lee con FileReader API nativa del browser, sin red</li>
         <li>El parsing corre 100% en tu máquina con PapaParse</li>
         <li>No existe ninguna llamada de red al cargar el CSV</li>
         <li>TI puede verificarlo abriendo DevTools → Network mientras sube el archivo</li>
@@ -156,23 +156,23 @@ tr.elux td{background:#EBF5FC11}
     <div class="prog-title">🧹 BB · Limpiando tu data</div>
     <div class="prog-file" id="progFile"></div>
     <div class="prog-step" id="ps1">
-      <div class="step-row"><span class="sico"></span><span class="step-lbl">Leyendo archivo — detectando separador ; vs ,</span></div>
+      <div class="step-row"><span class="sico"></span><span class="step-lbl">Leyendo archivo detectando separador ; vs ,</span></div>
       <div class="step-tx"><span class="tx-b">period_from_file;product_group;...</span><span class="tx-arr">→</span><span class="tx-a">7 columnas detectadas</span></div>
     </div>
     <div class="prog-step" id="ps2">
-      <div class="step-row"><span class="sico"></span><span class="step-lbl">Corrigiendo fechas — "Sept-16" no es un mes válido en ningún estándar</span></div>
+      <div class="step-row"><span class="sico"></span><span class="step-lbl">Corrigiendo fechas "Sept-16" no es un mes válido en ningún estándar</span></div>
       <div class="step-tx"><span class="tx-b">Sept-16 / 01-05-2021</span><span class="tx-arr">→</span><span class="tx-a">2016-09-01 / 2021-05-01</span></div>
     </div>
     <div class="prog-step" id="ps3">
-      <div class="step-row"><span class="sico"></span><span class="step-lbl">Corrigiendo unidades — "4.827" no es 4,827 sino 4827</span></div>
+      <div class="step-row"><span class="sico"></span><span class="step-lbl">Corrigiendo unidades "4.827" no es 4,827 sino 4827</span></div>
       <div class="step-tx"><span class="tx-b">4.827 / " - "</span><span class="tx-arr">→</span><span class="tx-a">4827 / 0</span></div>
     </div>
     <div class="prog-step" id="ps4">
-      <div class="step-row"><span class="sico"></span><span class="step-lbl">Traduciendo categorías — FA TOP / WASHING MACHINES → español</span></div>
+      <div class="step-row"><span class="sico"></span><span class="step-lbl">Traduciendo categorías FA TOP / WASHING MACHINES → español</span></div>
       <div class="step-tx"><span class="tx-b">FA TOP / WASHING MACHINES</span><span class="tx-arr">→</span><span class="tx-a">Lav. Carga Superior / LAVADO</span></div>
     </div>
     <div class="prog-step" id="ps5">
-      <div class="step-row"><span class="sico"></span><span class="step-lbl">Calculando market share, YoY y top SKUs — generando 24 respuestas</span></div>
+      <div class="step-row"><span class="sico"></span><span class="step-lbl">Calculando market share, YoY y top SKUs generando 24 respuestas</span></div>
       <div class="step-tx"><span class="tx-b">107.761 filas raw</span><span class="tx-arr">→</span><span class="tx-a">24 respuestas listas</span></div>
     </div>
     <div class="bar-wrap"><div class="bar-fill" id="barFill"></div></div>
@@ -352,7 +352,7 @@ function buildData(rows) {
     p4[c]=top?{item:top[0],units:Math.round(top[1])}:{item:'N/A',units:0};
   });
 
-  // P5 — amenaza real excl OTHERS y excl ELUX
+  // P5 amenaza real excl OTHERS y excl ELUX
   const p5 = {};
   CATS.forEach(c => {
     const tot=rows.filter(r=>r._y===lastY&&r._pg===c).reduce((a,b)=>a+b._u,0);
@@ -362,7 +362,7 @@ function buildData(rows) {
     p5[c]=top?{co:top[0],share:+(top[1]/tot*100).toFixed(1)}:{co:'N/A',share:0};
   });
 
-  // P8 — share mensual real últimos 12 meses
+  // P8 share mensual real últimos 12 meses
   const p8 = {};
   CATS.forEach(c => {
     const all = rows.filter(r=>r._pg===c);
@@ -376,7 +376,7 @@ function buildData(rows) {
     });
   });
 
-  // P9 — top SKUs lastY
+  // P9 top SKUs lastY
   const p9 = {};
   CATS.forEach(c => {
     const tot=rows.filter(r=>r._y===lastY&&r._pg===c).reduce((a,b)=>a+b._u,0);
@@ -385,7 +385,7 @@ function buildData(rows) {
     p9[c]={total:Math.round(tot),skus:Object.entries(agg).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([it,u])=>({it,u:Math.round(u),sh:+(u/tot*100).toFixed(1)}))};
   });
 
-  // P10 — ganadores/perdedores SKU
+  // P10 ganadores/perdedores SKU
   const p10 = {};
   CATS.forEach(c => {
     const tot1=rows.filter(r=>r._y===lastY-1&&r._pg===c).reduce((a,b)=>a+b._u,0);
@@ -398,7 +398,7 @@ function buildData(rows) {
     p10[c]={loser:diffs[0],winner:diffs[diffs.length-1]};
   });
 
-  // P11 — YTD del año en curso, MoM
+  // P11 YTD del año en curso, MoM
   const p11 = {};
   CATS.forEach(c => {
     const d=rows.filter(r=>r._y===ytdYear&&r._pg===c);
@@ -413,7 +413,7 @@ function buildData(rows) {
     p11[c]={ytd:ytd_sh,ytdYear,mom};
   });
 
-  // P14 — ranking lastY
+  // P14 ranking lastY
   const p14 = {};
   CATS.forEach(c => {
     const tot=rows.filter(r=>r._y===lastY&&r._pg===c).reduce((a,b)=>a+b._u,0);
@@ -517,3 +517,5 @@ const na24 = `<div class='unavail'><div class='warn'>⚠️ No es posible respon
 const na18 = `<div class='unavail'><div class='warn'>⚠️ No es posible responder esta pregunta con el dataset disponible.</div><div class='req-wrap'><div class='req-hdr'>Información adicional requerida</div><div class='req-body'><div class='req-item'>Sell In (despachos por SKU)</div><div class='req-item'>Inventario retail (DOH por SKU/canal)</div><div class='req-item'>Historial de promociones</div></div></div></div>`;
 
 
+
+  
