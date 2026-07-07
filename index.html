@@ -1,1 +1,429 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Electrolux · GfK Intelligence</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#F0F2F5;color:#0D2145}
+.hdr{background:#0D2145;padding:14px 32px;display:flex;align-items:center;justify-content:space-between}
+.logo{color:#fff;font-size:14px;font-weight:700;letter-spacing:.04em}
+.logo span{color:#4AB8F0}
+.demo-tag{background:rgba(74,184,240,.2);border:1px solid rgba(74,184,240,.4);color:#4AB8F0;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.1em;text-transform:uppercase}
+.nav{background:#132D5A;padding:0 32px;display:flex;gap:0}
+.nav-tab{padding:11px 18px;font-size:12px;font-weight:500;color:rgba(255,255,255,.45);border-bottom:2px solid transparent;cursor:pointer;transition:color .15s}
+.nav-tab.active{color:#fff;border-bottom-color:#4AB8F0}
+.nav-tab:hover:not(.active){color:rgba(255,255,255,.7)}
+.body{max-width:1100px;margin:0 auto;padding:32px 24px}
+.panel{display:none}.panel.active{display:block}
+
+/* UPLOAD */
+.upload-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:72vh;gap:20px}
+.drop-zone{background:#fff;border:2px dashed #BDD9EE;border-radius:16px;padding:56px 64px;text-align:center;cursor:pointer;transition:all .2s;max-width:580px;width:100%}
+.drop-zone:hover,.drop-zone.drag{border-color:#0082C8;background:#EBF5FC;border-style:solid}
+.drop-zone.drag{transform:scale(1.01)}
+.dz-icon{font-size:56px;margin-bottom:16px;display:block;transition:transform .2s}
+.drop-zone.drag .dz-icon{transform:translateY(-6px)}
+.dz-title{font-size:20px;font-weight:800;color:#0D2145;margin-bottom:8px}
+.dz-sub{font-size:13px;color:#6A7D99;line-height:1.7}
+.dz-or{font-size:11px;color:#9BABBE;margin:16px 0 4px}
+.dz-btn{background:#0D2145;color:#fff;border:none;padding:13px 32px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;transition:background .15s}
+.dz-btn:hover{background:#132D5A}
+.dz-hint{font-size:11px;color:#9BABBE;margin-top:16px;padding-top:14px;border-top:1px solid #F0F2F5}
+.sec-note{display:flex;align-items:center;gap:10px;font-size:12px;color:#1A6B3A;background:#E8F5EE;border:1px solid #A8D5B8;border-radius:8px;padding:10px 16px;max-width:580px;width:100%}
+input[type=file]{display:none}
+
+/* PROGRESS */
+.prog-wrap{background:#fff;border:1px solid #DDE3EC;border-radius:10px;padding:28px 32px;max-width:560px;width:100%}
+.prog-title{font-size:14px;font-weight:700;color:#0D2145;margin-bottom:4px}
+.prog-file{font-size:11px;color:#6A7D99;margin-bottom:18px;font-family:monospace}
+.prog-step{display:flex;align-items:center;gap:12px;margin-bottom:10px;font-size:12px;color:#9BABBE;transition:color .3s}
+.prog-step.done{color:#1A6B3A}.prog-step.cur{color:#0082C8;font-weight:600}
+.sico{width:18px;text-align:center;flex-shrink:0}
+.bar-wrap{background:#F0F2F5;border-radius:4px;height:6px;margin-top:16px;overflow:hidden}
+.bar-fill{background:linear-gradient(90deg,#0082C8,#4AB8F0);height:6px;border-radius:4px;transition:width .5s ease;width:0%}
+
+/* DASHBOARD */
+.filters{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
+.filters label{font-size:11px;font-weight:600;color:#6A7D99;text-transform:uppercase;letter-spacing:.08em}
+select{font-size:12px;padding:7px 12px;border:1px solid #DDE3EC;border-radius:4px;background:#fff;color:#0D2145;cursor:pointer}
+.data-info{font-size:11px;color:#9BABBE;background:#fff;border:1px solid #DDE3EC;border-radius:4px;padding:5px 12px}
+.btn-reset{background:#fff;border:1px solid #DDE3EC;color:#6A7D99;padding:7px 14px;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer;margin-left:auto}
+.btn-reset:hover{border-color:#C0392B;color:#C0392B}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.kpi{background:#fff;border:1px solid #DDE3EC;border-radius:6px;padding:16px 20px}
+.kpi-l{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#6A7D99;margin-bottom:6px}
+.kpi-v{font-size:26px;font-weight:800;color:#0D2145;line-height:1}
+.kpi-v.blue{color:#0082C8}.kpi-v.red{color:#C0392B}.kpi-v.green{color:#1A6B3A}
+.kpi-s{font-size:11px;color:#9BABBE;margin-top:4px}
+.kpi-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;margin-top:4px}
+.badge-r{background:#FCEBEB;color:#C0392B;border:1px solid #F5C0BB}
+.badge-g{background:#E8F5EE;color:#1A6B3A;border:1px solid #A8D5B8}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.card{background:#fff;border:1px solid #DDE3EC;border-radius:6px;padding:20px}
+.card-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#0D2145;margin-bottom:4px}
+.card-sub{font-size:11px;color:#9BABBE;margin-bottom:16px}
+.chart-wrap{position:relative;height:220px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:8px 10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#6A7D99;border-bottom:2px solid #0D2145}
+td{padding:8px 10px;border-bottom:1px solid #DDE3EC;color:#0D2145}
+tr:hover td{background:#F4F7FB}
+td.num{text-align:right;font-variant-numeric:tabular-nums;font-weight:500}
+.trend-up{color:#1A6B3A;font-weight:700}.trend-dn{color:#C0392B;font-weight:700}
+.elux-row td{background:#EBF5FC22}
+.elux-row td:first-child{color:#0082C8;font-weight:600}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="logo">ELECTROLUX<span>.</span>CL · GfK Intelligence</div>
+  <span class="demo-tag">🔒 100% Local · Sin servidores</span>
+</header>
+<nav class="nav">
+  <div class="nav-tab active" id="nav-up">📁 Datos</div>
+  <div class="nav-tab" id="nav-dash" style="opacity:.35;pointer-events:none">📊 Dashboard</div>
+</nav>
+
+<!-- UPLOAD TAB -->
+<div id="tab-up" class="panel active">
+<div class="body">
+<div class="upload-wrap">
+
+  <div class="drop-zone" id="dropZone"
+    onclick="document.getElementById('fi').click()"
+    ondragover="event.preventDefault();this.classList.add('drag')"
+    ondragleave="this.classList.remove('drag')"
+    ondrop="event.preventDefault();this.classList.remove('drag');handleFile(event.dataTransfer.files[0])">
+    <span class="dz-icon">📂</span>
+    <div class="dz-title">Sube tu data RAW — tal como la recibes</div>
+    <div class="dz-sub">El mismo archivo que te llega de GfK, sin modificar nada.<br>Separador <strong>;</strong> o <strong>,</strong> — se detecta automático.</div>
+    <div class="dz-or">— o —</div>
+    <button class="dz-btn" onclick="event.stopPropagation();document.getElementById('fi').click()">📎 Seleccionar archivo</button>
+    <div class="dz-hint">GfK T3 · Sell Out · Sell In · cualquier formato CSV · El archivo NUNCA sale de tu computador</div>
+    <input type="file" id="fi" accept=".csv,.txt" onchange="handleFile(this.files[0])">
+  </div>
+
+  <div class="sec-note">
+    🔒 <span><strong>Privacidad total:</strong> el archivo se lee en tu browser con JavaScript puro. No hay servidor, no hay base de datos, no hay backend. Tu IT puede verificarlo inspeccionando el código fuente — no existe ninguna llamada de red al cargar el CSV.</span>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="prog-wrap" id="progWrap" style="display:none">
+    <div class="prog-title">Procesando archivo...</div>
+    <div class="prog-file" id="progFile"></div>
+    <div class="prog-step" id="ps1"><span class="sico">⏳</span>Leyendo CSV y detectando separador</div>
+    <div class="prog-step" id="ps2"><span class="sico">⏳</span>Parseando fechas (fix Sept→Sep, formatos mixtos)</div>
+    <div class="prog-step" id="ps3"><span class="sico">⏳</span>Homologando categorías a español</div>
+    <div class="prog-step" id="ps4"><span class="sico">⏳</span>Calculando market share mensual por compañía</div>
+    <div class="prog-step" id="ps5"><span class="sico">⏳</span>Calculando YoY y ranking competidores</div>
+    <div class="prog-step" id="ps6"><span class="sico">⏳</span>Generando dashboard</div>
+    <div class="bar-wrap"><div class="bar-fill" id="barFill"></div></div>
+  </div>
+
+</div>
+</div>
+</div>
+
+<!-- DASHBOARD TAB -->
+<div id="tab-dash" class="panel">
+<div class="body">
+  <div class="filters">
+    <label>Categoría</label>
+    <select id="fCat" onchange="render()">
+      <option value="ALL">Todas</option>
+      <option value="LAVADO">Lavado</option>
+      <option value="REFRIGERACIÓN">Refrigeración</option>
+      <option value="COCINAS">Cocinas</option>
+    </select>
+    <label>Año</label>
+    <select id="fYear" onchange="render()"></select>
+    <label>Quarter</label>
+    <select id="fQ" onchange="render()">
+      <option value="ALL">Todos</option>
+      <option value="1">Q1</option><option value="2">Q2</option>
+      <option value="3">Q3</option><option value="4">Q4</option>
+    </select>
+    <span class="data-info" id="dataInfo"></span>
+    <button class="btn-reset" onclick="resetAll()">↺ Cargar otro archivo</button>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-l">Share Electrolux GRP</div><div class="kpi-v blue" id="k-share">—</div><div class="kpi-s" id="k-ss"></div></div>
+    <div class="kpi"><div class="kpi-l">Volumen total mercado</div><div class="kpi-v" id="k-vol">—</div><div class="kpi-s">unidades en el período</div></div>
+    <div class="kpi"><div class="kpi-l">Principal amenaza</div><div class="kpi-v red" style="font-size:16px;padding-top:4px" id="k-threat">—</div><div class="kpi-s" id="k-ts"></div></div>
+    <div class="kpi"><div class="kpi-l">Variación YoY Electrolux</div><div class="kpi-v" id="k-yoy">—</div><div class="kpi-badge" id="k-yb"></div></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card"><div class="card-title">Evolución Share mensual</div><div class="card-sub">Electrolux GRP vs competencia</div><div class="chart-wrap"><canvas id="shareChart"></canvas></div></div>
+    <div class="card"><div class="card-title">Volumen de mercado mensual</div><div class="card-sub">Unidades totales por mes</div><div class="chart-wrap"><canvas id="volChart"></canvas></div></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card"><div class="card-title">Ranking competidores</div><div class="card-sub">Por volumen y share en período</div>
+      <table id="rankTable"><thead><tr><th>#</th><th>Compañía</th><th class="num">Unidades</th><th class="num">Share</th><th class="num">YoY</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="card"><div class="card-title">Top SKUs Electrolux GRP</div><div class="card-sub">Mayor volumen en el período</div>
+      <table id="skuTable"><thead><tr><th>#</th><th>Item</th><th>Categoría</th><th class="num">Unidades</th></tr></thead><tbody></tbody></table>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+let GFK=null,shareCI=null,volCI=null;
+const COLORS={'ELECTROLUX GRP.':'#0082C8','MABE GRP':'#10B981','MIDEA GRP.':'#EF4444','WHIRLPOOL GRP.':'#F59E0B','NEWELL BRANDS':'#8B5CF6','WINIA':'#6B7280','OTHERS':'#D1D5DB'};
+const CAT_MAP={'WASHING MACHINES':'LAVADO','COOLING':'REFRIGERACIÓN','COOKING':'COCINAS'};
+const SUBCAT_MAP={'FA TOP':'Lavadora Carga Superior','FA FRONT':'Lavadora Carga Frontal','WASHDRY':'Lavasecadora','COOKER':'Cocinas','OVEN':'Hornos','1 DOOR >90 CM':'Refrig. 1P >90cm','1 DOOR 81 - 90 CM':'Refrig. 1P 81-90cm','1 DOOR UP TO 80 CM':'Refrig. 1P hasta 80cm','2 DR FRZ. BTM':'Refrig. 2P Freezer Abajo','2 DR FRZ. TOP':'Refrig. 2P Freezer Arriba','3+ DOORS':'Refrig. 3+ Puertas','SIDE BY SIDE':'Side by Side','OTHERCAT':'Otras','N.A.':'N/A'};
+const MN=['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+function step(n,pct){
+  [1,2,3,4,5,6].forEach(i=>{
+    const el=document.getElementById('ps'+i);
+    if(i<n){el.className='prog-step done';el.querySelector('.sico').textContent='✅';}
+    else if(i===n){el.className='prog-step cur';el.querySelector('.sico').textContent='⚙️';}
+    else{el.className='prog-step';el.querySelector('.sico').textContent='⏳';}
+  });
+  document.getElementById('barFill').style.width=pct+'%';
+}
+
+function parseDate(d){
+  d=String(d).trim().replace('Sept-','Sep-').replace('sept-','Sep-');
+  const fmts=[
+    [/^(\w{3})-(\d{2})$/,m=>{const mo={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};return new Date(2000+parseInt(m[2]),mo[m[1]],1);}],
+    [/^(\d{2})-(\d{2})-(\d{4})$/,m=>new Date(+m[3],+m[2]-1,1)],
+    [/^(\d{4})-(\d{2})-(\d{2})$/,m=>new Date(+m[1],+m[2]-1,1)],
+    [/^(\w{3})-(\d{4})$/,m=>{const mo={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};return new Date(+m[2],mo[m[1]],1);}],
+  ];
+  for(const[re,fn]of fmts){const m=d.match(re);if(m){const dt=fn(m);if(dt&&!isNaN(dt))return dt;}}
+  const dt=new Date(d);return isNaN(dt)?null:dt;
+}
+
+function detectSep(text){
+  const line=text.split('\n')[0];
+  const sc=(line.match(/;/g)||[]).length;
+  const cc=(line.match(/,/g)||[]).length;
+  return sc>=cc?';':',';
+}
+
+function handleFile(file){
+  if(!file)return;
+  document.getElementById('dropZone').style.display='none';
+  document.getElementById('progWrap').style.display='block';
+  document.getElementById('progFile').textContent=file.name+' · '+(file.size/1024).toFixed(0)+' KB';
+  step(1,5);
+
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const text=e.target.result;
+    const sep=detectSep(text);
+    setTimeout(()=>{
+      Papa.parse(text,{
+        header:true,delimiter:sep,skipEmptyLines:true,
+        complete(res){
+          step(2,20);
+          const raw=res.data;
+          setTimeout(()=>{
+            // Parsear fechas
+            const rows=raw.map(r=>{
+              const pf=r.period_from_file||r.period||r.Period||r.DATE||Object.values(r)[0];
+              const dt=parseDate(pf);
+              return{...r,_dt:dt,_y:dt?dt.getFullYear():null,_m:dt?dt.getMonth()+1:null,_q:dt?Math.ceil((dt.getMonth()+1)/3):null};
+            }).filter(r=>r._y&&r._y>2000&&r._y<2030);
+            step(3,40);
+            setTimeout(()=>{
+              rows.forEach(r=>{
+                const pg=(r.product_group||'').trim();
+                const cat=(r.category||'').trim();
+                r._pg=CAT_MAP[pg]||pg;
+                r._cat=SUBCAT_MAP[cat]||cat;
+                const uv=r['sales_units fake']||r.units||r.sales_units||r.Units||Object.values(r).slice(-1)[0];
+                r._u=parseFloat(String(uv).replace(',','.'))||0;
+                r._co=(r.company||'').trim();
+                r._it=(r.item||'').trim();
+              });
+              step(4,60);
+              setTimeout(()=>{
+                // Aggregations
+                const agg=(keys,extra)=>{
+                  const m={};
+                  rows.forEach(r=>{
+                    const k=keys.map(k=>r[k]).join('|');
+                    if(!m[k])m[k]={...keys.reduce((o,k)=>({...o,[k]:r[k]}),{}),units:0,...(extra?extra(r):{})};
+                    m[k].units+=r._u;
+                  });
+                  return Object.values(m);
+                };
+                const ms=agg(['_y','_m','_pg','_co']);
+                const mt={};ms.forEach(r=>{const k=`${r._y}|${r._m}|${r._pg}`;if(!mt[k])mt[k]=0;mt[k]+=r.units;});
+                const msf=ms.map(r=>({...r,share:+(r.units/(mt[`${r._y}|${r._m}|${r._pg}`]||1)*100).toFixed(2)}));
+                const qs=agg(['_y','_q','_pg','_co']);
+                const qt={};qs.forEach(r=>{const k=`${r._y}|${r._q}|${r._pg}`;if(!qt[k])qt[k]=0;qt[k]+=r.units;});
+                const qsf=qs.map(r=>({...r,share:+(r.units/(qt[`${r._y}|${r._q}|${r._pg}`]||1)*100).toFixed(2)}));
+                const sku=agg(['_y','_pg','_co','_it']);
+                const years=[...new Set(rows.map(r=>r._y))].filter(Boolean).sort();
+                step(5,80);
+                setTimeout(()=>{
+                  GFK={ms:msf,qs:qsf,sku,meta:{years,total:rows.length}};
+                  step(6,100);
+                  setTimeout(()=>initDash(file.name,rows.length),500);
+                },300);
+              },300);
+            },300);
+          },200);
+        },
+        error(e){alert('Error: '+e.message);}
+      });
+    },100);
+  };
+  reader.readAsText(file);
+}
+
+function initDash(fname,n){
+  const sel=document.getElementById('fYear');
+  sel.innerHTML='';
+  GFK.meta.years.forEach(y=>{
+    const o=document.createElement('option');
+    o.value=y;o.text=y;
+    if(y===GFK.meta.years[GFK.meta.years.length-2])o.selected=true;
+    sel.appendChild(o);
+  });
+  document.getElementById('dataInfo').textContent=n.toLocaleString('es-CL')+' filas · '+fname;
+  document.getElementById('tab-up').classList.remove('active');
+  document.getElementById('tab-dash').classList.add('active');
+  document.getElementById('nav-up').classList.remove('active');
+  document.getElementById('nav-dash').classList.add('active');
+  document.getElementById('nav-dash').style.opacity='1';
+  document.getElementById('nav-dash').style.pointerEvents='auto';
+  render();
+}
+
+function resetAll(){
+  GFK=null;
+  document.getElementById('tab-dash').classList.remove('active');
+  document.getElementById('tab-up').classList.add('active');
+  document.getElementById('nav-dash').classList.remove('active');
+  document.getElementById('nav-up').classList.add('active');
+  document.getElementById('nav-dash').style.opacity='.35';
+  document.getElementById('nav-dash').style.pointerEvents='none';
+  document.getElementById('progWrap').style.display='none';
+  document.getElementById('dropZone').style.display='block';
+  document.getElementById('fi').value='';
+}
+
+function render(){
+  if(!GFK)return;
+  const cat=document.getElementById('fCat').value;
+  const year=+document.getElementById('fYear').value;
+  const q=document.getElementById('fQ').value;
+
+  let qs=GFK.qs.filter(r=>r._y===year);
+  if(cat!=='ALL')qs=qs.filter(r=>r._pg===cat);
+  if(q!=='ALL')qs=qs.filter(r=>r._q===+q);
+
+  const bc={};
+  qs.forEach(r=>{if(!bc[r._co])bc[r._co]={u:0};bc[r._co].u+=r.units;});
+  const tot=Object.values(bc).reduce((a,b)=>a+b.u,0);
+  Object.keys(bc).forEach(c=>{bc[c].sh=tot>0?+(bc[c].u/tot*100).toFixed(1):0;});
+
+  const el=bc['ELECTROLUX GRP.'];
+  document.getElementById('k-share').textContent=el?el.sh+'%':'—';
+  document.getElementById('k-ss').textContent='período '+year+(q!=='ALL'?' Q'+q:'');
+  document.getElementById('k-vol').textContent=tot.toLocaleString('es-CL');
+
+  const thr=Object.entries(bc).filter(([c])=>c!=='ELECTROLUX GRP.').sort((a,b)=>b[1].u-a[1].u);
+  if(thr.length){
+    document.getElementById('k-threat').textContent=thr[0][0].replace(/ GRP\.?$/,'');
+    document.getElementById('k-ts').textContent=thr[0][1].sh+'% share en período';
+  }
+
+  let pqs=GFK.qs.filter(r=>r._y===year-1);
+  if(cat!=='ALL')pqs=pqs.filter(r=>r._pg===cat);
+  if(q!=='ALL')pqs=pqs.filter(r=>r._q===+q);
+  const pu=pqs.filter(r=>r._co==='ELECTROLUX GRP.').reduce((a,b)=>a+b.units,0);
+  const cu=el?el.u:0;
+  if(pu>0){
+    const yoy=((cu-pu)/pu*100).toFixed(1);
+    const kv=document.getElementById('k-yoy');
+    kv.textContent=(yoy>0?'+':'')+yoy+'%';
+    kv.className='kpi-v '+(yoy>0?'green':'red');
+    const kb=document.getElementById('k-yb');
+    kb.textContent=yoy>0?'↑ Creciendo':'↓ Cayendo';
+    kb.className='kpi-badge '+(yoy>0?'badge-g':'badge-r');
+  }
+
+  // Ranking
+  const rb=document.querySelector('#rankTable tbody');rb.innerHTML='';
+  Object.entries(bc).sort((a,b)=>b[1].u-a[1].u).forEach(([c,d],i)=>{
+    const pu2=pqs.filter(r=>r._co===c).reduce((a,b)=>a+b.units,0);
+    const yoy=pu2>0?((d.u-pu2)/pu2*100).toFixed(1):null;
+    const tr=document.createElement('tr');
+    if(c==='ELECTROLUX GRP.')tr.className='elux-row';
+    tr.innerHTML=`<td>${i+1}</td><td>${c}</td><td class="num">${d.u.toLocaleString('es-CL')}</td><td class="num"><strong>${d.sh}%</strong></td><td class="num ${yoy>0?'trend-up':'trend-dn'}">${yoy!==null?(yoy>0?'+':'')+yoy+'%':'—'}</td>`;
+    rb.appendChild(tr);
+  });
+
+  // SKUs
+  const sd=GFK.sku.filter(r=>r._co==='ELECTROLUX GRP.'&&r._y===year&&(cat==='ALL'||r._pg===cat));
+  const sb=document.querySelector('#skuTable tbody');sb.innerHTML='';
+  sd.sort((a,b)=>b.units-a.units).slice(0,8).forEach((r,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${i+1}</td><td><strong>${r._it}</strong></td><td>${r._pg}</td><td class="num">${r.units.toLocaleString('es-CL')}</td>`;
+    sb.appendChild(tr);
+  });
+
+  // Charts
+  const ms=GFK.ms.filter(r=>r._y===year&&(cat==='ALL'||r._pg===cat));
+  const months=[...new Set(ms.map(r=>r._m))].sort((a,b)=>a-b);
+  const labels=months.map(m=>MN[m]);
+  const cos=['ELECTROLUX GRP.','MABE GRP','MIDEA GRP.','WHIRLPOOL GRP.','OTHERS'];
+
+  if(shareCI)shareCI.destroy();
+  shareCI=new Chart(document.getElementById('shareChart'),{
+    type:'line',
+    data:{labels,datasets:cos.map(c=>({
+      label:c.replace(/ GRP\.?$/,''),
+      data:months.map(m=>{
+        const recs=ms.filter(x=>x._m===m&&x._co===c);
+        if(!recs.length)return null;
+        const u=recs.reduce((a,b)=>a+b.units,0);
+        const t=ms.filter(x=>x._m===m).reduce((a,b)=>a+b.units,0);
+        return t>0?(u/t*100).toFixed(1):null;
+      }),
+      borderColor:COLORS[c]||'#ccc',borderWidth:c==='ELECTROLUX GRP.'?3:1.5,
+      pointRadius:c==='ELECTROLUX GRP.'?4:2,tension:.3,fill:false
+    }))},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:12}}},scales:{y:{ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#F0F2F5'}},x:{ticks:{font:{size:10}},grid:{display:false}}}}
+  });
+
+  const vols=months.map(m=>ms.filter(x=>x._m===m).reduce((a,b)=>a+b.units,0));
+  if(volCI)volCI.destroy();
+  volCI=new Chart(document.getElementById('volChart'),{
+    type:'bar',
+    data:{labels,datasets:[{label:'Total',data:vols,backgroundColor:'#0D2145',borderRadius:3}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{font:{size:10},callback:v=>v.toLocaleString('es-CL')},grid:{color:'#F0F2F5'}},x:{ticks:{font:{size:10}},grid:{display:false}}}}
+  });
+}
+
+document.getElementById('nav-up').onclick=()=>{
+  if(!GFK)return;
+  document.getElementById('tab-dash').classList.remove('active');
+  document.getElementById('tab-up').classList.add('active');
+  document.getElementById('nav-dash').classList.remove('active');
+  document.getElementById('nav-up').classList.add('active');
+};
+document.getElementById('nav-dash').onclick=()=>{
+  if(!GFK)return;
+  document.getElementById('tab-up').classList.remove('active');
+  document.getElementById('tab-dash').classList.add('active');
+  document.getElementById('nav-up').classList.remove('active');
+  document.getElementById('nav-dash').classList.add('active');
+};
+</script>
+</body>
+</html>
