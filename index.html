@@ -161,9 +161,9 @@ tr.elux td{background:#EBF5FC11}
       <h1>Respuestas al set de preguntas — Martín Bize, Electrolux Chile</h1>
       <p id="intro-meta">Cargando...</p>
       <div class="meta">
-        <span class="pill pill-ok">✅ 18 de 24 respondidas</span>
-        <span class="pill pill-na">⚠️ 6 requieren lista de precios</span>
-        <span class="pill pill-warn">Datos dummy</span>
+        <span class="pill pill-ok">24 preguntas evaluadas</span>
+        <span class="pill pill-ok">18 respondidas con el dataset disponible</span>
+        <span class="pill pill-na">6 no pueden responderse con el dataset disponible</span>
       </div>
     </div>
     <button class="btn-reset" onclick="resetAll()">↺ Cargar otro archivo</button>
@@ -273,7 +273,10 @@ function sum(rows,filters){
 function buildData(rows){
   const CATS=['LAVADO','REFRIGERACIÓN','COCINAS'];
   const years=[...new Set(rows.map(r=>r._y))].filter(Boolean).sort();
-  const lastY=years[years.length-2]||years[years.length-1];
+  // lastY = año con más meses disponibles (evita usar año incompleto como referencia de share)
+  const yearCounts={};
+  rows.forEach(r=>{if(!yearCounts[r._y])yearCounts[r._y]=new Set();yearCounts[r._y].add(r._m);});
+  const lastY=Object.entries(yearCounts).sort((a,b)=>b[1].size-a[1].size||b[0]-a[0])[0][0]*1;
 
   const getShare=(y,q,cat,co)=>{
     let d=rows.filter(r=>r._y===y);
@@ -604,7 +607,9 @@ ${['COCINAS','LAVADO','REFRIGERACIÓN'].map(c=>{
 <div class="q-block"><div class="q-hdr"><span class="q-num">P20</span><div class="q-text">¿Quiénes son los principales ganadores y perdedores del mercado?</div></div>
 <div class="q-body"><table><thead><tr><th>Categoría</th><th>Mayor perdedor</th><th>∆ Share</th><th>Mayor ganador</th><th>∆ Share</th></tr></thead><tbody>
 ${['LAVADO','REFRIGERACIÓN','COCINAS'].map(c=>`<tr><td>${c}</td><td>${D.p20[c].loser?.co||'—'}</td><td class="dn">${D.p20[c].loser?.d.toFixed(1)||'—'}pp</td><td>${D.p20[c].winner?.co||'—'}</td><td class="up">+${D.p20[c].winner?.d.toFixed(1)||'—'}pp</td></tr>`).join('')}
-</tbody></table></div></div>
+</tbody></table>
+<div style="font-size:11px;color:#6A7D99;margin-top:8px;font-style:italic">Nota: "OTHERS" corresponde a un agregado residual de múltiples marcas no clasificadas individualmente en el dataset.</div>
+</div></div>
 
 <!-- P21 -->
 <div class="q-block"><div class="q-hdr"><span class="q-num">P21</span><div class="q-text">¿Cuál es la brecha de market share respecto al líder?</div></div>
